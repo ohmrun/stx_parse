@@ -8,7 +8,7 @@ class Failed<I,O> extends Direct<I,O>{
     this.msg = msg;
     this.isError = isError;
   }
-  override public function parse(ipt){
+  override function do_parse(ipt){
     return failed(msg.errorAt(ipt).newStack(), ipt, isError);
   }
 }

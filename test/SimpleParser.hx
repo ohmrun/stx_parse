@@ -9,7 +9,7 @@ class SimpleParser{
         a.testIdentitifierSuccess();
         a.testOption();
         a.testRegex();
-        a.testRecure();
+        a.testRecur();
   }
   public function new(){
 
@@ -17,17 +17,17 @@ class SimpleParser{
   static var test_id = "test".identifier(); 
   function testIdentitifierSuccess(){
     var b = "test";
-    var c = test_id.parse(b);
+    var c = test_id.parse(b.reader());
     shouldSucceed(c);
   }
   function testOption(){
     var b = "tes";
-    var c = test_id.option().parse(b);
+    var c = test_id.option().parse(b.reader());
     shouldSucceed(c);
   }
   function testRegex(){
     var b = "aaaa";
-    var c = ~/a+/.regexParser().parse(b);
+    var c = "a+".regexParser().parse(b.reader());
     shouldSucceed(c);
   }
   function shouldSucceed(v:ParseResult<Dynamic,Dynamic>){
@@ -39,12 +39,12 @@ class SimpleParser{
         default:
     }
   }
-  function testRecure(){
-    var t = "1+2+3x4";
-    var o = p_expr.parse(t);
+  function testRecur(){
+    var t = "1+2+3x4x9x10";
+    var o = p_expr.parse(t.reader());
     shouldSucceed(o);
   }
-  static var p_int = ~/[0-9]+/.regexParser().then(
+  static var p_int = "[0-9]+".regexParser().then(
     (x) -> Num(Std.parseInt(x))
   );
   static var p_star_id = "x".identifier();

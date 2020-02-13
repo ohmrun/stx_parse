@@ -1,24 +1,19 @@
 package com.mindrocks.text;
 
-class Enumerable<C,T> extends Indexable	<C,T> {
+class Enumerable<C,T>{
 	
-	public function new(d,?i) {
-		super(d, i);
-	}
-	public function next():T {
-		var o = this.at(this.index);
-		index++;
-		return o;
-	}
-	public function hasNext():Bool {
+	public var data 	: C;
+	public var index 	: Int;
 
-		return length > index;
+	public function new(data,?index = 0) {
+		this.data 	= data;
+		this.index 	= index;
 	}
-	public function setIndex(i:Int):Enumerable<C,T> {
+	public function isEnd(){
 		throw "abstract function";
-		return this;
+		return true;
 	}
-	public function match(fn:T -> Bool,at:Int):Bool{
+	public function match(fn:T -> Bool):Bool{
 		throw "abstract function";
 		return false;
 	}
@@ -26,8 +21,16 @@ class Enumerable<C,T> extends Indexable	<C,T> {
 		throw "abstract function";
 		return null;
 	}
-	public function range(loc:Int,?len:Null<Int>):C {
+	public function head():T{
 		throw "abstract function";
 		return null;
 	}
-}
+	public function drop(n:Int):Enumerable<C,T>{
+		throw "abstract function";
+		return null;
+	}
+	public function take(?len : Null<Int>) : C {
+		throw "abstract function";
+		return null;
+  }
+} 

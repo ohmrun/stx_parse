@@ -6,7 +6,7 @@ class Succeed<I,O> extends Direct<I,O>{
     super();
     this.value = value;
   }
-  override public function parse(ipt){
+  override function do_parse(ipt){
     return succeed(this.value,ipt); 
   }
 }

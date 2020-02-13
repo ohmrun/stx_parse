@@ -2,14 +2,24 @@ package com.mindrocks.text.parsers;
 
 class With<I,T,U,V> extends Base<I,V,Tuple2<Parser<I,T>,Parser<I,U>>>{
   var transform  : T -> U -> V;
-  public function new(l,r,transform,?id){
-    super({a:l,b:r},id);
+  public function new(l:Parser<I,T>,r:Parser<I,U>,transform,?id){
+    var lhs = __.that(id).exists().apply(l);
+    var rhs = __.that(id).exists().apply(r);
+    lhs.merge(rhs).crunch();
+    super(tuple2(l,r),id);
     this.transform  = transform;
+    this.tag = switch([l.tag,r.tag]){
+      case [Some(l),Some(r)]  : Some('($l) ($r)');
+      default                 : None;
+    }
   }
-  override public function parse(input:Input<I>){
-    return switch (delegation.a.parse(input)) {
+  override function check(){
+    __.that().exists().crunch(delegation);
+  }
+  override function do_parse(input:Input<I>){
+    return switch (delegation.fst().parse(input)) {
           case Success(m1, r) :
-            switch (delegation.b.parse(r)) {
+            switch (delegation.snd().parse(r)) {
               case Success(m2, r) : 
                 succeed(transform(m1, m2), r);
               case x : 

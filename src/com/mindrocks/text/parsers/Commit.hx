@@ -4,7 +4,7 @@ class Commit<I,T> extends Delegate<I,T>{
   public function new(delegation,?id){
     super(delegation,id);
   }
-  override public function parse(ipt){
+  override function do_parse(ipt){
     var res = delegation.parse(ipt);
     return switch(res) {
       case Success(_, _): 

@@ -1,4 +1,9 @@
 -main Main
+-lib hre
+-lib stx_core
+-lib stx_assert
+-lib stx_fn
+-lib tink_core
 -cp src
 -cp test
 --interp

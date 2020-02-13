@@ -1,26 +1,23 @@
 package com.mindrocks.text.parsers;
 
+import hre.*;
 class Regex extends Direct<String,String>{
-  var stamp : EReg;
+  var stamp : String;
   public function new(stamp,?id){
     super(id);
     this.stamp = stamp;
+    this.tag   = Some('Regex($stamp)');
   }
-  override public function parse(ipt:Input<String>){
-    return if (ipt.matchedBy(stamp.match)) {
-        var pos = stamp.matchedPos();
-        if (pos.pos == 0) {
-          succeed(ipt.take(pos.len), ipt.drop(pos.len));
-        } else {
-          failed(
-            '$stamp not matched at position ${ipt.offset} '.errorAt(ipt)
-            .newStack()
-            , ipt
-            , false
-          );
-        }
-      } else {
-        failed('$stamp not matched'.errorAt(ipt).newStack(), ipt, false);
-      }
+  override function do_parse(ipt:Input<String>){
+    var ereg        = new RegExp(stamp,"g");
+    var is_matched  = ipt.matchedBy(ereg.test);
+    //trace('stamp="$stamp" is_matched="$is_matched" ');
+    return if (is_matched) {
+      var match         = new RegExp(stamp,"g").parsify(ipt);//TODO
+      var length        = match.groups[0].length;
+      ipt.take(length).yes(ipt.drop(length));
+    }else{
+      '$stamp not matched'.no(ipt);
+    }
   }
 }

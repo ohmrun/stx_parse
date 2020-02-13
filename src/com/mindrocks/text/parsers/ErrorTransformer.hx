@@ -6,12 +6,12 @@ class ErrorTransformer<I,O> extends Delegate<I,O>{
     super(delegation,id);
     this.transformer = transformer;
   }
-  override public function parse(ipt){
+  override function do_parse(ipt){
     return switch(delegation.parse(ipt)) {
       case Failure(err, input, isError): 
         Failure(
           err.report(
-            (transformer(err.head.msg))
+            (transformer(err.head().msg))
               .errorAt(input)
           )
           , input

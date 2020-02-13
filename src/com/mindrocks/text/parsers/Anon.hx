@@ -7,7 +7,8 @@ class Anon<I,O> extends Direct<I,O>{
     super(id);
     this.method = method;
   }
-  override public function parse(ipt){
+  override function do_parse(ipt:Input<I>){
+    __.that(id).exists().errata(e -> e.map( _ -> UndefinedParseDelegate(ipt))).crunch(method);
     return this.method(ipt);
   }
 }

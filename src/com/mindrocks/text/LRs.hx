@@ -3,7 +3,7 @@ package com.mindrocks.text;
 class LRs{
   static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: Input<I>, growable: LR): ParseResult<I,T> {
     switch (growable.head) {
-      case None: throw "lrAnswer with no head!!";
+      case None: throw __.fault().of(NoRecursionHead);
       case Some(head):
         if (head.getHead() != p) /*not head rule, so not growing*/{
           return cast(growable.seed);
@@ -23,12 +23,12 @@ class LRs{
     switch (input.getRecursionHead()) {
       case None: return cached;
       case Some(head):
-        if (cached == None && !(head.involvedSet.cons(head.headParser).contains(cast p))) {
+        if (cached == None && !(head.involvedSet.cons(head.headParser).has(p.elide()))) {
           return Some(MemoParsed(Failure("dummy ".errorAt(input).newStack(), input, false)));
         }
         //$type(p);
         //$type(head.evalSet.contains);
-        if (head.evalSet.contains(cast p)) {
+        if (head.evalSet.has(cast p)) {
           head.evalSet = head.evalSet
             .filter(function (x:Parser<Dynamic,Dynamic>) return cast (x) != cast(p));
 
@@ -44,19 +44,19 @@ class LRs{
       recDetect.head = Some(p.mkHead());
 
     var stack = input.memo.lrStack;
-    var h = recDetect.head.get(); // valid (see above)
-    while (stack.head.rule != p) {
-      var head = stack.head;
+    var h     = recDetect.head.release(); // valid (see above)
+    while (stack.head().rule != p) {
+      var head = stack.head();
       head.head = recDetect.head;
       h.involvedSet = h.involvedSet.cons(head.rule);
-      stack = stack.tail;
+      stack = stack.tail();
     }
   }
   static function grow<I,T>(p: Parser<I,T>, genKey : Int -> String, rest: Input<I>, head: Head): ParseResult<I,T> {
     //store the head into the recursionHeads
     rest.setRecursionHead(head);
     var oldRes =
-      switch (rest.getFromCache(genKey).get()) {
+      switch (rest.getFromCache(genKey).release()) {
         case MemoParsed(ans): ans;
         default : throw "impossible match";
       };
@@ -64,6 +64,9 @@ class LRs{
     //resetting the evalSet of the head of the recursion at each beginning of growth
 
     head.evalSet = head.involvedSet;
+    if( p == null){
+       throw('undefined parse delegate'); 
+    }
     var res = p.parse(rest);
     switch (res) {
       case Success(_, _) :
@@ -73,7 +76,7 @@ class LRs{
         } else {
           //we're done with growing, we can remove data from recursion head
           rest.removeRecursionHead();
-          switch (rest.getFromCache(genKey).get()) {
+          switch (rest.getFromCache(genKey).release()) {
             case MemoParsed(ans): return cast(ans);
             default: throw "impossible match";
           }

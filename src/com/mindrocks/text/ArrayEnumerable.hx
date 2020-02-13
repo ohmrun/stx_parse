@@ -4,19 +4,23 @@ class ArrayEnumerable<T> extends Enumerable < Array<T>, T > {
 	public function new(v,?i) {
 		super(v, i);
 	}
-	override public function at(i:Int):T {
-		return this.data[i];
+	override public function isEnd() {
+		return !(this.data.length > this.index); 	
 	}
-	override private function get_length() {
-		return this.data.length;
+	override public function match(e:T->Bool){
+		return e(head());
 	}
 	override public function prepend(v:T):Enumerable<Array<T>,T> {
-		var out = this.data.copy();
-				out.insert(this.index, v);
-		return new ArrayEnumerable( out , this.index );
+		return new ArrayEnumerable( this.data.cons(v) , this.index );
 	}
-	override public function range(loc:Int, ?len:Null<Int>):Array<T> {
-		len = len == null ? length - loc : len;
-		return data.slice(loc, loc + len);
+	override public function take(?len:Null<Int>):Array<T> {
+		len = len == null ? this.data.length - this.index : len;
+		return data.prj().slice(this.index, this.index + len);
 	}
-}
+	override public function drop(i:Int):Enumerable<Array<T>,T>{
+		return new ArrayEnumerable(this.data,this.index + i);
+	}
+	override public function head():T{
+		return this.data[index];
+	}
+} 

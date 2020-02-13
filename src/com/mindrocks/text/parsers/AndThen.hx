@@ -7,11 +7,11 @@ class AndThen<I,T,U> extends Base<I,U,Parser<I,T>>{
     super(delegation,id);
     this.flatmap  = flatmap;
   }
-  override public function parse(input):ParseResult<I,U>{
+  override function do_parse(input):ParseResult<I,U>{
+    if(delegation == null){  throw('undefined parse delegate'); }
     return switch (delegation.parse(input)) {
       case Success(m, r): flatmap(m).parse(r);
       case def          : def.elide();
     }
   }
- 
 }

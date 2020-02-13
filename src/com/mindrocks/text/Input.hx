@@ -1,86 +1,88 @@
 package com.mindrocks.text;
 
-@:forward abstract Input<I>(InputT<I>) from InputT<I>{
-  inline public function take(?len : Int) : I {
-    return this.content.range(this.offset, len);
-  }
-
-  inline public function drop<I>(len : Int) : Input<I> {
+@:forward(memo,tag)abstract Input<I>(InputT<I>) from InputT<I>{
+  static public function pure<T>(en:Enumerable<Dynamic,T>):Input<T>{
     return {
-      content : this.content.setIndex(this.offset + len),
-      offset  : this.offset + len,
+      content : en,
+      memo    : Memo.unit()
+    };
+  }
+  inline public function drop(len : Int) : Input<I> {
+    return {
+      content : this.content.drop(len),
       memo    : this.memo
     };
   }
-
-  inline public function matchedBy(e:I->Bool) : Bool { // this is deadly unfortunate that RegEx don't support offset and first char maching constraint..
-    return this.content.match(e,this.offset);
+  inline public function take(?len):I{
+    return this.content.take(len);
+  }
+  inline public function tail():Input<I>{
+    return drop(1);
+  }
+  inline public function matchedBy(e:I->Bool) : Bool {
+    return this.content.match(e);
   }
   inline public function head() : I {
-    return this.content.at(this.offset);
+    return this.content.head();
   }
-  
+
   inline public function position<I>(r : Input<I>) : Int return
-    this.offset;
+    this.content.index;
 
   public function textAround(?before : Int = 10, ?after : Int = 10) : { text : String, indicator : String } {
 
-    var offset = Std.int(Math.max(0, this.offset - before));
-
-    var text = this.content.range(offset, before + after);
-
-    var indicPadding = Std.int(Math.min(this.offset, before));
-    var indicator = StringTools.lpad("^", "_", indicPadding+1);
+    var offset        = Std.int(Math.max(0, this.content.index - before));
+    var text          = this.content.take(before + after);
+    var indicPadding  = Std.int(Math.min(this.content.index, before));
+    var indicator     = StringTools.lpad("^", "_", indicPadding+1);
 
     return {
-      text : text,
-      indicator : indicator
+      text        : text,
+      indicator   : indicator
     };
   }
   public function errorMessage(msg: FailureStack){
     var x = textAround();
 
     var r = "";
-    msg.each(function(err){
-        r += "Error at " + err.pos + " : " + err.msg+"\n";
-    });
+    for (err in msg){
+      r += "Error at " + err.pos + " : " + err.msg+"\n";
+    }
 
     return r + " "+x.text+"\n"+x.indicator;
   }
-  @:from inline public static function reader(str : String) : Input<String> return {
-    content : Tools.enumerable(str),
-    offset : 0,
-    memo : {
-      memoEntries : new Map<String,MemoEntry>(),
-      recursionHeads: new Map<String,Head>(),
-      lrStack : List.nil()
-    }
-  }
-
   public inline function setRecursionHead(head : Head) {
-    this.memo.recursionHeads.set(this.offset + "", head);
+    this.memo.recursionHeads.set(this.content.index + "", head);
   }
   public inline function removeRecursionHead() {
-    this.memo.recursionHeads.remove(this.offset + "");
+    this.memo.recursionHeads.remove(this.content.index + "");
   }
   public inline function getRecursionHead() : Option<Head> {
-    var res = this.memo.recursionHeads.get(this.offset + "");
+    var res = this.memo.recursionHeads.get(this.content.index + "");
     return res == null?None: Some(res);
   }
   public inline function getFromCache(genKey : Int -> String) : Option<MemoEntry> {
-    var key = genKey(this.offset);
+    var key = genKey(this.content.index);
     var res = this.memo.memoEntries.get(key);
-    return res == null?None: Some(res);
+    return res == null? None: Some(res);
   }
   inline public function updateCacheAndGet(genKey : Int -> String, entry : MemoEntry) {
-    var key = genKey(this.offset);
+    var key = genKey(this.content.index);
     this.memo.memoEntries.set(key, entry);
     return entry;
   }
   public function toString(){
-    return 'at ${this.offset}:#(${head()})';
+    return 'at ${this.content.index}:#(${head()})';
   }
-  public function hasNext(){
-    return this.content.hasNext();
+  public function isEnd(){
+    return this.content.isEnd();
+  }
+  public var offset(get,never):Int;
+  function get_offset(){
+    return this.content.index;
+  }
+  private var content(get,never):Enumerable<Dynamic,I>;
+  function get_content(){
+    return this.content;
   }
 }

@@ -1,5 +1,10 @@
 package ;
 
+import stx.core.head.Data;
+
+using stx.core.Lift;
+using stx.ds.Lift;
+
 using com.mindrocks.text.Lift;
 /**
  * ...
@@ -8,9 +13,6 @@ using com.mindrocks.text.Lift;
 
 import com.mindrocks.text.Parser;
 import haxe.Timer;
-
-import com.mindrocks.functional.Functional;
-using com.mindrocks.functional.Functional;
 
 using Lambda; 
 
@@ -65,8 +67,8 @@ typedef Definition = {
 
 class LambdaTest {
   
-  public static  var identifierR  = ~/[a-zA-Z0-9_-]+/;
-  public static  var numberR      = ~/[-]*[0-9]+/;
+  public static  var identifierR  = "[a-zA-Z0-9_-]";
+  public static  var numberR      = "[-]*[0-9]";
   public static  var spaceP      = " ".identifier();    
   public static  var tabP        = "\t".identifier();
   public static  var retP        = ("\r".identifier().or("\n".identifier()));
@@ -105,19 +107,19 @@ class LambdaTest {
 	  spacingP()._and(p);
 
   static var identifierP =
-    withSpacing(identifierR.regexParser()).tag("identifier");
+    withSpacing(identifierR.regexParser()).tagged("identifier");
 
   static  var letP = withSpacing("let".identifier());
   static  var inP = withSpacing("in".identifier());
   
   static var identP : Parser<String, RExpression> =
-    identifierP.then(function (id) return Ident(id)).tag("identifier");
+    identifierP.then(function (id) return Ident(id)).tagged("identifier");
 
   static var numberP : Parser<String, PrimitiveType> =
     numberR.regexParser().then(function (n) return Number(Std.parseInt(n)));
   
   static var floatNumberP : Parser<String, PrimitiveType> = // TODO: change this!
-    numberP.and_(dotP).and(numberP).then(function (p) return FloatNumber(Std.parseFloat(p.a + "." + p.b)));
+    numberP.and_(dotP).and(numberP).then(function (p) return FloatNumber(Std.parseFloat(p.fst() + "." + p.snd())));
   
 // TODO
 //  static var stringP =
@@ -126,42 +128,42 @@ class LambdaTest {
   static var primitiveP : Parser<String, RExpression> = [
       floatNumberP,
       numberP,
-    ].ors().then(Primitive).tag("primitive");
+    ].ors().then(Primitive).tagged("primitive");
     
   static function applicationP() : Parser<String, RExpression>{
     return
-      rExpressionP.and(identifierP)
-      .then(function (p) return Apply(p.a, p.b)).tag("application");
+      (() -> rExpressionP).defer().and(identifierP)
+      .then(function (p) return Apply(p.fst(), p.snd())).tagged("application");
   }
 
   static function lambdaP(){
     return 
       (identifierP.and_(arrowP)
       .and(maybeRet(expressionP.commit()))
-      .then(function (p) return LambdaExpr(p.a, p.b)).tag("lambda") );
+      .then(function (p) return LambdaExpr(p.fst(), p.snd())).tagged("lambda") );
   }
   static var rExpressionP:Parser<String, RExpression> = {
     [
-      lambdaP(),
+      (lambdaP.defer():Parser<String, RExpression>),
       applicationP(),
       identP,
       primitiveP
-    ].ors().memo().tag("RExpression"); 
+    ].ors().memo().tagged("RExpression"); 
   } 
   static var letExpressionP : Parser<String, LetExpression> =
-    ( identifierP.and_(equalsP).and(maybeRet(rExpressionP.commit())).then(function (p) return { ident: p.a, expr: p.b }).tag("let expression") );
+    ( identifierP.and_(equalsP).and(maybeRet(rExpressionP.commit())).then(function (p) return { ident: p.fst(), expr: p.snd() }).tagged("let expression") );
   
   public static var expressionP : Parser<String, Expression> =
 	(
 
 		(letP._and(maybeRet(maybeRet(letExpressionP).rep1sep(commaP.or(retP)).and_(commaP.option())).and_(maybeRet(inP)).commit())).option().and(maybeRet(rExpressionP)).then(function (p) {
 		  var lets =
-			switch (p.a) {
-			  case Some(ls): ls;
-			  case None: [];
+			switch (p.fst()) {
+			  case Some(ls) : ls;
+			  case None     : [].ds();
 			};
-		  return { lets : lets, expr : p.b };
-		}).tag("expression")
+		  return { lets : lets, expr : p.snd() };
+		}).tagged("expression")
 	);
     
 
@@ -169,11 +171,11 @@ class LambdaTest {
   static var definitionP =
 	(
 		maybeRet(identifierP).and_(equalsP).and(maybeRet(expressionP.commit()))
-      .then(function (p) return { name : p.a, expr : p.b } ).tag("definition")
+      .then(function (p) return { name : p.fst(), expr : p.snd() } ).tagged("definition")
 	);
     
   public static var programP =
-    definitionP.many().tag("program").commit();
+    definitionP.many().tagged("program").commit();
   
 }
 
@@ -197,7 +199,7 @@ class LangParser {
         in
           add c d          
     ";
-    var out = LambdaTest.programP.parse(input);
+    var out = LambdaTest.programP.parse(input.reader());
     var errs = out.fold(
           (_,_) -> None,
           (err,xs,_) -> {
@@ -210,7 +212,7 @@ class LangParser {
     );
   }
   public static function numberParserTest(){
-    //var a = LambdaTest.numberR;//.tag("testing");
+    //var a = LambdaTest.numberR;//.tagged("testing");
     //trace(a);
     //var b = a.parse("21");
  }
