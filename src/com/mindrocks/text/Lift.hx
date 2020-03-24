@@ -7,16 +7,16 @@ class Lift{
       pos : pos.offset
     };
   }
-  static public inline function newStack(failure : FailureMsg) : FailureStack {
-    var newStack = FailureStack.nil();
-    return newStack.cons(failure);
+  static public inline function newStack(failure : FailureMsg,?pos:Pos) : FailureStack {
+    return __.fault(pos).of(ParseFailed(failure));
   }
-  static public inline function report(stack : FailureStack, msg : FailureMsg) : FailureStack {
-    return stack.cons(msg);
+  static public inline function report(stack : FailureStack, msg : Err<ParserFailure>) : FailureStack {
+    return stack.next(msg);
   }
 
   static public inline function fail<I,T>(msg : String, isError : Bool) : Parser<I,T>
     return new Failed(msg,isError).asParser();
+
   
   static public inline function success<I, T>(v : T):Parser<I,T>  
 	  return Parser.lift(new Succeed(v));

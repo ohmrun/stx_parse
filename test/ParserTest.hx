@@ -47,7 +47,7 @@ class JsonPrettyPrinter {
 
 class JsonParser {
   
-  static function makeField(t : Tuple2<String, JsValue>) return
+  static function makeField(t : Couple<String, JsValue>) return
     { name : t.a, value : t.b }
   
   static var identifierR = ~/[a-zA-Z0-9_-]+/;
@@ -154,7 +154,7 @@ class ParserTest {
         if (rest.offset == at)
         return true;
         else {
-          trace("unexpected failure offset: "+ rest.errorMessage(err));
+         
           return false;
         }
         return true;

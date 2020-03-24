@@ -1,7 +1,7 @@
 package com.mindrocks.text.parsers;
 
 class ErrorTransformer<I,O> extends Delegate<I,O>{
-  var transformer : String -> String;
+  var transformer : ParserFailure -> ParserFailure;
   public function new(delegation,transformer,?id){
     super(delegation,id);
     this.transformer = transformer;
@@ -10,10 +10,7 @@ class ErrorTransformer<I,O> extends Delegate<I,O>{
     return switch(delegation.parse(ipt)) {
       case Failure(err, input, isError): 
         Failure(
-          err.report(
-            (transformer(err.head().msg))
-              .errorAt(input)
-          )
+          err.map(transformer)
           , input
           , isError);
       case r: 

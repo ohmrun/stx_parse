@@ -2,6 +2,8 @@ package ;
 
 import stx.core.head.Data;
 
+import stx.ds.Package;
+
 using stx.core.Lift;
 using stx.ds.Lift;
 
@@ -201,15 +203,15 @@ class LangParser {
     ";
     var out = LambdaTest.programP.parse(input.reader());
     var errs = out.fold(
-          (_,_) -> None,
+          (_,_) -> None.core(),
           (err,xs,_) -> {
             trace(xs);
-            return Some(err);
+            return Some(err).core();
           }
         );
-    errs.get().each(
-      (x) -> trace(x)
-    );
+    for (x in errs){
+      trace(x);
+    }
   }
   public static function numberParserTest(){
     //var a = LambdaTest.numberR;//.tagged("testing");

@@ -21,15 +21,15 @@ package com.mindrocks.text;
   }
   public function mkHead() : Head return {
     headParser    : cast elide(),
-    involvedSet   : List.unit(),
-    evalSet       : List.unit()
+    involvedSet   : LinkedList.unit(),
+    evalSet       : LinkedList.unit()
   }
   inline public function elide<U>() : Parser<I,U> return cast(self);
 
   inline public function andWith<U,V>(that:Parser<I,U>,fn:O->U->V):Parser<I,V>{
     return Parsers.andWith(self,that,fn);
   }
-  inline public function and<U>(that:Parser<I,U>):Parser<I,Tuple2<O,U>>{
+  inline public function and<U>(that:Parser<I,U>):Parser<I,Couple<O,U>>{
     return Parsers.and(self,that);
   }
   inline public function and_seq(that:Parser<I,O>):Parser<I,Array<O>>{
@@ -42,11 +42,9 @@ package com.mindrocks.text;
     return Parsers.and_(self,that);
   }
 
-
   inline public function or(that:Parser<I,O>):Parser<I,O>{
     return Parsers.or(self,that);
   }
-
 
   inline public function many():Parser<I,Array<O>>{
     return Parsers.many(self);
@@ -55,7 +53,6 @@ package com.mindrocks.text;
     return Parsers.oneMany(self);
   }
 
-
   inline public function commit():Parser<I,O>{
     return Parsers.commit(self);
   }
@@ -63,19 +60,23 @@ package com.mindrocks.text;
   inline public function then<U>(fn:O->U):Parser<I,U>{
     return Parsers.then(self,fn);
   }
+
   inline public function andThen<U>(fn:O->Parser<I,U>):Parser<I,U>{
     return Parsers.andThen(self,fn);
   }
+
   inline public function trace(fn):Parser<I,O>{
     return Parsers.trace(self,fn);
   }
+
   inline public function filter(fn:O->Bool):Parser<I,O>{
     return Parsers.filter(self,fn);
   }
-
+  
   inline public function tagged(tag : String):Parser<I,O> {
     return Parsers.tagged(self,tag);
   }
+
   inline public function xs(fn):Parser<I,O>{
     return Parsers.xs(self,fn);
   }
@@ -83,9 +84,11 @@ package com.mindrocks.text;
   inline public function repsep<U>(sep:Parser<I,U>):Parser<I,Array<O>>{
     return Parsers.repsep(self,sep);
   }
+
   inline public function repsep0(sep:Parser<I,O>):Parser<I,Array<O>>{
     return Parsers.repsep0(self,sep);
   }
+  
   inline public function rep1sep<U>(sep:Parser<I,U>):Parser<I,Array<O>>{
     return Parsers.rep1sep(self,sep);
   }

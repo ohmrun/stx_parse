@@ -20,7 +20,7 @@ class Identifier extends Direct<String,String>{
       stamp.yes(next);
     }else{
       failed(
-        '"$stamp" expected instead found: "$string"'.errorAt(ipt).newStack()
+        '"Identifier expected *** $stamp *** instead found: *** $string ***'.errorAt(ipt).newStack()
         , ipt
         , false
       );

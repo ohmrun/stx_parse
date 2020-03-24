@@ -1,9 +1,9 @@
 package com.mindrocks.text.parsers;
 
-class Or<I,O> extends Base<I,O,Tuple2<Parser<I,O>,Parser<I,O>>>{
+class Or<I,O> extends Base<I,O,Couple<Parser<I,O>,Parser<I,O>>>{
   public function new(fst,snd,?id){
     super(
-      tuple2(fst,snd),
+      __.couple(fst,snd),
       id
     );
     this.tag = switch([fst.tag,snd.tag]){

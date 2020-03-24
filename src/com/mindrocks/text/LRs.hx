@@ -26,11 +26,9 @@ class LRs{
         if (cached == None && !(head.involvedSet.cons(head.headParser).has(p.elide()))) {
           return Some(MemoParsed(Failure("dummy ".errorAt(input).newStack(), input, false)));
         }
-        //$type(p);
-        //$type(head.evalSet.contains);
-        if (head.evalSet.has(cast p)) {
+        if (head.evalSet.has(p)) {
           head.evalSet = head.evalSet
-            .filter(function (x:Parser<Dynamic,Dynamic>) return cast (x) != cast(p));
+            .filter(function (x:Parser<Dynamic,Dynamic>) return x != p);
 
           var memo = MemoParsed(p.parse(input));
           input.updateCacheAndGet(genKey, memo); // beware; it won't update lrStack !!! Check that !!!
@@ -44,8 +42,8 @@ class LRs{
       recDetect.head = Some(p.mkHead());
 
     var stack = input.memo.lrStack;
-    var h     = recDetect.head.release(); // valid (see above)
-    while (stack.head().rule != p) {
+    var h     = recDetect.head.fudge(); // valid (see above)
+    while (stack.head() != null && stack.head().rule != p) {
       var head = stack.head();
       head.head = recDetect.head;
       h.involvedSet = h.involvedSet.cons(head.rule);
@@ -56,7 +54,7 @@ class LRs{
     //store the head into the recursionHeads
     rest.setRecursionHead(head);
     var oldRes =
-      switch (rest.getFromCache(genKey).release()) {
+      switch (rest.getFromCache(genKey).fudge()) {
         case MemoParsed(ans): ans;
         default : throw "impossible match";
       };
@@ -76,7 +74,7 @@ class LRs{
         } else {
           //we're done with growing, we can remove data from recursion head
           rest.removeRecursionHead();
-          switch (rest.getFromCache(genKey).release()) {
+          switch (rest.getFromCache(genKey).fudge()) {
             case MemoParsed(ans): return cast(ans);
             default: throw "impossible match";
           }

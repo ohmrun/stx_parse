@@ -1,3 +1,5 @@
+
+
 package com.mindrocks.text;
 
 @:forward(memo,tag)abstract Input<I>(InputT<I>) from InputT<I>{
@@ -40,16 +42,6 @@ package com.mindrocks.text;
       text        : text,
       indicator   : indicator
     };
-  }
-  public function errorMessage(msg: FailureStack){
-    var x = textAround();
-
-    var r = "";
-    for (err in msg){
-      r += "Error at " + err.pos + " : " + err.msg+"\n";
-    }
-
-    return r + " "+x.text+"\n"+x.indicator;
   }
   public inline function setRecursionHead(head : Head) {
     this.memo.recursionHeads.set(this.content.index + "", head);

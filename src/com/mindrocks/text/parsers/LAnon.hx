@@ -4,12 +4,12 @@ class LAnon<I,O> extends Anon<I,O>{
   var closure : Void -> Parser<I,O>;
   public function new(closure:Void->Parser<I,O>,?id){
     super(id);
-    __.that().exists().errata(e -> e.fault().of(UndefinedParseDelegate())).crunch(closure);
-    this.closure = closure.fn().lazy().prj();
+    __.assert().exists(closure);
+    this.closure = closure.fn().cache().prj();
   }
   override function do_parse(ipt:Input<I>){
     return if(method == null){
-      this.method = __.option(closure()).map(_ -> _.parse).force();
+      this.method = __.option(closure()).map(_ -> _.parse).fudge();
       __.that().exists().errata( e -> e.fault().of(UndefinedParseDelegate(ipt))).crunch(method);
       this.method(ipt);
     }else{

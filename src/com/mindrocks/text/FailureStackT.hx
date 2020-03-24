@@ -1,3 +1,3 @@
 package com.mindrocks.text;
 
-typedef FailureStackT = List<FailureMsg>
+typedef FailureStackT = Err<ParserFailure>;

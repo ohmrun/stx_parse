@@ -21,6 +21,13 @@ package com.mindrocks.text;
       case Success(x, _)    : Std.string(x);
       case Failure(_, _, _) : "";
     }
+
+  public function value():Option<T> {
+    return switch (this) {
+      case Success(x, _)    : Some(x);
+      case Failure(_, _, _) : None;
+    }
+  }
   inline public function elide<U>() : ParseResult<I,U> return cast(this);
 
   public function mkLR(rule,head){

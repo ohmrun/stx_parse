@@ -7,10 +7,10 @@ class OneMany<I,O> extends Many<I,O>{
     var x = delegation.parse(ipt);
     return switch(x){
       case Success(x,xs) : new Many(delegation).parse(xs).fold(
-        (x0,xs0) -> Success([x].ds().concat(x0),xs0),
+        (x0,xs0) -> Success([x].concat(x0),xs0),
         (stack,rest,is_error) -> Success([x],xs)
       );
-      case Failure(stack,rest,is_error) : Failure(stack.cons("oneMany failed".errorAt(rest)),rest,is_error);
+      case Failure(stack,rest,is_error) : report(stack,rest);
     }
   }
 } 

@@ -10,9 +10,9 @@ class Rep1Sep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
     return delegation.and(
       sep._and(delegation).many()
     ).then(
-      (t:Tuple2<O,Array<O>>) -> switch(t){
-        case tuple2(l,r) : r.cons(l);
-      }
+      __.decouple(
+        (l:O,r:Array<O>) -> r.cons(l)
+      )
     ).asParser().parse(ipt);
   }
 }

@@ -1,6 +1,6 @@
 package com.mindrocks.text.parsers;
 
-class Many<I,O> extends Base<I,stx.ds.pack.Array<O>,Parser<I,O>>{
+class Many<I,O> extends Base<I,stx.core.pack.Array<O>,Parser<I,O>>{
   public function new(delegation:Parser<I,O>,?id:Pos){
     __.that(id).exists().errata( e -> e.fault().of(UndefinedParserInConstructor(this))).crunch(delegation);
     super(delegation,id);
@@ -29,7 +29,7 @@ class Many<I,O> extends Base<I,stx.ds.pack.Array<O>,Parser<I,O>>{
       }
     }
     //trace(arr);
-    return Success(arr.ds(), n_input);
+    return Success(arr, n_input);
   }
 
 }

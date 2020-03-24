@@ -11,10 +11,12 @@ class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
     return delegation.option().and(
       sep._and(delegation).many()
     ).then(
-      (t:Tuple2<Option<O>,Array<O>>) -> switch(t){
-        case tuple2(Some(l),r) : r.cons(l);
-        case tuple2(None,_)    : [].ds();
-      }
+      __.decouple(
+        (l:Option<O>,r:Array<O>) -> switch([l,r]){
+          case [Some(l),r] : r.cons(l);
+          case [None,_]    : [];
+        }
+      )
     ).asParser().parse(ipt);
   }
 }

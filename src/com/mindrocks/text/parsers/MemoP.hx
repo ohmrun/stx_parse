@@ -11,7 +11,7 @@ class MemoP<I,O> extends Delegate<I,O>{
   override function do_parse(ipt:Input<I>):ParseResult<I,O>{
     switch (delegation.recall(genKey, ipt)) {
       case None :
-        var base = failed(ParseFail.failed.errorAt(ipt).newStack(), ipt, false).mkLR(delegation, None);
+        var base = failed(ParseFail.FAIL.errorAt(ipt).newStack(), ipt, false).mkLR(delegation, None);
 
         ipt.memo.lrStack  = ipt.memo.lrStack.cons(base);
         ipt.updateCacheAndGet(genKey, MemoLR(base));

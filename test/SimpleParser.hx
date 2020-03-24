@@ -1,4 +1,4 @@
-using com.mindrocks.functional.Functional;
+
 using com.mindrocks.text.Parser;
 using com.mindrocks.text.Lift;
 import com.mindrocks.text.*;
@@ -33,15 +33,14 @@ class SimpleParser{
   function shouldSucceed(v:ParseResult<Dynamic,Dynamic>){
     switch (v) {
       case Failure(errors, xs, isError):
-        errors.each(
-          (x) -> trace(x)
-        );
+        
         default:
     }
   }
   function testRecur(){
     var t = "1+2+3x4x9x10";
     var o = p_expr.parse(t.reader());
+    trace(o);
     shouldSucceed(o);
   }
   static var p_int = "[0-9]+".regexParser().then(
@@ -52,8 +51,8 @@ class SimpleParser{
 
   static var p_expr :Parser<String,Expr> = {
     [
-        p_mult.lazy(),
-        p_plus.lazy(),
+        p_mult.defer(),
+        p_plus.defer(),
         p_int
     ].ors().memo();
   }
@@ -62,14 +61,14 @@ class SimpleParser{
       p_expr
       .and_(p_star_id)
       .and(p_expr)
-      .then((tp) -> Mult(tp.a,tp.b));
+      .then((tp) -> Mult(tp.fst(),tp.snd()));
   }
   static function p_plus(){
     return 
       p_expr
       .and_(p_plus_id)
       .and(p_expr)
-      .then((tp) -> Plus(tp.a,tp.b));
+      .then((tp) -> Plus(tp.fst(),tp.snd()));
   }
 }
 enum Expr{

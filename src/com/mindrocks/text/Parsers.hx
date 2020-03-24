@@ -22,8 +22,8 @@ package com.mindrocks.text;
   static public inline function and_<I,T,U>(p1:Parser<I,T>,p2 : Parser<I, U>):Parser <I,T> {
     return new With(p1,p2,(a,_) -> a).asParser();
   }
-  static public inline function and<I,T,U>(p1:Parser<I,T>,p2 : Parser<I,U>):Parser<I,Tuple2<T,U>>{
-    return new With(p1,p2,(l:T,r:U) ->tuple2(l,r)).asParser();
+  static public inline function and<I,T,U>(p1:Parser<I,T>,p2 : Parser<I,U>):Parser<I,Couple<T,U>>{
+    return new With(p1,p2,(l:T,r:U) ->__.couple(l,r)).asParser();
   }
   static public inline function and_seq<I,T>(p1:Parser<I,T>,p2 : Parser<I,T>):Parser<I,Array<T>>{
     return new With(p1,p2,(l:T,r:T) -> [l,r]).asParser();
@@ -66,7 +66,7 @@ package com.mindrocks.text;
     return new Rep1Sep(p1,sep).asParser(); /* Optimize that! */
   }
   static public inline function rep1sep0<I,T,U>(p1:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Array<T>> {
-    var next : Parser<I,Array<Tuple2<T,T>>> = many(and(sep,p1)).asParser();
+    var next : Parser<I,Array<Couple<T,T>>> = many(and(sep,p1)).asParser();
     return then(and(p1,next).asParser(),
       function (t){ 
         var fst = t.fst();
@@ -84,13 +84,13 @@ package com.mindrocks.text;
   static public inline function repsep<I,T,U>(p1:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
     return new RepSep(p1,sep).asParser(); /* Optimize that! */
   }
-  static public inline function withError<I,T>(p:Parser<I,T>, f : String -> String ):Parser<I,T>
-    return new ErrorTransformer(p,f).asParser();
+  static public inline function withError<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
+    return new ErrorTransformer(p,ErrorNamed.bind(name)).asParser();
 
   
   @:noUsing static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
     p.tag = Some(tag);
-    return withError(p, function (x) return '$tag expected in "$x"');
+    return withError(p, tag);
   } 
   static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
     return new AndThen(
