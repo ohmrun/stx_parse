@@ -236,4 +236,10 @@ class LiftParse{
 			);
 		};
 	}
+	static public function eof<P,R>():Parser<P,R>{
+    return new Parser(Parser.Anon(ParserLift.eof));
+	}
+	static public function any<I>():Parser<I,I>{
+		return Parse.anything();
+	}
 }
