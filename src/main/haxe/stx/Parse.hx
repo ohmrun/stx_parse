@@ -98,8 +98,8 @@ class Parse{
 	static public var nl					= '\n'.id();
 	static public var gap					= [tab, space].ors();
 
-	//static public var camel 			= lower.andWith(word, mergeString);
-	static public var word				= lower.or(upper).oneMany().token();//[a-z]*
+	//static public var camel 			= lower.and_with(word, mergeString);
+	static public var word				= lower.or(upper).one_many().token();//[a-z]*
 	static public var quote				= '"'.id().or("'".id());
 	static public var escape			= '\\'.id();
 	static public var not_escaped	= '\\\\'.id();
@@ -124,7 +124,7 @@ class Parse{
 		var prs = function rec(ipt:Input<I>,memo:Array<I>){ 
 			return switch(p.parse(ipt)){
 				case Success(success) 				  : ipt.ok(memo);
-				case Failure(failure)           : anything().andThen(
+				case Failure(failure)           : anything().and_then(
 					(x:I) -> Parser.Anon(rec.bind(_,memo.snoc(x))).asParser()
 				).parse(ipt);
 			}

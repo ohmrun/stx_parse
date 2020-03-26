@@ -58,9 +58,9 @@ class JsonParser {
   
   static  var spacingP =
 	[
-      spaceP.oneMany(),
-      tabP.oneMany(),
-      retP.oneMany()
+      spaceP.one_many(),
+      tabP.one_many(),
+      retP.one_many()
     ].ors().many().lazyF();
   
   static  var leftAccP = withSpacing("{".identifier());
@@ -126,7 +126,7 @@ class LRTest {
   
   static var posNumberP = posNumberR.regexParser().tag("number");
     
-  static var binop = ( (expr.and_(plusP)).andWith(expr.commit(), function (a, b) return a + " + " + b).tag("binop") );
+  static var binop = ( (expr.and_(plusP)).and_with(expr.commit(), function (a, b) return a + " + " + b).tag("binop") );
   public static var expr : Void -> Parser<String,String> = binop.or(posNumberP).memo().tag("expression");
 }
 

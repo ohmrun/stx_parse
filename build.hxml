@@ -1,11 +1,16 @@
 -main Main
--lib hre
+
+
+-lib tink_core
+
 -lib stx_std
 -lib stx_core
 -lib stx_assert
 -lib stx_fn
--lib tink_core
--cp src
--cp test
+
+-lib hre
+
+-cp src/main/haxe
+
 --interp
 #-js test.js

@@ -81,13 +81,13 @@ class ParserLift{
   static public inline function then<I,T,U>(p:Parser<I,T>,f : T -> U):Parser<I,U>{
     return new Then(p,f).asParser();
   }
-  static public inline function andThen<I,T,U>(p:Parser<I,T>,fn:T->Parser<I,U>):Parser<I,U>{
+  static public inline function and_then<I,T,U>(p:Parser<I,T>,fn:T->Parser<I,U>):Parser<I,U>{
     return new AndThen(p,fn).asParser();
   }
   static public inline function many<I,T>(p1:Parser<I,T>):Parser<I,Array<T>>{
     return new Many(p1).asParser();
   }
-  static public inline function oneMany<I,T>(p1:Parser<I,T>):Parser<I,Array<T>>{
+  static public inline function one_many<I,T>(p1:Parser<I,T>):Parser<I,Array<T>>{
     return new OneMany(p1).asParser();
   }
   static public inline function and_<I,T,U>(p1:Parser<I,T>,p2 : Parser<I, U>):Parser <I,T> {
@@ -101,9 +101,9 @@ class ParserLift{
   }
   @:native("__and") // Prevent a bug with hxcpp
   static public inline function _and<I,T,U>(p1:Parser<I,T>, p2 : Parser<I,U>):Parser<I,U> {
-    return andWith(p1,p2, (_,b) -> b);
+    return and_with(p1,p2, (_,b) -> b);
   }
-  static public inline function andWith<I,T,U,V>(p1:Parser<I,T>,p2:Parser<I,U>,f:T->U->V):Parser<I,V>{
+  static public inline function and_with<I,T,U,V>(p1:Parser<I,T>,p2:Parser<I,U>,f:T->U->V):Parser<I,V>{
     return new With(p1,p2,f).asParser();
   }
   static public inline function commit<I,T> (p1 : Parser<I,T>):Parser <I,T>{

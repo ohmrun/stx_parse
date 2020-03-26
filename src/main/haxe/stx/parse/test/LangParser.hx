@@ -77,15 +77,15 @@ class LambdaTest {
   
   static function spacingP(){
    return [
-      spaceP.oneMany(),
-      tabP.oneMany(),
+      spaceP.one_many(),
+      tabP.one_many(),
     ].ors().many(); 
   }
   static  function spacingOrRetP(){
     return [
-      spaceP.oneMany(),
-      tabP.oneMany(),
-      retP.oneMany()
+      spaceP.one_many(),
+      tabP.one_many(),
+      retP.one_many()
 	  ].ors().many(); 
   }
     

@@ -22,7 +22,7 @@ package stx.parse.test;
     trace(target);
   }
   public function XtestOneMany(){
-    //var target = Base.anything().oneMany().parse("abs".reader());
+    //var target = Base.anything().one_many().parse("abs".reader());
     //trace(target);
   }
   public function test(){

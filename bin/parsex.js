@@ -430,7 +430,7 @@ Parsers.success = function(v) {
 Parsers.identity = function(p) {
 	return p;
 };
-Parsers.andWith = function(p1,p2,f) {
+Parsers.and_with = function(p1,p2,f) {
 	var f1 = function() {
 		return function(input) {
 			var res = (p1())(input);
@@ -465,21 +465,21 @@ Parsers.andWith = function(p1,p2,f) {
 	};
 };
 Parsers.and = function(p1,p2) {
-	return Parsers.andWith(p1,p2,com_mindrocks_functional_Tuples.t2);
+	return Parsers.and_with(p1,p2,com_mindrocks_functional_Tuples.t2);
 };
 Parsers.sndParam = function(_,b) {
 	return b;
 };
 Parsers.__and = function(p1,p2) {
-	return Parsers.andWith(p1,p2,Parsers.sndParam);
+	return Parsers.and_with(p1,p2,Parsers.sndParam);
 };
 Parsers.fstParam = function(a,_) {
 	return a;
 };
 Parsers.and_ = function(p1,p2) {
-	return Parsers.andWith(p1,p2,Parsers.fstParam);
+	return Parsers.and_with(p1,p2,Parsers.fstParam);
 };
-Parsers.andThen = function(p1,fp2) {
+Parsers.and_then = function(p1,fp2) {
 	var f = function() {
 		return function(input) {
 			var res = (p1())(input);
@@ -541,7 +541,7 @@ Parsers.forPredicate = function(pred) {
 };
 Parsers.filter = function(p,pred) {
 	var pred1 = pred;
-	return Parsers.andThen(p,function(x) {
+	return Parsers.and_then(p,function(x) {
 		if(pred1(x)) {
 			return Parsers.success(x);
 		} else {
@@ -683,7 +683,7 @@ Parsers.many = function(p1) {
 Parsers.notEmpty = function(arr) {
 	return arr.length > 0;
 };
-Parsers.oneMany = function(p1) {
+Parsers.one_many = function(p1) {
 	var pred = Parsers.notEmpty;
 	var tmp = function(x) {
 		if(pred(x)) {
@@ -692,10 +692,10 @@ Parsers.oneMany = function(p1) {
 			return Parsers.defaultFail;
 		}
 	};
-	return Parsers.andThen(Parsers.many(p1),tmp);
+	return Parsers.and_then(Parsers.many(p1),tmp);
 };
 Parsers.rep1sep = function(p1,sep) {
-	return Parsers.then(Parsers.andWith(p1,Parsers.many(Parsers.andWith(sep,p1,Parsers.sndParam)),com_mindrocks_functional_Tuples.t2),function(t) {
+	return Parsers.then(Parsers.and_with(p1,Parsers.many(Parsers.and_with(sep,p1,Parsers.sndParam)),com_mindrocks_functional_Tuples.t2),function(t) {
 		t.b.splice(0,0,t.a);
 		return t.b;
 	});
@@ -706,14 +706,14 @@ Parsers.repsep = function(p1,sep) {
 Parsers.chainl1 = function(p1,op) {
 	var rest = null;
 	rest = function(x) {
-		return Parsers.or(Parsers.andThen(op,function(f) {
-			return Parsers.andThen(p1,function(y) {
+		return Parsers.or(Parsers.and_then(op,function(f) {
+			return Parsers.and_then(p1,function(y) {
 				var rest1 = f(x,y);
 				return rest(rest1);
 			});
 		}),Parsers.success(x));
 	};
-	return Parsers.andThen(p1,rest);
+	return Parsers.and_then(p1,rest);
 };
 Parsers.option = function(p1) {
 	return Parsers.or(Parsers.then(p1,com_mindrocks_functional_Option.Some),Parsers.success(com_mindrocks_functional_Option.None));
@@ -993,10 +993,10 @@ com_mindrocks_functional_Tuples.t2 = function(a,b) {
 var LambdaTest = function() { };
 LambdaTest.__name__ = "LambdaTest";
 LambdaTest.maybeRet = function(p) {
-	return Parsers.andWith(Parsers.option(LambdaTest.spacingOrRetP),p,Parsers.sndParam);
+	return Parsers.and_with(Parsers.option(LambdaTest.spacingOrRetP),p,Parsers.sndParam);
 };
 LambdaTest.withSpacing = function(p) {
-	return Parsers.andWith(LambdaTest.spacingP,p,Parsers.sndParam);
+	return Parsers.and_with(LambdaTest.spacingP,p,Parsers.sndParam);
 };
 var LangParser = function() { };
 LangParser.__name__ = "LangParser";
@@ -1576,7 +1576,7 @@ LambdaTest.spacingP = (function($this) {
 			return Parsers.defaultFail;
 		}
 	};
-	var f2 = Parsers.many(Parsers.ors([Parsers.andThen(Parsers.many(LambdaTest.spaceP),f),Parsers.andThen(Parsers.many(LambdaTest.tabP),f1)]));
+	var f2 = Parsers.many(Parsers.ors([Parsers.and_then(Parsers.many(LambdaTest.spaceP),f),Parsers.and_then(Parsers.many(LambdaTest.tabP),f1)]));
 	var r = null;
 	$r = function() {
 		if(r == null) {
@@ -1615,7 +1615,7 @@ LambdaTest.spacingOrRetP = (function($this) {
 			return Parsers.defaultFail;
 		}
 	};
-	var f3 = Parsers.many(Parsers.ors([Parsers.andThen(Parsers.many(LambdaTest.spaceP),f),Parsers.andThen(Parsers.many(LambdaTest.tabP),f1),Parsers.andThen(Parsers.many(LambdaTest.retP),f2)]));
+	var f3 = Parsers.many(Parsers.ors([Parsers.and_then(Parsers.many(LambdaTest.spaceP),f),Parsers.and_then(Parsers.many(LambdaTest.tabP),f1),Parsers.and_then(Parsers.many(LambdaTest.retP),f2)]));
 	var r = null;
 	$r = function() {
 		if(r == null) {
@@ -1704,7 +1704,7 @@ LambdaTest.identP = (function($this) {
 LambdaTest.numberP = Parsers.then(Parsers.regexParser(LambdaTest.numberR),function(n) {
 	return PrimitiveType.Number(Std.parseInt(n));
 });
-LambdaTest.floatNumberP = Parsers.then(Parsers.andWith(Parsers.andWith(LambdaTest.numberP,LambdaTest.dotP,Parsers.fstParam),LambdaTest.numberP,com_mindrocks_functional_Tuples.t2),function(p) {
+LambdaTest.floatNumberP = Parsers.then(Parsers.and_with(Parsers.and_with(LambdaTest.numberP,LambdaTest.dotP,Parsers.fstParam),LambdaTest.numberP,com_mindrocks_functional_Tuples.t2),function(p) {
 	return PrimitiveType.FloatNumber(parseFloat(Std.string(p.a) + "." + Std.string(p.b)));
 });
 LambdaTest.primitiveP = (function($this) {
@@ -1724,7 +1724,7 @@ LambdaTest.primitiveP = (function($this) {
 }(this));
 LambdaTest.lambdaP = (function($this) {
 	var $r;
-	var f = Parsers.tag(Parsers.then(Parsers.andWith(Parsers.andWith(LambdaTest.identifierP,LambdaTest.arrowP,Parsers.fstParam),LambdaTest.maybeRet(Parsers.commit(LambdaTest.expressionP)),com_mindrocks_functional_Tuples.t2),function(p) {
+	var f = Parsers.tag(Parsers.then(Parsers.and_with(Parsers.and_with(LambdaTest.identifierP,LambdaTest.arrowP,Parsers.fstParam),LambdaTest.maybeRet(Parsers.commit(LambdaTest.expressionP)),com_mindrocks_functional_Tuples.t2),function(p) {
 		return RExpression.LambdaExpr(p.a,p.b);
 	}),"lambda");
 	var r = null;
@@ -1741,7 +1741,7 @@ LambdaTest.lambdaP = (function($this) {
 }(this));
 LambdaTest.applicationP = (function($this) {
 	var $r;
-	var f = Parsers.tag(Parsers.then(Parsers.andWith(LambdaTest.rExpressionP,LambdaTest.identifierP,com_mindrocks_functional_Tuples.t2),function(p) {
+	var f = Parsers.tag(Parsers.then(Parsers.and_with(LambdaTest.rExpressionP,LambdaTest.identifierP,com_mindrocks_functional_Tuples.t2),function(p) {
 		return RExpression.Apply(p.a,p.b);
 	}),"application");
 	var r = null;
@@ -1773,7 +1773,7 @@ LambdaTest.rExpressionP = (function($this) {
 }(this));
 LambdaTest.letExpressionP = (function($this) {
 	var $r;
-	var f = Parsers.tag(Parsers.then(Parsers.andWith(Parsers.andWith(LambdaTest.identifierP,LambdaTest.equalsP,Parsers.fstParam),LambdaTest.maybeRet(Parsers.commit(LambdaTest.rExpressionP)),com_mindrocks_functional_Tuples.t2),function(p) {
+	var f = Parsers.tag(Parsers.then(Parsers.and_with(Parsers.and_with(LambdaTest.identifierP,LambdaTest.equalsP,Parsers.fstParam),LambdaTest.maybeRet(Parsers.commit(LambdaTest.rExpressionP)),com_mindrocks_functional_Tuples.t2),function(p) {
 		return { ident : p.a, expr : p.b};
 	}),"let expression");
 	var r = null;
@@ -1790,7 +1790,7 @@ LambdaTest.letExpressionP = (function($this) {
 }(this));
 LambdaTest.expressionP = (function($this) {
 	var $r;
-	var f = Parsers.tag(Parsers.then(Parsers.andWith(Parsers.option(Parsers.andWith(LambdaTest.letP,Parsers.commit(Parsers.andWith(LambdaTest.maybeRet(Parsers.andWith(Parsers.rep1sep(LambdaTest.maybeRet(LambdaTest.letExpressionP),Parsers.or(LambdaTest.commaP,LambdaTest.retP)),Parsers.option(LambdaTest.commaP),Parsers.fstParam)),LambdaTest.maybeRet(LambdaTest.inP),Parsers.fstParam)),Parsers.sndParam)),LambdaTest.maybeRet(LambdaTest.rExpressionP),com_mindrocks_functional_Tuples.t2),function(p) {
+	var f = Parsers.tag(Parsers.then(Parsers.and_with(Parsers.option(Parsers.and_with(LambdaTest.letP,Parsers.commit(Parsers.and_with(LambdaTest.maybeRet(Parsers.and_with(Parsers.rep1sep(LambdaTest.maybeRet(LambdaTest.letExpressionP),Parsers.or(LambdaTest.commaP,LambdaTest.retP)),Parsers.option(LambdaTest.commaP),Parsers.fstParam)),LambdaTest.maybeRet(LambdaTest.inP),Parsers.fstParam)),Parsers.sndParam)),LambdaTest.maybeRet(LambdaTest.rExpressionP),com_mindrocks_functional_Tuples.t2),function(p) {
 		var lets;
 		var _g = p.a;
 		switch(_g._hx_index) {
@@ -1818,7 +1818,7 @@ LambdaTest.expressionP = (function($this) {
 }(this));
 LambdaTest.definitionP = (function($this) {
 	var $r;
-	var f = Parsers.tag(Parsers.then(Parsers.andWith(Parsers.andWith(LambdaTest.maybeRet(LambdaTest.identifierP),LambdaTest.equalsP,Parsers.fstParam),LambdaTest.maybeRet(Parsers.commit(LambdaTest.expressionP)),com_mindrocks_functional_Tuples.t2),function(p) {
+	var f = Parsers.tag(Parsers.then(Parsers.and_with(Parsers.and_with(LambdaTest.maybeRet(LambdaTest.identifierP),LambdaTest.equalsP,Parsers.fstParam),LambdaTest.maybeRet(Parsers.commit(LambdaTest.expressionP)),com_mindrocks_functional_Tuples.t2),function(p) {
 		return { name : p.a, expr : p.b};
 	}),"definition");
 	var r = null;

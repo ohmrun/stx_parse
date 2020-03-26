@@ -1,14 +1,14 @@
 {
-  "name": "Parsex",
-  "url": "https://github.com/sledorze/Parsex",
+  "name": "stx_parse",
+  "url": "https://github.com/ohmrun/stx_parse",
   "license": "BSD",
   "tags": ["cross","utility"],
-  "description": "General Parser API providing Packrat Parsers combinators and a Monadic support (requiers monax)",
-  "version": "1.4.0",
-  "releasenote": "Cope with changes in Haxe",
-  "contributors": ["sledorze"],
+  "description": "General Parser API based on Parsex",
+  "version": "0.1.0",
+  "releasenote": "",
+  "contributors": ["0b1kn00b"],
   "dependencies": {
     "hre" : ""    
   },
-  "classPath": "src"
+  "classPath": "src/main/haxe"
 }

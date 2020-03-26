@@ -7,7 +7,7 @@ class Predicate<I,O> extends Delegate<I,O>{
     this.predicate = predicate;
     __.that(id).exists().errata( e -> e.fault().of(UndefinedParseDelegate())).crunch(delegation);
     super(
-      new AndThen(delegation,(o:O) -> this.predicate(o) ? o.success() : "predicate failed".fail(false))
+      new and_then(delegation,(o:O) -> this.predicate(o) ? o.success() : "predicate failed".fail(false))
       ,id
     );
     
