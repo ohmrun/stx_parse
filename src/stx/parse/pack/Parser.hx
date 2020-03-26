@@ -38,12 +38,9 @@ interface ParserApi<I,O>{
 
 @:using(stx.parse.pack.Parser.ParserLift)
 @:forward abstract Parser<I,O>(ParserApi<I,O>) to ParserApi<I,O>{
-  public function new(self:ParserApi<I,O>){
-    this = self;
-  }
-  @:noUsing static inline public function eof<I,O>():Parser<I,O>{
-    return new Parser(new Anon(ParserLift.eof));
-  }
+  public function new(self:ParserApi<I,O>) this = self;
+  static public var _(default,never) = ParserLift;
+   
   @:noUsing static inline public function fromConstructor<I,O>(fn:Void->Parser<I,O>):Parser<I,O>{
     return lift(new LAnon(fn));
   }
@@ -63,16 +60,9 @@ interface ParserApi<I,O>{
   }
   inline public function elide<U>() : Parser<I,U> return cast(self);
 
-  // inline public function memo():Parser<I,O>{
-  //   return LRs.memo(self);
-  // }
-  // inline public function recall(genKey : Int -> String, input : Input<I>) : Option<MemoEntry>{
-  //   return LRs.recall(self,genKey,input);
-  // }
-  // inline public function lrAnswer(genKey : Int -> String, input: Input<I>, growable: LR){
-  //   return LRs.lrAnswer(self,genKey,input,growable);
-  // }
-
+  @:noUsing static public function Anon<P,R>(fn:Input<P> -> ParseResult<P,R>):Parser<P,R>{
+    return new Anon(fn).asParser();
+  }
   var self(get,never):Parser<I,O>;
   function get_self():Parser<I,O>{
     return lift(this);

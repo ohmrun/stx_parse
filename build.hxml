@@ -1,5 +1,6 @@
 -main Main
 -lib hre
+-lib stx_std
 -lib stx_core
 -lib stx_assert
 -lib stx_fn

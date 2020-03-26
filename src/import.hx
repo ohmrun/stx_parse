@@ -10,10 +10,11 @@ using stx.Core;
 using stx.Log;
 using stx.Assert;
 using stx.Ds;
+using stx.Std;
 
 import stx.core.alias.StdMap;
 
 
 using stx.show.Lift;
-using stx.Ds;
+
 using stx.Parse;

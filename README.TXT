@@ -1,4 +1,6 @@
-Parser combinator library.
+Parser Combinator Library.
+
+Forked from https://github.com/sledorze/parsex
 
 More info here:
 http://lambdabrella.blogspot.com/2012/01/packrat-parser-combinators-for-haxe.html
