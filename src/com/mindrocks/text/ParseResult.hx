@@ -85,4 +85,7 @@ package com.mindrocks.text;
       default           : fn();
     }
   }
+  public function elide():ParseResult<P,Dynamic>{
+    return this;
+  }
 } 

@@ -1,3 +1,5 @@
+using stx.Parse;
+
 class Main{
   static public function main(){
     trace("before");
