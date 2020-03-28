@@ -136,6 +136,12 @@ class Parse{
 			return v == i.head() ? i.tail().ok(i.head()) : i.fail('no $v found',false);
 		}).asParser();
 	}
+	static public function eof<P,R>():Parser<P,R>{
+    return new Parser(Parser.Anon(ParserLift.eof));
+	}
+	static public function any<I>():Parser<I,I>{
+		return Parse.anything();
+	}
 }
 class LiftParse{
   static public function parse(wildcard:Wildcard){
@@ -236,10 +242,8 @@ class LiftParse{
 			);
 		};
 	}
-	static public function eof<P,R>():Parser<P,R>{
-    return new Parser(Parser.Anon(ParserLift.eof));
-	}
-	static public function any<I>():Parser<I,I>{
-		return Parse.anything();
-	}
+	static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
+    p.tag = Some(tag);
+    return Parser._.with_error_tag(p, tag);
+  }
 }

@@ -155,18 +155,13 @@ class ParserLift{
   static public inline function repsep<I,T,U>(p1:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
     return new RepSep(p1,sep).asParser(); /* Optimize that! */
   }
-  static public inline function withError<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
+  static public inline function with_error_tag<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
     return new ErrorTransformer(p,
       (err:ParseError) -> err.map(
         info -> info.tag(name)
       )
     ).asParser();
-
-  
-  @:noUsing static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
-    p.tag = Some(tag);
-    return withError(p, tag);
-  } 
+ 
   static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
     return new AndThen(
       p,

@@ -1,10 +1,10 @@
 package stx.parse.term;
 
-@:access(com.mindrocks) class Literal extends com.mindrocks.text.parsers.Base<String,String,Parser<String,String>>{
-  override function do_parse(ipt:Input<String>){
+@:access(stx.parse) class Literal extends stx.parse.pack.parser.term.Base<String,String,Parser<String,String>>{
+  override function do_parse(ipt:Input<String>):ParseResult<String,String>{
     var data : String = ipt.content.data.substr(ipt.offset);
     var code = StringTools.fastCodeAt;
-    var has  = Base.range;
+    var has  = Parse.range;
     var q    = 34;
     var ok   = code(data,0) == 34;
     var idx  = 1;
@@ -28,6 +28,6 @@ package stx.parse.term;
     }
     var out = ipt.take(idx);
         out = out.substr(1,out.length-2);
-    return idx > 1 ? Success(out,ipt.drop(idx)) : 'not matched'.no(ipt);
+    return idx > 1 ? ipt.drop(idx).ok(out) : ipt.fail('not matched');
   }
 }

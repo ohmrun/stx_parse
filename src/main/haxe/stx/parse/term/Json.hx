@@ -1,5 +1,7 @@
 package stx.parse.term;
 
+import stx.parse.pack.parser.term.LAnon;
+
 enum JsonSum<T>{
   JsObject(record : Array<Couple<String,JsonSum<T>>>);
   JsArray(array : Array<JsonSum<T>>);
@@ -54,6 +56,6 @@ class Json{
     ).asParser().tagged('json').memo();
   }
   function parse(ipt:Input<String>):ParseResult<String,JsonSum<String>>{
-    return parser().and_(Parser.eof()).parse(ipt);
+    return parser().and_(Parse.eof()).parse(ipt);
   }
 }
