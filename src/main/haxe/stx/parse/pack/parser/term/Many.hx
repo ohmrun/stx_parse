@@ -1,6 +1,6 @@
 package stx.parse.pack.parser.term;
 
-class Many<I,O> extends Base<I,stx.core.pack.Array<O>,Parser<I,O>>{
+class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   public function new(delegation:Parser<I,O>,?id:Pos){
     __.that(id).exists().errata( e -> e.fault().of(E_UndefinedParserInConstructor(this))).crunch(delegation);
     super(delegation,id);

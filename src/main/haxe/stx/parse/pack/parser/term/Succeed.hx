@@ -2,8 +2,8 @@ package stx.parse.pack.parser.term;
 
 class Succeed<P,R> extends Direct<P,R>{
   var value : R;
-  public function new(value:R){
-    super();
+  public function new(value:R,?id){
+    super(id);
     this.value = value;
   }
   @:noUsing static public function pure<P,R>(r:R):Parser<P,R>{

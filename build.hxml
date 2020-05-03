@@ -1,9 +1,5 @@
 -main Main
 
-
--lib tink_core
-
--lib stx_std
 -lib stx_core
 -lib stx_assert
 -lib stx_fn
@@ -11,6 +7,7 @@
 -lib hre
 
 -cp src/main/haxe
-
---interp
+-dce no
+#--interp
 #-js test.js
+-neko test.n

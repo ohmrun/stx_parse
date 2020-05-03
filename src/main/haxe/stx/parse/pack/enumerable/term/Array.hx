@@ -1,6 +1,6 @@
 package stx.parse.pack.enumerable.term;
 
-import stx.core.alias.StdArray;
+
 
 class Array<T> extends stx.parse.pack.enumerable.term.Base<StdArray<T>, T > {
 	public function new(v,?i) {

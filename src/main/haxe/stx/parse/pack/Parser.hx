@@ -63,6 +63,12 @@ interface ParserApi<I,O>{
   @:noUsing static public function Anon<P,R>(fn:Input<P> -> ParseResult<P,R>):Parser<P,R>{
     return new Anon(fn).asParser();
   }
+  @:noUsing static public function Failed<P,R>(msg,is_error = false,?id):Parser<P,R>{
+    return new Failed(msg,is_error,id).asParser();
+  }
+  @:noUsing static public function Succeed<P,R>(value,?id):Parser<P,R>{
+    return new Succeed(value,id).asParser();
+  }
   var self(get,never):Parser<I,O>;
   function get_self():Parser<I,O>{
     return lift(this);
