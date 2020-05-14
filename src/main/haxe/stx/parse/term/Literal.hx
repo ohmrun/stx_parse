@@ -1,8 +1,11 @@
 package stx.parse.term;
 
+@:note("neko throws without explicit typing of ipt.content.data")
 @:access(stx.parse) class Literal extends stx.parse.pack.parser.term.Base<String,String,Parser<String,String>>{
   override function do_parse(ipt:Input<String>):ParseResult<String,String>{
-    var data : String = ipt.content.data.substr(ipt.offset);
+    //trace('"${ipt.content.data}" ${ipt.offset}');
+    var all  : String = ipt.content.data;
+    var data : String = all.substr(ipt.offset);
     var code = StringTools.fastCodeAt;
     var has  = Parse.range;
     var q    = 34;
