@@ -1,6 +1,7 @@
 -main Main
 
--lib stx_core
+-lib stx_nano
+-lib stx_pico
 -lib stx_assert
 -lib stx_fn
 

@@ -8,7 +8,10 @@
   "releasenote": "",
   "contributors": ["0b1kn00b"],
   "dependencies": {
-    "hre" : ""    
+    "stx_pico"    : "",
+    "stx_nano"    : "",
+    "stx_assert"  : "",
+    "hre"         : ""    
   },
   "classPath": "src/main/haxe"
 }
