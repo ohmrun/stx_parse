@@ -18,4 +18,4 @@ import stx.core.alias.StdMap;
 
 using stx.show.Lift;
 
-using stx.Parse;
+using stx.parse.Pack;

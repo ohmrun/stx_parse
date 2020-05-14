@@ -1,11 +1,13 @@
-package stx;
+package stx.parse;
 
 import stx.parse.pack.parser.term.LAnon;
 import stx.parse.pack.parser.term.Regex;
 import stx.parse.pack.parser.term.Or;
 import stx.parse.pack.parser.term.Identifier;
 
+#if(test==stx_parse)
 typedef Test                  = stx.parse.test.Test;
+#end
 typedef LiftArrayReader       = stx.parse.lift.LiftArrayReader;
 typedef LiftStringReader      = stx.parse.lift.LiftStringReader;
 
@@ -39,6 +41,9 @@ typedef ParserLift            = stx.parse.pack.Parser.ParserLift;
 
 typedef ParseSystemFailure    = stx.parse.pack.ParseSystemFailure;
 
+class Pack{
+
+}
 class Parse{
   static public function anything<I>():Parser<I,I>{
 		return Parser.Anon(
@@ -50,22 +55,22 @@ class Parse{
 			}
 		}).asParser();
 	}
-	static public function range(min:Int, max:Int):String->Bool{
+	@:noUsing static public function range(min:Int, max:Int):String->Bool{
 		return function(s:String):Bool {
 			var x = StringTools.fastCodeAt(s,0);
 			return (x >= min) && (x <= max);
 		}
 	}
-	static public function mergeString(a:String,b:String){
+	@:noUsing static public function mergeString(a:String,b:String){
 		return a + b;
 	}
-	static public function mergeOption<T>(a:String, b:Option<String>){
+	@:noUsing static public function mergeOption<T>(a:String, b:Option<String>){
 		return switch (b){ case Some(v) : a += v ; default : ''; } return a; 
 	}
-	static public function mergeTAndArray<T>(a:T, b:Array<T>):Array<T>{
+	@:noUsing static public function mergeTAndArray<T>(a:T, b:Array<T>):Array<T>{
 		return [a].concat(b);
 	}
-	static public function mergeOptionAndArray<T>(a:Option<T>, b:Array<T>):Array<T>{
+	@:noUsing static public function mergeOptionAndArray<T>(a:Option<T>, b:Array<T>):Array<T>{
 		return a.fold(
 			(t) -> [t].concat(b),
 			() 	-> b
@@ -131,7 +136,7 @@ class Parse{
 		}
 		return Parser.Anon(prs.bind(_,[])).asParser();
 	}
-	static public function eq<I>(v:I):Parser<I,I>{
+	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
 		return Parser.Anon((i:Input<I>) -> {
 			return v == i.head() ? i.tail().ok(i.head()) : i.fail('no $v found',false);
 		}).asParser();
@@ -142,6 +147,31 @@ class Parse{
 	static public function any<I>():Parser<I,I>{
 		return Parse.anything();
 	}
+
+  /**
+	 * Takes a predicate function for an item of Input and returns it's parser.
+   */
+   static public function predicated<I>(p:I->Bool) : Parser<I,I> {
+		return Parser.Anon(function(x:Input<I>) {
+			var res = p( x.take(1) ) ;
+			//trace(x.offset + ":z" + x.content.at(x.offset)  + " " + Std.string(res));
+			return
+				if ( res && !x.is_end() ) {
+          x.drop(1).ok(x.take(1));
+				}else {
+					x.fail("predicate failed",false);
+				}
+		}).asParser();
+  }
+  static public function filter<I,O>(fn:I->Option<O>): Parser<I,O>{
+    return Parser.Anon(
+      (i:Input<I>) -> 
+        fn(i.take(1)).fold(
+          (o) -> i.drop(1).ok(o),
+          ()  -> i.fail("predicate failed")
+        )
+    );
+  }
 }
 class LiftParse{
   static public function parse(wildcard:Wildcard){
@@ -153,7 +183,7 @@ class LiftParse{
   static public inline function fail<P,R>(rest:Input<P>,message:String,fatal:Bool=false,?pos:Pos):ParseResult<P,R>{
     return ParseFailure.at_with(rest,message,fatal,pos);
   }
-  @:access(com.mindrocks.text) static public function parsify(regex:hre.RegExp,ipt:Input<String>):hre.Match{
+  static public function parsify(regex:hre.RegExp,ipt:Input<String>):hre.Match{
     //trace(ipt.content.data);
     var data : String = (cast ipt).content.data;
     if(data == null){
@@ -207,22 +237,6 @@ class LiftParse{
 
   public static function id(s:String) {
 		return identifier(s);
-	}
-
-  /**
-	 * Takes a predicate function for an item of Input and returns it's parser.
-	 */
-	static public inline function predicated<I>(p:I->Bool) : Parser<I,I> {
-		return Parser.Anon(function(x:Input<I>) {
-			var res = p( x.take(1) ) ;
-			//trace(x.offset + ":z" + x.content.at(x.offset)  + " " + Std.string(res));
-			return
-				if ( res && !x.is_end() ) {
-          x.drop(1).ok(x.take(1));
-				}else {
-					x.fail("predicate failed",false);
-				}
-		}).asParser();
 	}
 	static public function inspector<I,O>(__:Wildcard,?pre:Input<I>->Void,?post:ParseResult<I,O>->Void,?pos:Pos):Parser<I,O>->Parser<I,O>{
 		return (prs:Parser<I,O>) -> {
