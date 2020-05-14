@@ -30,8 +30,8 @@ interface ParserApi<I,O>{
   public var tag                            : Option<String>;
   public var id(default,null)               : Pos;
   
-  public var uid(default,null)              :Int;
-  public function parse(ipt:Input<I>)       :ParseResult<I,O>;
+  public var uid(default,null)              : Int;
+  public function parse(ipt:Input<I>)       : ParseResult<I,O>;
   
   public function name():String;
 }
@@ -188,5 +188,4 @@ class ParserLift{
   static public function inspect<I,O>(parser:Parser<I,O>,pre,post):Parser<I,O>{
     return new Inspect(parser,pre,post).asParser();
   }
-
 }
