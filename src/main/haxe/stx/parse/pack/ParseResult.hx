@@ -62,6 +62,12 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       (_) -> None
     );
   }
+  public function error():Option<ParseFailure<P>>{
+    return fold(
+      (_) -> None,
+      (e) -> Some(e)
+    );
+  }
   public function prj():ParseResultDef<P,R> return this;
   private var self(get,never):ParseResult<P,R>;
   private function get_self():ParseResult<P,R> return lift(this);
