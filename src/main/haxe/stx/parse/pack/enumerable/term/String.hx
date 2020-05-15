@@ -32,4 +32,7 @@ class String extends stx.parse.pack.enumerable.term.Base<StdString,StdString>{
 	override public function head():StdString{
 		return this.data.charAt(index);
 	}
+	public function toStrinf(){
+		return 'Enumerable($data)';
+	}
 }

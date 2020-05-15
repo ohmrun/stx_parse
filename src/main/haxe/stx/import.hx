@@ -16,6 +16,5 @@ using stx.Std;
 import stx.core.alias.StdMap;
 
 
-using stx.show.Lift;
 
 using stx.parse.Pack;

@@ -1,7 +1,6 @@
 package stx.parse.pack.enumerable.term;
 
 
-
 class Array<T> extends stx.parse.pack.enumerable.term.Base<StdArray<T>, T > {
 	public function new(v,?i) {
 		super(v, i);

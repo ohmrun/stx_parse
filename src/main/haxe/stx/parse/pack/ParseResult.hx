@@ -52,8 +52,8 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
   }
   public function toString(){
     return fold(
-      (success)             -> __.show(success.with),
-      (failure)             -> __.show(failure.with)
+      (success)             -> Std.string(success.with),
+      (failure)             -> Std.string(failure.with)
     );
   }
   public function value():Option<R> {

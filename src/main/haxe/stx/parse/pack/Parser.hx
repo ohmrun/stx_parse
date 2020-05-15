@@ -171,7 +171,7 @@ class ParserLift{
   static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
     return new AndThen(
       p,
-      function(o){
+      function(o:T){
         return fn(o) ? Parser.lift(new Succeed(o)) : Parser.lift(new Failed('filter failed',false)); 
       }
     ).asParser();
@@ -185,7 +185,7 @@ class ParserLift{
   static public inline function succeed<I,O>(v:O):Parser<I,O>{
     return new Succeed(v).asParser();
   }
-  static public function inspect<I,O>(parser:Parser<I,O>,pre,post):Parser<I,O>{
+  static public function inspect<I,O>(parser:Parser<I,O>,pre:Input<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
     return new Inspect(parser,pre,post).asParser();
   }
 }

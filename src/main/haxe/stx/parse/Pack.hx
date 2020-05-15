@@ -84,7 +84,7 @@ class Parse{
 		return truth.then((x) -> PBool(x == 'true' ? true : false))
 		.or(float.then(Std.parseFloat.fn().then(PFloat)))
 		.or(integer.then((str) -> PInt(__.option(Std.parseInt(str)).defv(0))))
-		.or(literalR.regexParser.defer().then(PString));
+		.or(literal.then(PString));
 	}
 		
 
@@ -114,10 +114,7 @@ class Parse{
 	
  	static public var whitespace	= range(0, 33).predicated();
 	
-	//TODO test
-	//http://wordaligned.org/articles/string-literals-and-regular-expressions
-	static public var literalR		= '^"[^"]*"';
-	static public var literal 		= literalR.regexParser();
+	static public var literal 		= new stx.parse.term.Literal().asParser();
 	
 	static public function spaced( p : Parser<String,String> ) {
 		return p.and_(gap.many());
@@ -166,7 +163,7 @@ class Parse{
   static public function filter<I,O>(fn:I->Option<O>): Parser<I,O>{
     return Parser.Anon(
       (i:Input<I>) -> 
-        fn(i.take(1)).fold(
+        fn(i.head()).fold(
           (o) -> i.drop(1).ok(o),
           ()  -> i.fail("predicate failed")
         )

@@ -20,6 +20,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
       var res : ParseResult<I,O> = delegation.parse(n_input);
       switch (res) {
         case Success(m): 
+          //trace(arr);
           arr.push(m.with); 
           n_input = m.rest;
         case Failure(e) if( e.is_fatal() == true) : 
