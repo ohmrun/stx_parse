@@ -12,7 +12,9 @@ class Array<T> extends stx.parse.pack.enumerable.term.Base<StdArray<T>, T > {
 		return e(head());
 	}
 	override public function prepend(v:T):Enumerable<StdArray<T>,T> {
-		return new Array( this.data.cons(v) , this.index );
+		var lhs = this.data.slice(0,index);
+		var rhs = this.data.slice(index);
+		return new Array(lhs.concat(rhs.cons(v)) , this.index);
 	}
 	override public function take(?len:Null<Int>):StdArray<T> {
 		len = len == null ? this.data.length - this.index : len;

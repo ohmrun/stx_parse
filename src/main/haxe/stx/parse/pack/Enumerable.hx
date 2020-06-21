@@ -2,6 +2,7 @@ package stx.parse.pack;
 
 import stx.parse.pack.enumerable.term.Array;
 import stx.parse.pack.enumerable.term.String;
+import stx.parse.pack.enumerable.term.LinkedList;
 
 interface EnumerableApi<C,T>{
 	
@@ -27,8 +28,11 @@ interface EnumerableApi<C,T>{
 	@:noUsing static public function array<T>(array:std.Array<T>):Enumerable<std.Array<T>,T>{
 		return new Array(array);
 	}
-	@:noUsing static public function string<T>(string:std.String):Enumerable<std.String,std.String>{
+	@:noUsing static public function string(string:std.String):Enumerable<std.String,std.String>{
 		return new String(string);
+	}
+	@:noUsing static public function linked_list<T>(list:stx.ds.LinkedList<T>):Enumerable<stx.ds.LinkedList<T>,T>{
+		return new LinkedList(list);
 	}
   
 

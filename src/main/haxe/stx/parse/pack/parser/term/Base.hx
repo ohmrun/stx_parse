@@ -19,7 +19,7 @@ class Base<I,O,T> implements ParserApi<I,O> extends Clazz{
   final inline public function parse(ipt:Input<I>):ParseResult<I,O>{
     switch(this.tag){
       case Some(v)  : ipt.tag = v;
-      case null     :   
+      case null     : 
       default       : 
     }
     #if test

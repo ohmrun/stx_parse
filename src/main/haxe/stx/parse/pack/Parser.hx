@@ -166,7 +166,7 @@ class ParserLift{
       (err:ParseError) -> err.map(
         info -> info.tag(name)
       )
-    ).asParser();
+  ).asParser();
  
   static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
     return new AndThen(
@@ -180,10 +180,10 @@ class ParserLift{
     return new Parser(new OptionP(p));
   }
   static public inline function eof<I,U>(input:Input<I>):ParseResult<I,U>{
+    //trace(input);
+    //trace(input.offset);
+    //trace(input.is_end());
     return input.is_end() ? input.ok(null) : input.fail('not at end');
-  }
-  static public inline function succeed<I,O>(v:O):Parser<I,O>{
-    return new Succeed(v).asParser();
   }
   static public function inspect<I,O>(parser:Parser<I,O>,pre:Input<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
     return new Inspect(parser,pre,post).asParser();

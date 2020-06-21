@@ -9,7 +9,10 @@ class LAnon<I,O> extends Anon<I,O>{
   }
   override function do_parse(ipt:Input<I>){
     return if(method == null){
-      this.method = __.option(closure()).map(_ -> _.parse).fudge();
+      var delegate = __.option(closure()).fudge();
+      //this.id      = delegate.id;
+      //this.tag     = delegate.tag;
+      this.method  = delegate.parse;
       __.that().exists().errata( e -> e.fault().of(E_UndefinedParseDelegate(ipt))).crunch(method);
       this.method(ipt);
     }else{

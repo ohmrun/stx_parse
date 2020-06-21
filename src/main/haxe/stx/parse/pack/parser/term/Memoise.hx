@@ -1,8 +1,8 @@
 package stx.parse.pack.parser.term;
 
 class Memoise<I,O> extends Delegate<I,O>{ 
-  public function new(delegation:Parser<I,O>){
-    super(delegation);
+  public function new(delegation:Parser<I,O>,?pos){
+    super(delegation,pos);
     this.uid = new UID();
   }
   function genKey(pos : Int) {  

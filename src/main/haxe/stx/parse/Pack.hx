@@ -1,5 +1,6 @@
 package stx.parse;
 
+import stx.parse.pack.parser.term.Head;
 import stx.parse.pack.parser.term.LAnon;
 import stx.parse.pack.parser.term.Regex;
 import stx.parse.pack.parser.term.Or;
@@ -10,6 +11,8 @@ typedef Test                  = stx.parse.test.Test;
 #end
 typedef LiftArrayReader       = stx.parse.lift.LiftArrayReader;
 typedef LiftStringReader      = stx.parse.lift.LiftStringReader;
+typedef LiftLinkedListReader  = stx.parse.lift.LiftLinkedListReader;
+
 
 typedef EnumerableApi<C,T>    = stx.parse.pack.Enumerable.EnumerableApi<C,T>;
 typedef Enumerable<C,T>       = stx.parse.pack.Enumerable<C,T>;
@@ -45,6 +48,9 @@ class Pack{
 
 }
 class Parse{
+	static public function head<I,O>(fn:I->Option<Couple<O,Option<I>>>):Parser<I,O>{
+		return new stx.parse.pack.parser.term.Head(fn).asParser();
+	}
   static public function anything<I>():Parser<I,I>{
 		return Parser.Anon(
 			(input:Input<I>)->{
@@ -256,5 +262,8 @@ class LiftParse{
 	static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
     p.tag = Some(tag);
     return Parser._.with_error_tag(p, tag);
+	}
+	@:noUsing static public inline function succeed<I,O>(v:O):Parser<I,O>{
+    return new stx.parse.pack.parser.term.Succeed(v).asParser();
   }
 }

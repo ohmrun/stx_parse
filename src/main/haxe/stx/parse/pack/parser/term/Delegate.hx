@@ -2,7 +2,6 @@ package stx.parse.pack.parser.term;
 
 class Delegate<I,O> extends Base<I,O,Parser<I,O>>{
   public function new(delegation,?id){
-    __.assert(id).exists(delegation);
     super(delegation,id);
     this.tag = delegation.tag;
   }

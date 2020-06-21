@@ -46,7 +46,12 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       failure
     ));
   }
-
+  public function tack(i:Input<P>):ParseResult<P,R>{
+    return lift(fold(
+      (ok) -> Success(ParseSuccess.make(i,ok.with)),
+      (no) -> Failure(ParseFailure.make(i,no.with))
+    ));
+  }
   public function elide():ParseResult<P,Dynamic>{
     return this;
   }

@@ -4,6 +4,7 @@ import stx.core.alias.StdString;
 
 class String extends stx.parse.pack.enumerable.term.Base<StdString,StdString>{
 	public function new(v, ?i) {
+		__.assert().exists(v);
 		super(v, i);
 	}
 	override public function is_end() {
@@ -32,7 +33,7 @@ class String extends stx.parse.pack.enumerable.term.Base<StdString,StdString>{
 	override public function head():StdString{
 		return this.data.charAt(index);
 	}
-	public function toStrinf(){
+	public function toString(){
 		return 'Enumerable($data)';
 	}
 }

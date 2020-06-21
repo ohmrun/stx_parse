@@ -17,7 +17,7 @@ class Regex extends Direct<String,String>{
       var length        = match.groups[0].length;
       ipt.drop(length).ok(ipt.take(length));
     }else{
-      ipt.fail('$stamp not matched',false,id);
+      ipt.fail('$stamp not matched to ${ipt.take()}',false,id);
     }
   }
 }

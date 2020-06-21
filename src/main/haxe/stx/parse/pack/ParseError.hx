@@ -1,18 +1,20 @@
 package stx.parse.pack;
 
 typedef ParseErrorInfoDef = {
-  public var idx(default,null)    : Int;
-  public var msg(default,null)    : String;
-  public var fatal(default,null)  : Bool;
+  public var idx(default,null)              : Int;
+  public var msg(default,null)              : String;
+  public var fatal(default,null)            : Bool;
+  @:optional public var label(default,null) : String;
 }
 @:forward abstract ParseErrorInfo(ParseErrorInfoDef) from ParseErrorInfoDef{
   public function new(self) this = self;
 
-  @:noUsing static public function make(idx,msg,fatal):ParseErrorInfo{
+  @:noUsing static public function make(idx,msg,fatal,?label):ParseErrorInfo{
     return new ParseErrorInfo({
       idx   : idx,
       msg   : msg,
-      fatal : fatal
+      fatal : fatal,
+      label : label
     });
   }
   public function tag(name):ParseErrorInfo{
@@ -20,8 +22,8 @@ typedef ParseErrorInfoDef = {
   }
 }
 @:forward abstract ParseError(Err<ParseErrorInfo>) from Err<ParseErrorInfo> to Err<ParseErrorInfo>{
-  @:noUsing static public function at_with(input:Input<Dynamic>,msg,?fatal=false,?pos:Pos):ParseError{
-    return new Err(Some(ERR_OF(ParseErrorInfo.make(input.offset,msg,fatal))),null,pos);
+  @:noUsing static public function at_with(input:Input<Dynamic>,msg,?fatal=false,?label:String,?pos:Pos):ParseError{
+    return new Err(Some(ERR_OF(ParseErrorInfo.make(input.offset,msg,fatal,label))),null,pos);
   }
   static public var FAIL(default,never) = 'FAIL';
   

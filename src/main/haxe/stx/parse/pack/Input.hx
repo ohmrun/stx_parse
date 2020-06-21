@@ -7,6 +7,13 @@ typedef InputDef<I> = {
 }
 
 @:forward(memo,tag)abstract Input<I>(InputDef<I>) from InputDef<I>{
+  static public function make<I>(content:Enumerable<Dynamic,I>,memo:Memo,?tag:String):Input<I>{
+    return {
+      content : content,
+      memo    : memo,
+      tag     : tag
+    };
+  }
   static public function pure<T>(en:Enumerable<Dynamic,T>):Input<T>{
     return {
       content : en,
@@ -46,6 +53,9 @@ typedef InputDef<I> = {
       text        : text,
       indicator   : indicator
     };
+  }
+  public function prepend(i:I):Input<I>{
+    return make(this.content.prepend(i),this.memo,this.tag);
   }
   public inline function setRecursionHead(head : Head) {
     this.memo.recursionHeads.set(this.content.index + "", head);
