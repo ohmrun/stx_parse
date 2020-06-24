@@ -17,12 +17,12 @@ class LinkedList<T> extends Base<StxLinkedList<T>,T>{
     return if(len == null){
       this.data;
     }else{
-      var go = null;
-      var go = (source,i) -> {
+      function go(source:StxLinkedList<T>,i:Int):StxLinkedList<T>{
         return switch([source,i]){
           case [_,0]          : Nil.ds();
           case [Cons(x,xs),_] : go(xs,i--).cons(x);
           case [Nil,_]        : Nil.ds();
+          case [null,_]       : Nil.ds();
         }
       }
       go(this.data,len);

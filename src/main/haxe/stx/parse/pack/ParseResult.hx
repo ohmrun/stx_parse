@@ -15,6 +15,7 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
   @:from static public inline function fromFailure<P,R>(self:ParseFailure<P>):ParseResult<P,R>{
     return failure(self);
   }
+
   @:noUsing static public function failure<P,R>(self:ParseFailure<P>):ParseResult<P,R>{
     return Failure(self);
   }
@@ -32,12 +33,6 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
     return switch(this){
       case Success(_succ)                 : succ(_succ);
       case Failure(_fail)                 : fail(_fail);
-    }
-  }
-  public function s_fold<Ri>(succ:ParseSuccess<P,R> -> ParseResult<P,R> -> Ri,fail:ParseFailure<P> -> ParseResult<P,R> -> Ri):Ri{
-    return switch(this){
-      case Success(_succ)                 : succ(_succ,self);
-      case Failure(_fail)                 : fail(_fail,self);
     }
   }
   public function map<Ri>(fn:R->Ri):ParseResult<P,Ri>{
@@ -63,7 +58,7 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
   }
   public function value():Option<R> {
     return fold(
-      (s) -> __.option(s.with),
+      (s) -> s.with,
       (_) -> None
     );
   }

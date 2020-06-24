@@ -14,7 +14,7 @@ typedef LRDef = {
 class LRLift{
   static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: Input<I>, growable: LR): ParseResult<I,T> {
     return switch (growable.head) {
-      case None: throw __.fault().of(E_NoRecursionHead);
+      case None: ParseError.at_with(input,"E_NoRecursionHead",true,"LR").toParseResultWithInput(input);
       case Some(head):
         if (head.getHead() != p) /*not head rule, so not growing*/{
           cast(growable.seed);

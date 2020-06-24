@@ -6,18 +6,24 @@ import stx.parse.pack.enumerable.term.LinkedList;
 
 interface EnumerableApi<C,T>{
 	
-	public var data(default,null) 	: C;
-	public var index(default,null) 	: Int;
+	@:allow(stx)
+	private var data(default,null) 	: C;
+
+	public var index(default,null)	: Int;
 
 	public function head():T;
 	public function take(?len : Null<Int>):C;
 
 	public function drop(n:Int):Enumerable<C,T>;
 
-	
+	/**
+		Inputing the implementation allows this interface not to leak information about the internals into the type definitions.
+	**/
 	public function match(fn:T -> Bool):Bool;
+
 	public function prepend(v:T):Enumerable<C,T>;
-	
+	//public function append(v:T):Enumerable<C,T>;
+	//public function concat(e:Enumerable<Dynamic || C ,T>):???
 	public function is_end():Bool;
 } 
 

@@ -10,7 +10,10 @@ class AndThen<I,T,U> extends Base<I,U,Parser<I,T>>{
   override function do_parse(input):ParseResult<I,U>{
     __.assert().exists(delegation);
     return delegation.parse(input).fold(
-      (s) -> flatmap(s.with).parse(s.rest),
+      (s:ParseSuccess<I,T>) -> 
+        s.with.map(flatmap)
+         .map((parser:Parser<I,U>) -> parser.parse(s.rest))
+         .defv(ParseFailure.make(s.rest,ParseError.at_with(s.rest,"FAIL",false))),
       Failure
     );
   }

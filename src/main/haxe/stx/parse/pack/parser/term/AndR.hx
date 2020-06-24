@@ -1,13 +1,11 @@
 package stx.parse.pack.parser.term;
 
-class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
-  var transform  : T -> U -> V;
-  public function new(l:Parser<I,T>,r:Parser<I,U>,transform,?id){
+class AndR<I,T,U> extends Base<I,U,Couple<Parser<I,T>,Parser<I,U>>>{
+  public function new(l:Parser<I,T>,r:Parser<I,U>,?id){
     var lhs = __.that(id).exists().applyI(l);
     var rhs = __.that(id).exists().applyI(r);
     lhs.merge(rhs).crunch();
     super(__.couple(l,r),id);
-    this.transform  = transform;
     this.tag = switch([l.tag,r.tag]){
       case [Some(l),Some(r)]  : Some('($l) ($r)');
       default                 : None;
@@ -22,7 +20,7 @@ class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
         (matchII) -> ParseResult.success(
           ParseSuccess.make(
             matchII.rest,
-            matchI.with.zip(matchII.with).map(__.decouple(transform))
+            matchII.with
           )
         ),
         ParseResult.failure

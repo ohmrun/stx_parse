@@ -17,11 +17,14 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
     var n_input = input;
 
     while (true) {
+      //trace(delegation.tag);
       var res : ParseResult<I,O> = delegation.parse(n_input);
       switch (res) {
         case Success(m): 
           //trace(arr);
-          arr.push(m.with); 
+          for(v in m.with){
+            arr.push(v);
+          }
           n_input = m.rest;
         case Failure(e) if( e.is_fatal() == true) : 
           return e;

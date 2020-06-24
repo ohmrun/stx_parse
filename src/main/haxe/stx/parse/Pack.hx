@@ -57,7 +57,10 @@ class Parse{
 			return if(input.is_end()){
 				input.fail('EOF');
 			}else{
-				input.tail().ok(input.head());
+				input.head().fold(
+					v 	-> input.tail().ok(v),
+					() 	-> input.tail().nil()
+				);
 			}
 		}).asParser();
 	}
@@ -128,24 +131,24 @@ class Parse{
 	static public function returned(p : Parser<String,String>) {
 		return p.and_(whitespace.many());
 	}
-	static public function until<I>(p:Parser<I,I>):Parser<I,Array<I>>{
-		var prs = function rec(ipt:Input<I>,memo:Array<I>){ 
-			return switch(p.parse(ipt)){
-				case Success(success) 				  : ipt.ok(memo);
-				case Failure(failure)           : anything().and_then(
-					(x:I) -> Parser.Anon(rec.bind(_,memo.snoc(x))).asParser()
-				).parse(ipt);
-			}
-		}
-		return Parser.Anon(prs.bind(_,[])).asParser();
-	}
+	// static public function until<I>(p:Parser<I,I>):Parser<I,Array<I>>{
+	// 	var prs = function rec(ipt:Input<I>,memo:Array<I>){ 
+	// 		return switch(p.parse(ipt)){
+	// 			case Success(success) 				  : ipt.ok(Some(memo));
+	// 			case Failure(failure)           : anything().and_then(
+	// 				(x:I) -> Parser.Anon(rec.bind(_,memo.snoc(x))).asParser()
+	// 			).parse(ipt);
+	// 		}
+	// 	}
+	// 	return Parser.Anon(prs.bind(_,[])).asParser();
+	// }
 	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
-		return Parser.Anon((i:Input<I>) -> {
-			return v == i.head() ? i.tail().ok(i.head()) : i.fail('no $v found',false);
-		}).asParser();
+		return Parser.TaggedAnon((input:Input<I>) -> {
+			return v == input.head() ? input.head().fold((v) -> input.tail().ok(v),() -> input.tail().nil()) : input.fail('no $v found',false);
+		},'eq').asParser();
 	}
 	static public function eof<P,R>():Parser<P,R>{
-    return new Parser(Parser.Anon(ParserLift.eof));
+    return new Parser(Parser.TaggedAnon(ParserLift.eof,'eof'));
 	}
 	static public function any<I>():Parser<I,I>{
 		return Parse.anything();
@@ -155,21 +158,21 @@ class Parse{
 	 * Takes a predicate function for an item of Input and returns it's parser.
    */
    static public function predicated<I>(p:I->Bool) : Parser<I,I> {
-		return Parser.Anon(function(x:Input<I>) {
-			var res = p( x.take(1) ) ;
+		return Parser.TaggedAnon(function(input:Input<I>) {
+			var res = input.head().map(p).defv(false);
 			//trace(x.offset + ":z" + x.content.at(x.offset)  + " " + Std.string(res));
 			return
-				if ( res && !x.is_end() ) {
-          x.drop(1).ok(x.take(1));
+				if ( res && !input.is_end() ) {
+          input.drop(1).ok(input.take(1));
 				}else {
-					x.fail("predicate failed",false);
+					input.fail("predicate failed",false);
 				}
-		}).asParser();
+		},'predicated').asParser();
   }
   static public function filter<I,O>(fn:I->Option<O>): Parser<I,O>{
     return Parser.Anon(
       (i:Input<I>) -> 
-        fn(i.head()).fold(
+        i.head().flat_map(fn).fold(
           (o) -> i.drop(1).ok(o),
           ()  -> i.fail("predicate failed")
         )
@@ -181,7 +184,10 @@ class LiftParse{
     return new stx.parse.Module();
   }
   static public inline function ok<P,R>(rest:Input<P>,match:R):ParseResult<P,R>{
-    return ParseSuccess.make(rest,match);
+    return ParseSuccess.make(rest,Some(match));
+	}
+	static public inline function nil<P,R>(rest:Input<P>):ParseResult<P,R>{
+    return ParseSuccess.make(rest,None);
   }
   static public inline function fail<P,R>(rest:Input<P>,message:String,fatal:Bool=false,?pos:Pos):ParseResult<P,R>{
     return ParseFailure.at_with(rest,message,fatal,pos);
@@ -208,12 +214,12 @@ class LiftParse{
     return new LAnon(f).asParser();
   }
   static public function lookahead<I,O>(p:Parser<I,O>):Parser<I,O>{
-		return Parser.Anon((input:Input<I>)->{
+		return Parser.TaggedAnon((input:Input<I>)->{
 			return switch(p.parse(input)){
 				case Success(success) 					: ParseResult.success(ParseSuccess.make(input,null));
 				case Failure(failure)		        : ParseResult.failure(failure);
 			}
-		}).asParser();
+		},'lookahead: ${p.tag}').asParser();
 	}
 	static public function token(p:Parser<String,Array<String>>):Parser<String,String>{
 		return p.then(
@@ -224,7 +230,7 @@ class LiftParse{
 	 * Returns true if the parser fails and vice versa.
 	 */
 	static public function not<I,O>(p:Parser<I,O>):Parser<I,O>{
-		return Parser.Anon((function(input:Input<I>) {
+		return Parser.TaggedAnon((function(input:Input<I>) {
 				return switch(p.parse(input)) {
 					case Success(success) : 
             input.fail("Parser succeeded rather than failed");
@@ -234,8 +240,8 @@ class LiftParse{
                 () -> ParseResult.success(ParseSuccess.make(input,null))
               );
 				}
-			}
-		)).asParser();
+			}),
+			'not: ${p.tag}').asParser();
 	}
 
   public static function id(s:String) {

@@ -1,5 +1,5 @@
 package stx.parse.pack;
-
+ 
 typedef InputDef<I> = {
   content   : Enumerable<Dynamic,I>,
   memo      : Memo,
@@ -7,7 +7,10 @@ typedef InputDef<I> = {
 }
 
 @:forward(memo,tag)abstract Input<I>(InputDef<I>) from InputDef<I>{
-  static public function make<I>(content:Enumerable<Dynamic,I>,memo:Memo,?tag:String):Input<I>{
+  @:noUsing static public function lift<I>(self:InputDef<I>):Input<I>{
+    return self;
+  }
+  @:noUsing static public function make<I>(content:Enumerable<Dynamic,I>,memo:Memo,?tag:String):Input<I>{
     return {
       content : content,
       memo    : memo,
@@ -26,34 +29,34 @@ typedef InputDef<I> = {
       memo    : this.memo
     };
   }
-  inline public function take(?len):I{
+  inline public function take(?len):Dynamic{
     return this.content.take(len);
   }
+  inline public function foldn<Z>(fn:I->Z->Z,n:Int,z:Z):Z{
+    var memo = z;
+    var self = lift(this);
+
+    while(n > 0){
+      var next = self.content.take(1);
+      memo = fn(next,memo);
+      self = self.drop(1);
+      n--;
+    }
+    return memo;
+  }
+
   inline public function tail():Input<I>{
     return drop(1);
   }
   inline public function matchedBy(e:I->Bool) : Bool {
     return this.content.match(e);
   }
-  inline public function head() : I {
-    return this.content.head();
+  inline public function head() : Option<I> {
+    return __.option(this.content.head());
   }
 
-  inline public function position<I>(r : Input<I>) : Int return
-    this.content.index;
-
-  public function textAround(?before : Int = 10, ?after : Int = 10) : { text : String, indicator : String } {
-
-    var offset        = Std.int(Math.max(0, this.content.index - before));
-    var text          = this.content.take(before + after);
-    var indicPadding  = Std.int(Math.min(this.content.index, before));
-    var indicator     = StringTools.lpad("^", "_", indicPadding+1);
-
-    return {
-      text        : text,
-      indicator   : indicator
-    };
-  }
+  inline public function position<I>(r : Input<I>) : Int return this.content.index;
+  
   public function prepend(i:I):Input<I>{
     return make(this.content.prepend(i),this.memo,this.tag);
   }
@@ -65,12 +68,12 @@ typedef InputDef<I> = {
   }
   public inline function getRecursionHead() : Option<Head> {
     var res = this.memo.recursionHeads.get(this.content.index + "");
-    return res == null?None: Some(res);
+    return res == null ? None: Some(res);
   }
   public inline function getFromCache(genKey : Int -> String) : Option<MemoEntry> {
     var key = genKey(this.content.index);
     var res = this.memo.memoEntries.get(key);
-    return res == null? None: Some(res);
+    return res == null ? None: Some(res);
   }
   inline public function updateCacheAndGet(genKey : Int -> String, entry : MemoEntry) {
     var key = genKey(this.content.index);

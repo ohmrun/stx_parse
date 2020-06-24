@@ -16,7 +16,9 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       if(p == null){
         //p = '${delegation.length} $pIndex'.fail(true);
       }
+      //trace(p);
       var res = p.parse(ipt);
+      //trace(res);
       switch (res) {
         case Success(_)                       : return res;
         case Failure(_.is_fatal() => false)   :
@@ -26,5 +28,4 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
     }
     return ipt.fail("None Match",false,id);
   }
-
 }

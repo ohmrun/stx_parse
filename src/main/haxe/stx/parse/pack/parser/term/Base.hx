@@ -25,7 +25,10 @@ class Base<I,O,T> implements ParserApi<I,O> extends Clazz{
     #if test
       check();
     #end
-    return do_parse(ipt);
+    var result    = do_parse(ipt);
+    var value     = result.value();
+    //trace('$tag $value');
+    return result;
     // return try{on
       
     // }catch(e:Dynamic){
@@ -41,5 +44,9 @@ class Base<I,O,T> implements ParserApi<I,O> extends Clazz{
   }
   inline public function name(){
     return this.identifier();
+  }
+  public function toString(){
+    var id_s = Position.fromPos(id).toStringClassMethodLine();
+    return '${name()} $tag $id_s';
   }
 }

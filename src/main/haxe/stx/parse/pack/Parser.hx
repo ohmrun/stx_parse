@@ -1,6 +1,8 @@
 package stx.parse.pack;
 
 import stx.parse.pack.parser.term.AndThen;
+import stx.parse.pack.parser.term.AndL;
+import stx.parse.pack.parser.term.AndR;
 import stx.parse.pack.parser.term.Anon;
 import stx.parse.pack.parser.term.Base;
 import stx.parse.pack.parser.term.Commit;
@@ -23,6 +25,7 @@ import stx.parse.pack.parser.term.Regex;
 import stx.parse.pack.parser.term.Rep1Sep;
 import stx.parse.pack.parser.term.RepSep;
 import stx.parse.pack.parser.term.Succeed;
+import stx.parse.pack.parser.term.TaggedAnon;
 import stx.parse.pack.parser.term.Then;
 import stx.parse.pack.parser.term.With;
 
@@ -60,8 +63,11 @@ interface ParserApi<I,O>{
   }
   inline public function elide<U>() : Parser<I,U> return cast(self);
 
-  @:noUsing static public function Anon<P,R>(fn:Input<P> -> ParseResult<P,R>):Parser<P,R>{
-    return new Anon(fn).asParser();
+  @:noUsing static public function Anon<P,R>(fn:Input<P> -> ParseResult<P,R>,?pos:Pos):Parser<P,R>{
+    return new Anon(fn,pos).asParser();
+  }
+  @:noUsing static public function TaggedAnon<P,R>(fn:Input<P> -> ParseResult<P,R>,tag,?pos:Pos):Parser<P,R>{
+    return new TaggedAnon(fn,tag,pos).asParser();
   }
   @:noUsing static public function Failed<P,R>(msg,is_error = false,?id):Parser<P,R>{
     return new Failed(msg,is_error,id).asParser();
@@ -97,7 +103,7 @@ class ParserLift{
     return new OneMany(p1).asParser();
   }
   static public inline function and_<I,T,U>(p1:Parser<I,T>,p2 : Parser<I, U>):Parser <I,T> {
-    return new With(p1,p2,(a,_) -> a).asParser();
+    return new AndL(p1,p2).asParser();
   }
   static public inline function and<I,T,U>(p1:Parser<I,T>,p2 : Parser<I,U>):Parser<I,Couple<T,U>>{
     return new With(p1,p2,(l:T,r:U) ->__.couple(l,r)).asParser();
@@ -105,9 +111,9 @@ class ParserLift{
   static public inline function and_seq<I,T>(p1:Parser<I,T>,p2 : Parser<I,T>):Parser<I,Array<T>>{
     return new With(p1,p2,(l:T,r:T) -> [l,r]).asParser();
   }
-  @:native("__and") // Prevent a bug with hxcpp
+  //@:native("__and") // Prevent a bug with hxcpp
   static public inline function _and<I,T,U>(p1:Parser<I,T>, p2 : Parser<I,U>):Parser<I,U> {
-    return and_with(p1,p2, (_,b) -> b);
+    return new AndR(p1,p2).asParser();
   }
   static public inline function and_with<I,T,U,V>(p1:Parser<I,T>,p2:Parser<I,U>,f:T->U->V):Parser<I,V>{
     return new With(p1,p2,f).asParser();
@@ -183,7 +189,7 @@ class ParserLift{
     //trace(input);
     //trace(input.offset);
     //trace(input.is_end());
-    return input.is_end() ? input.ok(null) : input.fail('not at end');
+    return input.is_end() ? input.nil() : input.fail('not at end');
   }
   static public function inspect<I,O>(parser:Parser<I,O>,pre:Input<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
     return new Inspect(parser,pre,post).asParser();

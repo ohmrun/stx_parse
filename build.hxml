@@ -1,5 +1,6 @@
 -main Main
 
+
 -lib stx_nano
 -lib stx_pico
 -lib stx_assert
@@ -12,3 +13,4 @@
 #--interp
 #-js test.js
 -neko test.n
+-cmd neko test.n
