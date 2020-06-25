@@ -8,35 +8,45 @@ class Memoise<I,O> extends Delegate<I,O>{
   function genKey(pos : Int) {  
     return this.id+"@"+pos;
   }
-  override function do_parse(ipt:Input<I>):ParseResult<I,O>{
-    switch (delegation.recall(genKey, ipt)) {
-      case None :
-        var base = ipt.fail(ParseError.FAIL,false,id).mkLR(delegation, None);
+  override function applyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+    return Arrowlet.Then(
+      delegation.recall(genKey, ipt),
+      Arrowlet.Anon(
+        (memo:Option<MemoEntry>,cont:Terminal<ParseResult<I,O>,Noise>) -> switch(memo){
+          case None :
+            var base = ipt.fail(ParseError.FAIL,false,id).mkLR(delegation, None);
 
-        ipt.memo.lrStack  = ipt.memo.lrStack.cons(base);
-        ipt.updateCacheAndGet(genKey, MemoLR(base));
+            ipt.memo.lrStack  = ipt.memo.lrStack.cons(base);
+            ipt.updateCacheAndGet(genKey, MemoLR(base));
 
-        __.that().exists().errata(e -> e.fault().of(E_UndefinedParseDelegate(ipt))).crunch(delegation);
-        var res = delegation.parse(ipt);
+            __.that().exists().errata(e -> e.fault().of(E_UndefinedParseDelegate(ipt))).crunch(delegation);
 
-        ipt.memo.lrStack = ipt.memo.lrStack.tail();
-
-        return switch (base.head) {
-          case None:
-            ipt.updateCacheAndGet(genKey, MemoParsed(res));
-            res;
-          case Some(_):
-            base.seed = res;
-            delegation.lrAnswer(genKey, ipt, base);
+            return Arrowlet.Then(
+              delegation,
+              Arrowlet.Anon(
+                (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,O>,Noise>) -> {
+                  ipt.memo.lrStack = ipt.memo.lrStack.tail();
+                  return switch (base.head) {
+                    case None:
+                      ipt.updateCacheAndGet(genKey, MemoParsed(res));
+                      cont.value(res).serve();
+                    case Some(_):
+                      base.seed = res;
+                      delegation.lrAnswer(genKey, ipt, base).prepare(cont);
+                  }
+                }
+              )
+            ).applyII(ipt,cont);
+        case Some(mEntry):
+          switch(mEntry) {
+            case  MemoLR(recDetect):
+              LR._.setupLR(delegation, ipt, recDetect);
+              return cont.value(cast(recDetect.seed)).serve();
+            case  MemoParsed(ans):
+              return cont.value(cast(ans)).serve();
+          }
         }
-      case Some(mEntry):
-        switch(mEntry) {
-          case  MemoLR(recDetect):
-            LR._.setupLR(delegation, ipt, recDetect);
-            return cast(recDetect.seed);
-          case  MemoParsed(ans):
-            return cast(ans);
-        }
-    }
+      )
+    ).prepare(Noise,cont);
   }
 }

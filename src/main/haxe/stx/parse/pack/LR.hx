@@ -12,42 +12,47 @@ typedef LRDef = {
   public function pos() : Input<Dynamic> return this.seed.pos();
 }
 class LRLift{
-  static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: Input<I>, growable: LR): ParseResult<I,T> {
+  static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: Input<I>, growable: LR): Forward<ParseResult<I,T>> {
     return switch (growable.head) {
-      case None: ParseError.at_with(input,"E_NoRecursionHead",true,"LR").toParseResultWithInput(input);
+      case None: Forward.pure(ParseError.at_with(input,"E_NoRecursionHead",true,"LR").toParseResultWithInput(input));
       case Some(head):
         if (head.getHead() != p) /*not head rule, so not growing*/{
-          cast(growable.seed);
+          Forward.pure(cast growable.seed);
         } else {
           input.updateCacheAndGet(genKey, MemoParsed(growable.seed));
           growable.seed.fold(
             (_) -> grow(p, genKey, input, head), /*growing*/
-            (_) -> cast(growable.seed)
+            (_) -> Forward.pure((cast growable.seed))
           );
         }
     }
   }
-  static public function recall<I,T>(p : Parser<I,T>, genKey : Int -> String, input : Input<I>) : Option<MemoEntry> {
+  static public function recall<I,T>(p : Parser<I,T>, genKey : Int -> String, input : Input<I>) : Forward<Option<MemoEntry>> {
     var cached = input.getFromCache(genKey);
     return switch (input.getRecursionHead()) {
-      case None: cached;
+      case None: Forward.pure(cached);
       case Some(head):
         if (cached == None && !(head.involvedSet.cons(head.headParser).has(p.elide()))) {
-          Some(
+          Forward.pure(Some(
             MemoParsed(
               ParseFailure.at_with(input,'dummy')
             )
-          );
-        }
-        if (head.evalSet.has(p)) {
+          ));
+        }else if (head.evalSet.has(p)) {
           head.evalSet = head.evalSet
             .filter(function (x:Parser<Dynamic,Dynamic>) return x != p);
 
-          var memo = MemoParsed(p.parse(input));
-          input.updateCacheAndGet(genKey, memo); // beware; it won't update lrStack !!! Check that !!!
-          cached = Some(memo);
+          Forward.fromFunTerminalWork(p.applyII.bind(input))
+            .process(
+              Process.fromFun1R((res:ParseResult<I,T>) -> {
+                var memo = MemoParsed(res);
+                input.updateCacheAndGet(genKey, memo); // beware; it won't update lrStack !!! Check that !!!
+                return Some(memo);
+              })
+            );
+        }else{
+          Forward.pure(cached);
         }
-        return cached;
     }
   }
   static public function setupLR<I>(p: Parser<I,Dynamic>, input: Input<I>, recDetect: LR) {
@@ -63,7 +68,7 @@ class LRLift{
       stack = stack.tail();
     }
   }
-  static function grow<I,T>(p: Parser<I,T>, genKey : Int -> String, rest: Input<I>, head: Head): ParseResult<I,T> {
+  static function grow<I,T>(p: Parser<I,T>, genKey : Int -> String, rest: Input<I>, head: Head): Forward<ParseResult<I,T>> {
     //store the head into the recursionHeads
     rest.setRecursionHead(head);
     var oldRes =
@@ -78,33 +83,34 @@ class LRLift{
     if( p == null){
        throw('undefined parse delegate'); 
     }
-    var res = p.parse(rest);
-    switch (res) {
-      case Success(_) :
-        if (oldRes.pos().offset < res.pos().offset ) {
-          rest.updateCacheAndGet(genKey, MemoParsed(res));
-          return grow(p, genKey, rest, head);
-        } else {
-          //we're done with growing, we can remove data from recursion head
-          rest.removeRecursionHead();
-          switch (rest.getFromCache(genKey).fudge()) {
-            case MemoParsed(ans): return cast(ans);
-            default: throw "impossible match";
-          }
+    return Forward.fromFunTerminalWork(p.applyII.bind(rest)).process(
+      Arrowlet.Anon(
+        (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>) -> switch (res) {
+          case Success(_) :
+            if (oldRes.pos().offset < res.pos().offset ) {
+              rest.updateCacheAndGet(genKey, MemoParsed(res));
+              return grow(p, genKey, rest, head).prepare(cont);
+            } else {
+              //we're done with growing, we can remove data from recursion head
+              rest.removeRecursionHead();
+              switch (rest.getFromCache(genKey).fudge()) {
+                case MemoParsed(ans): return cast(ans);
+                default: throw "impossible match";
+              }
+            }
+          case Failure(_.is_fatal() => isError):
+            if (isError) { // the error must be propagated  and not discarded by the grower!
+    
+              rest.updateCacheAndGet(genKey, MemoParsed(res));
+              rest.removeRecursionHead();
+              cont.value(res).serve();
+            } else {
+              rest.removeRecursionHead();
+              return cont.value(cast(oldRes)).serve();
+            }
         }
-      case Failure(_.is_fatal() => isError):
-        if (isError) { // the error must be propagated  and not discarded by the grower!
-
-          rest.updateCacheAndGet(genKey, MemoParsed(res));
-          rest.removeRecursionHead();
-          return res;
-
-        } else {
-          rest.removeRecursionHead();
-          return cast(oldRes);
-        }
-
-    }
+      )
+    );
   }
 
   /**

@@ -14,10 +14,16 @@ class Or<I,O> extends Base<I,O,Couple<Parser<I,O>,Parser<I,O>>>{
   override public function check(){
     if(delegation == null){  throw('undefined parse delegate'); }
   }
-  override function do_parse(ipt:Input<I>):ParseResult<I,O>{
-    return delegation.fst().parse(ipt).fold(
-      ParseResult.success,
-      (err)       -> err.is_fatal() ? ParseResult.failure(err) : delegation.snd().parse(ipt) 
-    );
+  override function doApplyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+    return Arrowlet.Then(
+      delegation.fst(),
+      Arrowlet.Anon(
+        (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,O>,Noise>) -> 
+          res.fold(
+            (ok) -> cont.value(ParseResult.success(ok)).serve(),
+            (no) -> no.is_fatal() ? cont.value(ParseResult.failure(no)).serve() : delegation.snd().applyII(ipt,cont) 
+          )         
+      )
+    ).applyII(ipt,cont);
   }
 }

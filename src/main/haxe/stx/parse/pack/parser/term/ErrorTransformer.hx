@@ -6,10 +6,12 @@ class ErrorTransformer<I,O> extends Delegate<I,O>{
     super(delegation,id);
     this.transformer = transformer;
   }
-  override function do_parse(ipt){
-    return delegation.parse(ipt).fold(
-      Success,
-      (e) -> e.mod(transformer)
-    );
+  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+    return delegation.forward(input).process(
+      (res:ParseResult<I,O>) -> res.fold(
+        ParseResult.success,
+        (e) -> ParseResult.failure(e.mod(transformer))
+      )
+    ).prepare(cont);
   }
 }

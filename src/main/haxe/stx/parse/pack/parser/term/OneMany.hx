@@ -2,20 +2,22 @@ package stx.parse.pack.parser.term;
 
 class OneMany<I,O> extends Many<I,O>{
 
-  override public function do_parse(ipt:Input<I>):ParseResult<I,Array<O>>{  
+  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
     __.assert(delegation.id).exists(delegation);
-    //trace(delegation.tag);
-    return delegation.parse(ipt).fold(
-      (succ) -> new Many(delegation).parse(succ.rest).fold(
-        (succI) -> ParseResult.success(succ.map(
-          (res) -> [res].concat(succI.with.defv([]))
-        ).then(succI.rest)),
-        (err) -> err.is_fatal().if_else(
-          () -> ParseResult.failure(err),
-          () -> ParseResult.success(succ.map((x) -> [x]))
+
+    return Arrowlet.Then(
+      delegation,
+      Arrowlet.Anon(
+        (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Array<O>>,Noise>) -> res.fold(
+          (ok:ParseSuccess<I,O>) -> Process.lift(new Many(delegation)).forward(ok.rest).process(
+            ((nxt:ParseResult<I,Array<O>>) -> nxt.fold(
+                okI -> nxt.rest.ok(ok.with.toArray().concat(okI.with.defv([]))),
+                no  -> no.is_fatal() ? ParseResult.failure(no) : nxt.rest.ok(ok.with.toArray())
+            ))
+          ).prepare(cont),
+          (no) -> cont.value(no.toParseResult()).serve()
         )
-      ),
-      ParseResult.failure
-    );
+      )
+    ).applyII(input,cont);
   }
 } 

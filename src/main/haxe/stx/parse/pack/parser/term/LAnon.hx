@@ -7,16 +7,16 @@ class LAnon<I,O> extends Anon<I,O>{
     __.assert().exists(closure);
     this.closure = closure.fn().cache().prj();
   }
-  override function do_parse(ipt:Input<I>){
+  override private function doApplyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>){
     return if(method == null){
       var delegate = __.option(closure()).fudge();
-      //this.id      = delegate.id;
-      //this.tag     = delegate.tag;
-      this.method  = delegate.parse;
+      //this.id       = delegate.id;
+      //this.tag      = delegate.tag;
+      this.method     = delegate.applyII;
       __.that().exists().errata( e -> e.fault().of(E_UndefinedParseDelegate(ipt))).crunch(method);
-      this.method(ipt);
+      this.method(ipt,cont);
     }else{
-      this.method(ipt);
+      this.method(ipt,cont);
     }
   }
 }

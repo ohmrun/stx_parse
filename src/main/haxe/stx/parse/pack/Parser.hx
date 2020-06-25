@@ -25,18 +25,32 @@ import stx.parse.pack.parser.term.Regex;
 import stx.parse.pack.parser.term.Rep1Sep;
 import stx.parse.pack.parser.term.RepSep;
 import stx.parse.pack.parser.term.Succeed;
+import stx.parse.pack.parser.term.Sync;
+import stx.parse.pack.parser.term.SyncAnon;
 import stx.parse.pack.parser.term.TaggedAnon;
 import stx.parse.pack.parser.term.Then;
 import stx.parse.pack.parser.term.With;
 
-interface ParserApi<I,O>{
+class ParserApi<I,O> extends ArrowletApi<Input<I>,ParseResult<I,O>,Noise>{
+  public function new(?tag:Option<String>,?id:Pos){
+    super();
+    this.tag = tag;
+    this.id  = id;
+  }
   public var tag                            : Option<String>;
   public var id(default,null)               : Pos;
   
   public var uid(default,null)              : Int;
-  public function parse(ipt:Input<I>)       : ParseResult<I,O>;
   
-  public function name():String;
+  inline public function name(){
+    return this.identifier();
+  }
+  public final inline function definition():Class<Dynamic>{
+    return Type.getClass(this);
+  }
+  public final inline function identifier():String{
+    return Type.getClassName(definition());
+  }
 }
 
 @:using(stx.parse.pack.Parser.ParserLift)
@@ -51,7 +65,7 @@ interface ParserApi<I,O>{
     return new Parser(it);
   }
   @:noUsing static inline public function fromFunction<I,O>(f:Input<I>->ParseResult<I,O>):Parser<I,O>{
-    return new Anon(f).asParser();
+    return new SyncAnon(f).asParser();
   }
   @:noUsing static inline public function lift<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);
@@ -63,10 +77,13 @@ interface ParserApi<I,O>{
   }
   inline public function elide<U>() : Parser<I,U> return cast(self);
 
-  @:noUsing static public function Anon<P,R>(fn:Input<P> -> ParseResult<P,R>,?pos:Pos):Parser<P,R>{
+  @:noUsing static public function Anon<P,R>(fn:Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,?pos:Pos):Parser<P,R>{
     return new Anon(fn,pos).asParser();
   }
-  @:noUsing static public function TaggedAnon<P,R>(fn:Input<P> -> ParseResult<P,R>,tag,?pos:Pos):Parser<P,R>{
+  @:noUsing static public function SyncAnon<P,R>(fn:Input<P> -> ParseResult<P,R>,?tag:String,?pos:Pos):Parser<P,R>{
+    return new SyncAnon(fn,tag,pos).asParser();
+  }
+  @:noUsing static public function TaggedAnon<P,R>(fn:Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag,?pos:Pos):Parser<P,R>{
     return new TaggedAnon(fn,tag,pos).asParser();
   }
   @:noUsing static public function Failed<P,R>(msg,is_error = false,?id):Parser<P,R>{
@@ -81,6 +98,9 @@ interface ParserApi<I,O>{
   }
   public inline function asParser():Parser<I,O>{
     return self;
+  }
+  @:to public inline function toArrowlet():Arrowlet<Input<I>,ParseResult<I,O>,Noise>{
+    return this;
   }
 }
 class ParserLift{
@@ -130,13 +150,13 @@ class ParserLift{
   //static public inline function print<I,O>(p : Parser<I,O>,f : Input<I> -> String):Parser<I,I>{
     //return Parser.
   //}
-  static public inline function xs<I,T>(p:Parser<I,T>, f : Input<I> -> Void):Parser<I,T>{
-    return new Parser(new Anon(function(i:Input<I>):ParseResult<I,T>{
-      var out = p.parse(i);
-      f(out.pos());
-      return out;
-    }));
-  }
+  // static public inline function xs<I,T>(p:Parser<I,T>, f : Input<I> -> Void):Parser<I,T>{
+  //   return new Parser(new Anon(function(i:Input<I>):ParseResult<I,T>{
+  //     var out = p.parse(i);
+  //     f(out.pos());
+  //     return out;
+  //   }));
+  // }
   static public inline function identifier(x : String):Parser<String,String>{
     return new Identifier(x).asParser();
   }
@@ -193,5 +213,8 @@ class ParserLift{
   }
   static public function inspect<I,O>(parser:Parser<I,O>,pre:Input<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
     return new Inspect(parser,pre,post).asParser();
+  }
+  static public function forward<I,O>(parser:Parser<I,O>,input:Input<I>):Forward<ParseResult<I,O>>{
+    return Forward.fromFunTerminalWork(parser.applyII.bind(input));
   }
 }

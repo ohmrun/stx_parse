@@ -7,14 +7,20 @@ class AndThen<I,T,U> extends Base<I,U,Parser<I,T>>{
     super(delegation,id);
     this.flatmap  = flatmap;
   }
-  override function do_parse(input):ParseResult<I,U>{
+  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,U>,Noise>):Work{
     __.assert().exists(delegation);
-    return delegation.parse(input).fold(
-      (s:ParseSuccess<I,T>) -> 
-        s.with.map(flatmap)
-         .map((parser:Parser<I,U>) -> parser.parse(s.rest))
-         .defv(ParseFailure.make(s.rest,ParseError.at_with(s.rest,"FAIL",false))),
-      Failure
-    );
+    return Arrowlet.Then(
+      delegation,
+      Arrowlet.Anon(
+        (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,U>,Noise>) -> res.fold(
+          (ok:ParseSuccess<I,T>) -> 
+            ok.with.map(flatmap)
+             .map((parser:Parser<I,U>) -> parser.forward(ok.rest))
+             .defv(Forward.pure(ParseFailure.make(ok.rest,ParseError.at_with(ok.rest,"FAIL",false)).toParseResult()))
+             .prepare(cont),
+          (no) -> cont.value(Failure(no)).serve()
+        )
+      )
+    ).applyII(input,cont);
   }
 }

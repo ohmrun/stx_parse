@@ -5,6 +5,7 @@
 -lib stx_pico
 -lib stx_assert
 -lib stx_fn
+-lib stx_arrowlet
 
 -lib hre
 

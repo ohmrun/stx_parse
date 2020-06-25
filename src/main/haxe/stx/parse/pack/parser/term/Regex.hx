@@ -1,7 +1,7 @@
 package stx.parse.pack.parser.term;
 
 import hre.*;
-class Regex extends Direct<String,String>{
+class Regex extends Sync<String,String>{
   var stamp : String;
   public function new(stamp,?id){
     super(id);

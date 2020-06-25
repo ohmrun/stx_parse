@@ -17,9 +17,13 @@ typedef ParseSuccessDef<P,R> = RestWithDef<P,Option<R>>;
   public function map<Ri>(fn:R->Ri):ParseSuccess<P,Ri>
     return make(
       this.rest,
-
-      
       this.with.map(fn)
+    );
+
+  public function map_o<Ri>(fn:R->Option<Ri>):ParseSuccess<P,Ri>
+    return make(
+      this.rest,
+      this.with.flat_map(fn)
     );
   public function then(rest:Input<P>):ParseSuccess<P,R>{
     return make(

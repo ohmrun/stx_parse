@@ -1,6 +1,6 @@
 package stx.parse.pack.parser.term;
 
-class Head<I,O> extends Direct<I,O>{
+class Head<I,O> extends Sync<I,O>{
   var delegate : I -> Option<Couple<O,Option<I>>>;
   public function new(delegate,?id){
     super(id);

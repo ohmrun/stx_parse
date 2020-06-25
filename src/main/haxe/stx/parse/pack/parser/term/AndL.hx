@@ -14,19 +14,23 @@ class AndL<I,T,U> extends Base<I,T,Couple<Parser<I,T>,Parser<I,U>>>{
   override function check(){
     __.that().exists().crunch(delegation);
   }
-  override function do_parse(input:Input<I>){
-    return delegation.fst().parse(input).fold(
-      (matchI) -> delegation.snd().parse(matchI.rest).fold(
-        (matchII) -> ParseResult.success(
-          ParseSuccess.make(
-            matchII.rest,
-            matchI.with
-          )
-        ),
-        ParseResult.failure
-      ),
-      ParseResult.failure
-    );
+  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,T>,Noise>){
+    return Arrowlet.Then(
+      delegation.fst().forward(input),
+      Arrowlet.Anon(
+        (res:ParseResult<I,T>,cont) -> res.fold(
+          (matchI) -> delegation.snd().forward(matchI.rest).process(
+            Arrowlet.Anon(
+              (res:ParseResult<I,U>,cont:Terminal<ParseResult<I,Couple<Option<T>,Option<U>>>,Noise>) -> res.fold(
+                (matchII) -> cont.value(matchII.rest.ok(__.couple(matchI.with,matchII.with))).serve(),
+                (e)       -> cont.value(e.toParseResult()).serve()
+              )
+            )
+          ).prepare(cont),
+         (no) -> cont.value(no.toParseResult()).serve()
+        )
+      )
+    ).postfix(opt_tu -> opt_tu.map_o( tu -> tu.fst())).prepare(Noise,cont);
   }
   
 }

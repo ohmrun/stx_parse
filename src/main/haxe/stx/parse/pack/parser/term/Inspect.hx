@@ -8,10 +8,14 @@ class Inspect<I,O> extends Delegate<I,O>{
     this.postfix  = postfix;
     super(delegation,id);
   }
-  override function do_parse(ipt){
-    this.prefix(ipt);
-    var out = this.delegation.parse(ipt);
-    this.postfix(out);
-    return out;
+  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+    this.prefix(input);
+    var out = this.delegation.forward(input).process(
+      (res:ParseResult<I,O>) -> {
+        this.postfix(res);
+        return res;
+      }
+    );
+    return out.prepare(cont);
   }
 }

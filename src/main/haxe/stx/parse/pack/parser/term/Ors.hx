@@ -9,23 +9,26 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       if(delegate == null){  throw('undefined parse delegate in $delegate'); }
     }
   }
-  override function do_parse(ipt){
-    var pIndex = 0;
-    while (pIndex < delegation.length) {
-      var p   = delegation[pIndex];
-      if(p == null){
-        //p = '${delegation.length} $pIndex'.fail(true);
-      }
-      //trace(p);
-      var res = p.parse(ipt);
-      //trace(res);
-      switch (res) {
-        case Success(_)                       : return res;
-        case Failure(_.is_fatal() => false)   :
-        case Failure(_)                       : return res;
-      };
-      pIndex = pIndex+1;
-    }
-    return ipt.fail("None Match",false,id);
+  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
+    var idx = 1;
+    return Arrowlet.Then(
+      delegation[0],
+      Arrowlet.Anon(
+        function rec(res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
+          return res.fold(
+            (ok) -> cont.value(ParseResult.success(ok)).serve(),
+            (no) -> no.is_fatal().if_else(
+              () -> cont.value(ParseResult.failure(no)).serve(),
+              () -> 
+                if(idx < delegation.length){
+                  Arrowlet.Then(delegation[idx++],Arrowlet.Anon(rec)).applyII(no.rest,cont);
+                }else{
+                  cont.value(input.fail("Ors",false,id)).serve();
+                }
+            )
+          );
+        }
+      )
+    ).applyII(input,cont);
   }
 }

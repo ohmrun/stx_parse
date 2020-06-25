@@ -1,6 +1,6 @@
 package stx.parse.pack.parser.term;
 
-class Succeed<P,R> extends Direct<P,R>{
+class Succeed<P,R> extends Sync<P,R>{
   var value : R;
   public function new(value:R,?id){
     super(id);

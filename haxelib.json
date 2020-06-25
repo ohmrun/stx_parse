@@ -3,15 +3,16 @@
   "url": "https://github.com/ohmrun/stx_parse",
   "license": "BSD",
   "tags": ["cross","utility"],
-  "description": "General Parser API based on Parsex",
+  "description": "LR Parser API based on Parsex",
   "version": "0.1.0",
   "releasenote": "",
   "contributors": ["0b1kn00b"],
   "dependencies": {
-    "stx_pico"    : "",
-    "stx_nano"    : "",
-    "stx_assert"  : "",
-    "hre"         : ""    
+    "stx_pico"      : "",
+    "stx_nano"      : "",
+    "stx_assert"    : "",
+    "hre"           : "",
+    "stx_arrowlet"  : "" 
   },
   "classPath": "src/main/haxe"
 }

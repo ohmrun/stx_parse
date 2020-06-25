@@ -1,14 +1,11 @@
 package stx.parse.pack.parser.term;
 
-class Base<I,O,T> implements ParserApi<I,O> extends Clazz{
-  public var id                 : Pos;
-  public var uid(default,null)  : Int;
-  public var tag                : Option<String>;
+class Base<I,O,T> extends ParserApi<I,O>{
 
   private var delegation        : T;
 
   public function new(?delegation,?id:Pos){
-    super();
+    super(id);
     this.delegation = delegation;
     this.id         = id;
     this.tag        = Some(name());
@@ -16,7 +13,7 @@ class Base<I,O,T> implements ParserApi<I,O> extends Clazz{
   function check(){
   
   }
-  final inline public function parse(ipt:Input<I>):ParseResult<I,O>{
+  override public function applyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>){
     switch(this.tag){
       case Some(v)  : ipt.tag = v;
       case null     : 
@@ -25,25 +22,13 @@ class Base<I,O,T> implements ParserApi<I,O> extends Clazz{
     #if test
       check();
     #end
-    var result    = do_parse(ipt);
-    var value     = result.value();
-    //trace('$tag $value');
-    return result;
-    // return try{on
-      
-    // }catch(e:Dynamic){
-    //   Failure('exception: $e'.errorAt(ipt).newStack(), ipt, true);
-    // }
-    
+    return doApplyII(ipt,cont);
   }
-  private function do_parse(ipt:Input<I>):ParseResult<I,O>{
-    return ParseFailure.at_with(ipt,"default implementation",true);
+  override private function doApplyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+    return cont.value(ParseFailure.at_with(ipt,"default implementation",true)).serve();
   }
   public inline function asParser():Parser<I,O>{
     return Parser.lift(this);
-  }
-  inline public function name(){
-    return this.identifier();
   }
   public function toString(){
     var id_s = Position.fromPos(id).toStringClassMethodLine();

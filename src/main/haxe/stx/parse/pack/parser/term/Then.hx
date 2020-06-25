@@ -11,11 +11,13 @@ class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
   override public function check(){
     __.that(id).exists().errata(e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
   }
-  override function do_parse(input:Input<I>):ParseResult<I,U>{
-    return delegation.parse(input).fold(
-      (match)   -> Success(match.map(transform)),
-      (err)     -> err
-    );
+  override public function doApplyII(input:Input<I>,cont:Terminal<ParseResult<I,U>,Noise>){
+    return delegation.forward(input).process(
+      (res:ParseResult<I,T>) -> res.fold(
+        (match)   -> ParseResult.success(match.map(transform)),
+        (err)     -> ParseResult.failure(err)
+      )
+    ).prepare(cont);
   }
 
 }

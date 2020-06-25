@@ -1,6 +1,6 @@
 package stx.parse.pack.parser.term;
 
-class Identifier extends Direct<String,String>{
+class Identifier extends Sync<String,String>{
   var stamp : String;
   public function new(stamp,?id){
     super(id);

@@ -12,28 +12,24 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   override public function check(){
     __.that(id).exists().errata( e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
   }
-  override function do_parse(input:Input<I>):ParseResult<I,Array<O>>{
+  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
     var arr     = [];
-    var n_input = input;
 
-    while (true) {
-      //trace(delegation.tag);
-      var res : ParseResult<I,O> = delegation.parse(n_input);
-      switch (res) {
-        case Success(m): 
-          //trace(arr);
-          for(v in m.with){
-            arr.push(v);
-          }
-          n_input = m.rest;
-        case Failure(e) if( e.is_fatal() == true) : 
-          return e;
-        default :
-          break;
-      }
-    }
-    //trace(arr);
-    return n_input.ok(arr);
+    return  Arrowlet._.then(
+      delegation,
+      Arrowlet.Anon(
+        function rec(i:ParseResult<I,O>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
+          return i.fold(
+            (ok) -> {
+              for (v in ok.with){
+                arr.push(v);
+              }
+              return Arrowlet.Then(delegation,Arrowlet.Anon(rec)).applyII(ok.rest,cont);
+            },
+            (no) -> cont.value(no.is_fatal() ? no.toParseResult() : input.ok(arr)).serve()
+          );
+        }
+      )
+    ).applyII(input,cont);
   }
-
 }

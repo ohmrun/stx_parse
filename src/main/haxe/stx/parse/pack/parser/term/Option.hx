@@ -6,14 +6,10 @@ class OptionP<I,T> extends Base<I,StdOption<T>,Parser<I,T>>{
   public function new(delegation:Parser<I,T>,?id){
     super(delegation,id);
   }
-  override function do_parse(ipt:Input<I>):ParseResult<I,StdOption<T>>{
-    __.that().exists().errata(
-      e -> e.fault().of(E_UndefinedParseDelegate(ipt))
-    ).crunch(delegation);
+  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,StdOption<T>>,Noise>):Work{
     return delegation
       .then(Some)
-      .or(
-        Succeed.pure(None)
-      ).parse(ipt);
+      .or(Succeed.pure(None))
+      .applyII(input,cont);
   }
 }

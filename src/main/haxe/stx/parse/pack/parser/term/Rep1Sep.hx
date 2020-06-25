@@ -6,13 +6,13 @@ class Rep1Sep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
     super(delegate,pos);
     this.sep = sep;
   }
-  override public function do_parse(ipt:Input<I>){
+  override public function doApplyII(ipt:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>){
     return delegation.and(
       sep._and(delegation).many()
     ).then(
       __.decouple(
         (l:O,r:Array<O>) -> r.cons(l)
       )
-    ).asParser().parse(ipt);
+    ).asParser().applyII(ipt,cont);
   }
 }

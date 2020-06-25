@@ -1,6 +1,6 @@
 package stx.parse.pack.parser.term;
 
-class Failed<P,R> extends Direct<P,R>{
+class Failed<P,R> extends Sync<P,R>{
   var msg       : String;
   var is_error  : Bool;
 

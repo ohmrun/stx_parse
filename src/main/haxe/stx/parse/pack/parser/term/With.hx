@@ -16,19 +16,22 @@ class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   override function check(){
     __.that().exists().crunch(delegation);
   }
-  override function do_parse(input:Input<I>){
-    return delegation.fst().parse(input).fold(
-      (matchI) -> delegation.snd().parse(matchI.rest).fold(
-        (matchII) -> ParseResult.success(
-          ParseSuccess.make(
-            matchII.rest,
-            matchI.with.zip(matchII.with).map(__.decouple(transform))
-          )
-        ),
-        ParseResult.failure
-      ),
-      ParseResult.failure
-    );
+  override public function doApplyII(input:Input<I>,cont:Terminal<ParseResult<I,V>,Noise>){  
+    return Process.lift(Arrowlet.Then(
+      delegation.fst(),
+      Arrowlet.Anon(
+        (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,Couple<T,U>>,Noise>) -> res.fold(
+          (ok) -> delegation.snd().forward(ok.rest).process(
+            (resI:ParseResult<I,U>) -> resI.fold(
+              okI -> ok.with.zip(okI.with).map(okI.rest.ok).defv(input.fail('With')),
+              no  -> ParseResult.failure(no)
+            )
+          ).prepare(cont),
+          no -> cont.value(ParseResult.failure(no)).serve()
+        )
+      )
+    )).process(
+      Process.fromFun1R((res:ParseResult<I,Couple<T,U>>) -> res.map(__.decouple(transform)))
+    ).forward(input).prepare(cont);
   }
-  
 }

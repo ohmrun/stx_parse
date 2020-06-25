@@ -41,6 +41,12 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       failure
     ));
   }
+  public function map_o<Ri>(fn:R->Option<Ri>):ParseResult<P,Ri>{
+    return lift(fold(
+      (s) -> success(s.map_o(fn)),
+      failure
+    ));
+  }
   public function tack(i:Input<P>):ParseResult<P,R>{
     return lift(fold(
       (ok) -> Success(ParseSuccess.make(i,ok.with)),

@@ -8,7 +8,7 @@ class Delegate<I,O> extends Base<I,O,Parser<I,O>>{
   override function check(){
     __.assert(id).exists(delegation);
   }
-  override function do_parse(ipt){
-    return this.delegation.parse(ipt);
+  override function doApplyII(ipt,cont){
+    return this.delegation.doApplyII(ipt,cont);
   }
 }
