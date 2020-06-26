@@ -21,9 +21,9 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
               () -> cont.value(ParseResult.failure(no)).serve(),
               () -> 
                 if(idx < delegation.length){
-                  Arrowlet.Then(delegation[idx++],Arrowlet.Anon(rec)).applyII(no.rest,cont);
+                  Arrowlet.Then(delegation[idx++],Arrowlet.Anon(rec)).applyII(no.rest,cont);//TODO can a failure consume?
                 }else{
-                  cont.value(input.fail("Ors",false,id)).serve();
+                  cont.value(no.rest.fail("Ors",false,id)).serve();
                 }
             )
           );

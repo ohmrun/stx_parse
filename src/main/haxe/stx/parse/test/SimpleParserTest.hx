@@ -55,7 +55,7 @@ class SimpleParserTest extends haxe.unit.TestCase{
     var result = parser.forward(reader).fudge();
     this.assertEquals("ifY",result.value().defv(""));
   }
-  public function testAnon(){
+  public function testSyncAnon(){
     var reader = "a".reader();
     var parser   = Parser.SyncAnon(
       (input) -> input.head().fold(
@@ -66,4 +66,23 @@ class SimpleParserTest extends haxe.unit.TestCase{
     var result = parser.forward(reader).fudge();
     this.assertEquals("a",result.value().defv(""));
   }
+  public function testAndR(){
+    var reader = " a".reader();
+    var parser = " ".id()._and("a".id());
+    var result = parser.forward(reader).fudge();
+    this.assertEquals("a",result.value().defv(""));
+  }
+  public function testAndL(){
+    var reader = " a".reader();
+    var parser = " ".id().and_("a".id());
+    var result = parser.forward(reader).fudge();
+    this.assertEquals(" ",result.value().defv(""));
+  }
+  public function testMany_empty(){
+    var reader  = "".reader();
+    var parser  = "a".id().many();
+    var result  = parser.forward(reader).fudge();
+    this.assertEquals("",result.value().defv([]).join(""));
+  }
+  
 }

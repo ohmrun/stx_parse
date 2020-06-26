@@ -26,7 +26,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
               }
               return Arrowlet.Then(delegation,Arrowlet.Anon(rec)).applyII(ok.rest,cont);
             },
-            (no) -> cont.value(no.is_fatal() ? no.toParseResult() : input.ok(arr)).serve()
+            (no) -> cont.value(no.is_fatal() ? no.toParseResult() : no.rest.ok(arr)).serve()
           );
         }
       )

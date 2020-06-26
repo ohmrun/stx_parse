@@ -15,18 +15,23 @@ class AndL<I,T,U> extends Base<I,T,Couple<Parser<I,T>,Parser<I,U>>>{
     __.that().exists().crunch(delegation);
   }
   override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,T>,Noise>){
+    //trace(delegation.fst());
     return Arrowlet.Then(
       delegation.fst().forward(input),
       Arrowlet.Anon(
         (res:ParseResult<I,T>,cont) -> res.fold(
-          (matchI) -> delegation.snd().forward(matchI.rest).process(
-            Arrowlet.Anon(
-              (res:ParseResult<I,U>,cont:Terminal<ParseResult<I,Couple<Option<T>,Option<U>>>,Noise>) -> res.fold(
-                (matchII) -> cont.value(matchII.rest.ok(__.couple(matchI.with,matchII.with))).serve(),
-                (e)       -> cont.value(e.toParseResult()).serve()
+          (matchI) -> {
+            trace(delegation.fst());
+            trace(matchI.rest.offset);
+            return delegation.snd().forward(matchI.rest).process(
+              Arrowlet.Anon(
+                (res:ParseResult<I,U>,cont:Terminal<ParseResult<I,Couple<Option<T>,Option<U>>>,Noise>) -> res.fold(
+                  (matchII) -> cont.value(matchII.rest.ok(__.couple(matchI.with,matchII.with))).serve(),
+                  (e)       -> cont.value(e.toParseResult()).serve()
+                )
               )
-            )
-          ).prepare(cont),
+            ).prepare(cont);
+          },
          (no) -> cont.value(no.toParseResult()).serve()
         )
       )
