@@ -15,7 +15,6 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
   @:from static public inline function fromFailure<P,R>(self:ParseFailure<P>):ParseResult<P,R>{
     return failure(self);
   }
-
   @:noUsing static public function failure<P,R>(self:ParseFailure<P>):ParseResult<P,R>{
     return Failure(self);
   }

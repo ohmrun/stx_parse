@@ -39,7 +39,9 @@ typedef Memo                  = stx.parse.pack.Memo;
 typedef MemoEntry             = stx.parse.pack.Memo.MemoEntry;
 typedef MemoKey               = stx.parse.pack.Memo.MemoKey;
 
+
 typedef ParserApi<P,R>        = stx.parse.pack.Parser.ParserApi<P,R>;
+typedef ParserBase<P,R>       = stx.parse.pack.Parser.ParserBase<P,R>;
 typedef Parser<P,R>           = stx.parse.pack.Parser<P,R>;
 typedef ParserLift            = stx.parse.pack.Parser.ParserLift;
 
@@ -100,12 +102,12 @@ class Parse{
 	}
 		
 
-	static public var lower				= range(97, 122).predicated();
-	static public var upper				= range(65, 90).predicated();
+	static public var lower				= Parse.predicated(range(97, 122));
+	static public var upper				= Parse.predicated(range(65, 90));
 	static public var alpha				= Parser._.or(upper,lower);
-	static public var digit				= range(48, 57).predicated();
+	static public var digit				= Parse.predicated(range(48, 57));
 	static public var alphanum		= alpha.or(digit);
-	static public var ascii				= range(0, 255).predicated();
+	static public var ascii				= Parse.predicated(range(0, 255));
 	
 	static public var valid				= alpha.or(digit).or('_'.id());
 	
@@ -124,7 +126,7 @@ class Parse{
 	static public var x 					= not_escaped.not()._and(escape);
 	static public var x_quote 		= x._and(quote);
 	
- 	static public var whitespace	= range(0, 33).predicated();
+ 	static public var whitespace	= Parse.predicated(range(0, 33));
 	
 	static public var literal 		= new stx.parse.term.Literal().asParser();
 	
@@ -160,7 +162,7 @@ class Parse{
   /**
 	 * Takes a predicate function for an item of Input and returns it's parser.
    */
-   static public function predicated<I>(p:I->Bool) : Parser<I,I> {
+   @:noUsing static public function predicated<I>(p:I->Bool) : Parser<I,I> {
 		return Parser.SyncAnon(function(input:Input<I>) {
 			var res = input.head().map(p).defv(false);
 			//trace(x.offset + ":z" + x.content.at(x.offset)  + " " + Std.string(res));
@@ -172,11 +174,11 @@ class Parse{
 				}
 		},'predicated').asParser();
   }
-  static public function filter<I,O>(fn:I->Option<O>): Parser<I,O>{
+  @:noUsing static public function filter<I,O>(fn:I->Option<O>): Parser<I,O>{
     return Parser.SyncAnon(
       (i:Input<I>) -> 
         i.head().flat_map(fn).fold(
-          (o) -> i.drop(1).ok(o),
+          (o) -> i.drop(1).ok(__.logger()(o)),
           ()  -> i.fail("predicate failed")
         )
     );

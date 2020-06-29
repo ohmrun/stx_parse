@@ -9,7 +9,7 @@ class Memoise<I,O> extends Delegate<I,O>{
     return this.id+"@"+pos;
   }
   override function applyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
-    return Arrowlet.Then(
+    var res =  Arrowlet.Then(
       delegation.recall(genKey, ipt),
       Arrowlet.Anon(
         (memo:Option<MemoEntry>,cont:Terminal<ParseResult<I,O>,Noise>) -> switch(memo){
@@ -37,6 +37,7 @@ class Memoise<I,O> extends Delegate<I,O>{
                 }
               )
             ).applyII(ipt,cont);
+
         case Some(mEntry):
           switch(mEntry) {
             case  MemoLR(recDetect):
@@ -47,6 +48,7 @@ class Memoise<I,O> extends Delegate<I,O>{
           }
         }
       )
-    ).prepare(Noise,cont);
+    );
+    return res.prepare(Noise,cont);
   }
 }

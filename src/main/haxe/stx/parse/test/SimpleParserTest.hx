@@ -84,5 +84,10 @@ class SimpleParserTest extends haxe.unit.TestCase{
     var result  = parser.forward(reader).fudge();
     this.assertEquals("",result.value().defv([]).join(""));
   }
-  
+  public function test_filter(){
+    var reader  = "a".reader();
+    var parser  = Parse.filter((str:String) -> __.logger()(Some(str)));
+    var result  = parser.forward(reader).fudge();
+    trace(result);
+  }
 }

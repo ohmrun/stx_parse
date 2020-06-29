@@ -1,6 +1,6 @@
 package stx.parse.pack.parser.term;
 
-class Base<I,O,T> extends ParserApi<I,O>{
+class Base<I,O,T> extends ParserBase<I,O>{
 
   private var delegation        : T;
 
@@ -26,9 +26,6 @@ class Base<I,O,T> extends ParserApi<I,O>{
   }
   override private function doApplyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return cont.value(ParseFailure.at_with(ipt,"default implementation",true)).serve();
-  }
-  public inline function asParser():Parser<I,O>{
-    return Parser.lift(this);
   }
   public function toString(){
     var id_s = Position.fromPos(id).toStringClassMethodLine();

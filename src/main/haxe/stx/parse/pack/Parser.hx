@@ -31,7 +31,18 @@ import stx.parse.pack.parser.term.TaggedAnon;
 import stx.parse.pack.parser.term.Then;
 import stx.parse.pack.parser.term.With;
 
-class ParserApi<I,O> extends ArrowletApi<Input<I>,ParseResult<I,O>,Noise>{
+
+interface ParserApi<I,O> extends ArrowletApi<Input<I>,ParseResult<I,O>,Noise>{
+  public var tag                            : Option<String>;
+  public var id(default,null)               : Pos;
+  
+  public var uid(default,null)              : Int;
+  
+  public function identifier():String;
+  public function asParser():Parser<I,O>;
+}
+
+class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,ParseResult<I,O>,Noise>{
   public function new(?tag:Option<String>,?id:Pos){
     super();
     this.tag = tag;
@@ -50,6 +61,9 @@ class ParserApi<I,O> extends ArrowletApi<Input<I>,ParseResult<I,O>,Noise>{
   }
   public final inline function identifier():String{
     return Type.getClassName(definition());
+  }
+  public function asParser():Parser<I,O>{
+    return new Parser(this);
   }
 }
 
