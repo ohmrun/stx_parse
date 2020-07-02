@@ -13,5 +13,8 @@
 -dce no
 #--interp
 #-js test.js
--neko test.n
--cmd neko test.n
+#-neko test.n
+#-cmd neko test.n
+#--jvm bin/main.jar
+#--hl bin/main.hl
+--cpp bin/cpp

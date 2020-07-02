@@ -29,7 +29,7 @@ package stx.parse.term;
         }
       }
     }
-    var out = input.take(idx);
+    var out : String = input.take(idx);
         out = out.substr(1,out.length-2);
     return cont.value(idx > 1 ? input.drop(idx).ok(out) : input.fail('Literal')).serve();
   }

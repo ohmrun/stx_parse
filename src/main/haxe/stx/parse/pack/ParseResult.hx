@@ -46,16 +46,25 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       failure
     ));
   }
-  public function tack(i:Input<P>):ParseResult<P,R>{
+  /**
+    If you run a parser with a subset of the input, remember to hook up the rest of the original input using this.
+  **/
+  public function tack(success:Input<P>,failure:Input<P>):ParseResult<P,R>{
     return lift(fold(
-      (ok) -> Success(ParseSuccess.make(i,ok.with)),
-      (no) -> Failure(ParseFailure.make(i,no.with))
+      (ok) -> Success(ParseSuccess.make(success,ok.with)),
+      (no) -> Failure(ParseFailure.make(failure,no.with))
     ));
   }
   public function elide():ParseResult<P,Dynamic>{
     return this;
   }
-  public function toString(){
+  public function toRes():Res<Option<R>,ParseErrorInfo>{
+    return fold(
+      ok -> __.success(ok.with),
+      no -> no.toRes()
+    );
+  }
+  public function toString():String{
     return fold(
       (success)             -> Std.string(success.with),
       (failure)             -> Std.string(failure.with)

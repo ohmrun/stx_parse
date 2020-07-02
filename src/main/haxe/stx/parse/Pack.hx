@@ -69,10 +69,14 @@ class Parse{
 			}
 		}).asParser();
 	}
+	@:note("0b1kn00b","Lua fix")
 	@:noUsing static public function range(min:Int, max:Int):String->Bool{
 		return function(s:String):Bool {
 			var x = StringTools.fastCodeAt(s,0);
-			return (x >= min) && (x <= max);
+			var v = __.option(x);
+			var l = v.map( x -> x >= min).defv(false);
+			var r = v.map( x -> x <= max).defv(false);
+			return l && r;
 		}
 	}
 	@:noUsing static public function mergeString(a:String,b:String){
@@ -115,7 +119,11 @@ class Parse{
 	static public var space				= ' '.id();
 	
 	static public var nl					= '\n'.id();
+	static public var cr					= '\r\n'.id();
+	static public var cr_or_nl		= nl.or(cr);
+
 	static public var gap					= [tab, space].ors();
+	static public var whitespace	= Parse.predicated(range(0, 33));
 
 	//static public var camel 			= lower.and_with(word, mergeString);
 	static public var word				= lower.or(upper).one_many().token();//[a-z]*
@@ -125,8 +133,7 @@ class Parse{
 	
 	static public var x 					= not_escaped.not()._and(escape);
 	static public var x_quote 		= x._and(quote);
-	
- 	static public var whitespace	= Parse.predicated(range(0, 33));
+
 	
 	static public var literal 		= new stx.parse.term.Literal().asParser();
 	
@@ -136,21 +143,31 @@ class Parse{
 	static public function returned(p : Parser<String,String>) {
 		return p.and_(whitespace.many());
 	}
-	// static public function until<I>(p:Parser<I,I>):Parser<I,Array<I>>{
-	// 	var prs = function rec(ipt:Input<I>,memo:Array<I>){ 
-	// 		return switch(p.parse(ipt)){
-	// 			case Success(success) 				  : ipt.ok(Some(memo));
-	// 			case Failure(failure)           : anything().and_then(
-	// 				(x:I) -> Parser.Anon(rec.bind(_,memo.snoc(x))).asParser()
-	// 			).parse(ipt);
-	// 		}
-	// 	}
-	// 	return Parser.Anon(prs.bind(_,[])).asParser();
-	// }
+	static public function until<I>(p:Parser<I,I>):Parser<I,Array<I>>{
+		function rec(input:Input<I>,memo:Array<I>):Forward<ParseResult<I,Array<I>>>{ 
+			return Parser.Arrow(Arrowlet.Then(
+				p,
+				Arrowlet.Anon(
+					(res:ParseResult<I,I>,cont:Terminal<ParseResult<I,Array<I>>,Noise>) -> res.fold(
+						(ok) -> cont.value(ok.rest.ok(memo)).serve(),
+						(no) -> anything().and_then(
+							(x:I) -> Parser.fromInputForward(
+								rec.bind(_,memo.snoc(x))
+							)
+						).applyII(input,cont)
+					)
+				)
+			)).forward(input);
+		};
+		return Parser.Forward(rec.bind(_,[])).asParser();
+	}
 	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
-		return Parser.SyncAnon((input:Input<I>) -> {
-			return v == input.head() ? input.head().fold((v) -> input.tail().ok(v),() -> input.tail().nil()) : input.fail('no $v found',false);
-		},'eq').asParser();
+		return Parser.SyncAnon(
+			(input:Input<I>) -> input.head().fold(
+				(vI) -> v == vI ? input.tail().ok(vI) : input.fail('eq'),
+				() -> input.fail('eq')
+			)
+		,'eq').asParser();
 	}
 	static public function eof<P,R>():Parser<P,R>{
     return new Parser(Parser.SyncAnon(ParserLift.eof,'eof'));
@@ -178,7 +195,7 @@ class Parse{
     return Parser.SyncAnon(
       (i:Input<I>) -> 
         i.head().flat_map(fn).fold(
-          (o) -> i.drop(1).ok(__.logger()(o)),
+          (o) -> i.drop(1).ok(o),
           ()  -> i.fail("predicate failed")
         )
     );
@@ -272,3 +289,4 @@ class LiftParse{
     return new stx.parse.pack.parser.term.Succeed(v).asParser();
   }
 }
+typedef LiftInputForwardToParser = stx.parse.lift.LiftInputForwardToParser;

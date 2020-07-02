@@ -8,6 +8,6 @@ abstract UID(Int) to Int{
 private class UIDs{
   static var _parserUid = 0;
   public static function parserUid() {
-    return _parserUid == null ? _parserUid = 0 : ++_parserUid;
+    return __.option(_parserUid).is_defined() ? ++_parserUid : _parserUid = 0;
   }
 }

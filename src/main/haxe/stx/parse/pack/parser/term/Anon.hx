@@ -15,7 +15,7 @@ package stx.parse.pack.parser.term;
 class Anon<P,R> extends Direct<P,R>{
 
   var method : Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work;
-  public function new(method,?id){
+  public function new(method: Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,?id){
     super(id);
     this.method = method;
   }

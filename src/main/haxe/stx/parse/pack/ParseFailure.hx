@@ -35,4 +35,8 @@ typedef ParseFailureDef<P> = RestWith<P,ParseError>;
   public function prj():ParseFailureDef<P> return this;
   private var self(get,never):ParseFailure<P>;
   private function get_self():ParseFailure<P> return lift(this);
+ 
+  public function toRes<T,E>(?pos:Pos):Res<T,ParseErrorInfo>{
+    return __.failure(this.with);
+  }
 }

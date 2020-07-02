@@ -1,5 +1,6 @@
 package stx.parse.pack;
 
+import stx.parse.pack.parser.term.Arrow;
 import stx.parse.pack.parser.term.AndThen;
 import stx.parse.pack.parser.term.AndL;
 import stx.parse.pack.parser.term.AndR;
@@ -9,6 +10,7 @@ import stx.parse.pack.parser.term.Commit;
 import stx.parse.pack.parser.term.Delegate;
 import stx.parse.pack.parser.term.Direct;
 import stx.parse.pack.parser.term.ErrorTransformer;
+import stx.parse.pack.parser.term.Forward in ForwardP;
 import stx.parse.pack.parser.term.Failed;
 import stx.parse.pack.parser.term.Identifier;
 import stx.parse.pack.parser.term.Inspect;
@@ -81,6 +83,9 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
   @:noUsing static inline public function fromFunction<I,O>(f:Input<I>->ParseResult<I,O>):Parser<I,O>{
     return new SyncAnon(f).asParser();
   }
+  @:noUsing static inline public function fromInputForward<I,O>(self:Input<I>->Forward<ParseResult<I,O>>):Parser<I,O>{
+    return lift(Anon(Process.fromProcessForward(self).toArrowlet().applyII));
+  }
   @:noUsing static inline public function lift<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);
   }
@@ -91,6 +96,14 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
   }
   inline public function elide<U>() : Parser<I,U> return cast(self);
 
+  @:noUsing static public function Forward<P,R>(fn:Input<P>->Forward<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
+    return Arrow(
+      Process.fromFun1Forward(fn).toArrowlet() 
+    ,pos).asParser();
+  }
+  @:noUsing static public function Arrow<P,R>(fn:Arrowlet<Input<P>,ParseResult<P,R>,Noise>,?pos:Pos):Parser<P,R>{
+    return new Arrow(fn,pos).asParser();
+  }
   @:noUsing static public function Anon<P,R>(fn:Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,?pos:Pos):Parser<P,R>{
     return new Anon(fn,pos).asParser();
   }
@@ -155,6 +168,13 @@ class ParserLift{
   static public inline function commit<I,T> (p1 : Parser<I,T>):Parser <I,T>{
     return new Commit(p1).asParser();
   }
+  static public inline function mod<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->ParseResult<I,TT>):Parser<I,TT>{
+    return Parser.Arrow(Arrowlet.Then(
+      p,
+      Arrowlet.Sync(fn)
+    ));
+  }
+
   static public inline function notEmpty<T>(arr:Array<T>):Bool return arr.length>0;
 
 

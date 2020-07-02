@@ -26,7 +26,8 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
                   var d = delegation[n];
                   Arrowlet.Then(d,Arrowlet.Anon(rec)).applyII(input,cont);//TODO can a failure consume?
                 }else{
-                  cont.value(no.rest.fail("Ors",false,id)).serve();
+                  var opts = delegation.map(_ -> _.tag);
+                  cont.value(no.rest.fail('Ors $opts',false,id)).serve();
                 }
             )
           );
