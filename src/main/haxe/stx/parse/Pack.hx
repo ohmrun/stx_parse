@@ -249,6 +249,44 @@ class LiftParse{
 			).applyII(input,cont)
 		,'lookahead: ${p.tag}').asParser();
 	}
+	static public function sub<I,O,Oi>(p:Parser<I,O>,p0:Option<O>->Couple<Input<O>,Parser<O,Oi>>){
+		return Parser.Anon(
+			(input:Input<I>,cont:Terminal<ParseResult<I,Oi>,Noise>) -> {
+				return Arrowlet.Then(
+					p,
+					Arrowlet.Anon(
+						(res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Oi>,Noise>) -> __.noop()(res).fold(
+							(ok) -> {
+								var defer		= Future.trigger();
+								var inner 	= cont.inner(
+									(resI:Outcome<ParseResult<O,Oi>,Noise>) -> {
+										//trace(res);
+										defer.trigger(
+											resI.fold(
+												(resII) -> resII.fold(
+													ok 		-> Success(ParseSuccess.make(res.rest,ok.with).toParseResult()),
+													no		-> Success(ParseFailure.make(input,no.with).toParseResult())
+												),
+												(no) -> Failure(Noise)
+											)
+										);
+									}
+								);
+								var out 		= p0(ok.with);
+								var reader 	: Input<O>	 		= out.fst();
+								var parser 	: Parser<O,Oi> 	= out.snd(); 
+								//trace(out.snd());
+								var result 	= parser.applyII(out.fst(),inner);
+
+								return cont.defer(defer.asFuture()).after(result);
+							},
+							(no) -> cont.value(ParseResult.failure(no)).serve()
+						)
+					)
+				).applyII(input,cont);
+			}
+		);
+	}
 	static public function token(p:Parser<String,Array<String>>):Parser<String,String>{
 		return p.then(
 			(arr) -> __.option(arr).defv([]).join("")
