@@ -19,4 +19,4 @@ Special thanks goes to Marc Weber and Laurence Taylor for supporting the effort.
   https://github.com/sledorze/monax
 
 
-
+Uses the Arrowlet function type: `Input<I> -> Terminal<ParseResult<O>> -> Work`.

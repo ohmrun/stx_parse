@@ -6,6 +6,7 @@ import stx.parse.pack.parser.term.AndL;
 import stx.parse.pack.parser.term.AndR;
 import stx.parse.pack.parser.term.Anon;
 import stx.parse.pack.parser.term.Base;
+import stx.parse.pack.parser.term.Closed;
 import stx.parse.pack.parser.term.Commit;
 import stx.parse.pack.parser.term.Delegate;
 import stx.parse.pack.parser.term.Direct;
@@ -118,6 +119,9 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
   }
   @:noUsing static public function Succeed<P,R>(value,?id):Parser<P,R>{
     return new Succeed(value,id).asParser();
+  }
+  @:noUsing static public function Closed<P,R>(self:Forward<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
+    return new Closed(self,pos).asParser();
   }
   var self(get,never):Parser<I,O>;
   function get_self():Parser<I,O>{
