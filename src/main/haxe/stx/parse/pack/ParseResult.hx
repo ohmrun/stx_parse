@@ -49,7 +49,7 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
   /**
     If you run a parser with a subset of the input, remember to hook up the rest of the original input using this.
   **/
-  public function tack(success:Input<P>,failure:Input<P>):ParseResult<P,R>{
+  public function tack<Q>(success:Input<Q>,failure:Input<Q>):ParseResult<Q,R>{
     return lift(fold(
       (ok) -> Success(ParseSuccess.make(success,ok.with)),
       (no) -> Failure(ParseFailure.make(failure,no.with))
