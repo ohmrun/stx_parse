@@ -19,7 +19,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
       delegation,
       Arrowlet.Anon(
         function rec(i:ParseResult<I,O>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
-          return i.fold(
+          return (i).fold(
             (ok) -> {
               for (v in ok.with){
                 arr.push(v);

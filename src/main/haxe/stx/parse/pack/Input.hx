@@ -29,7 +29,7 @@ typedef InputDef<I> = {
       memo    : this.memo
     };
   }
-  inline public function take(?len):Dynamic{
+  inline public function take<T>(?len):T{
     return this.content.take(len);
   }
   inline public function foldn<Z>(fn:I->Z->Z,n:Int,z:Z):Z{

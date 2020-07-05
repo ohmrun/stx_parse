@@ -8,9 +8,9 @@ class OneMany<I,O> extends Many<I,O>{
     return Arrowlet.Then(
       delegation,
       Arrowlet.Anon(
-        (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Array<O>>,Noise>) -> res.fold(
+        (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Array<O>>,Noise>) -> (res).fold(
           (ok:ParseSuccess<I,O>) -> Process.lift(new Many(delegation)).forward(ok.rest).process(
-            ((nxt:ParseResult<I,Array<O>>) -> nxt.fold(
+            ((nxt:ParseResult<I,Array<O>>) -> (nxt).fold(
                 okI -> nxt.rest.ok(ok.with.toArray().concat(okI.with.defv([]))),
                 no  -> no.is_fatal() ? ParseResult.failure(no) : nxt.rest.ok(ok.with.toArray())
             ))

@@ -62,9 +62,9 @@ class Parse{
 			return if(input.is_end()){
 				input.fail('EOF');
 			}else{
-				input.head().fold(
+				__.noop()(input.head()).fold(
 					v 	-> input.tail().ok(v),
-					() 	-> input.tail().nil()
+					() 	-> input.tail().fail('anything')
 				);
 			}
 		}).asParser();
@@ -124,6 +124,7 @@ class Parse{
 
 	static public var gap					= [tab, space].ors();
 	static public var whitespace	= Parse.predicated(range(0, 33));
+	
 
 	//static public var camel 			= lower.and_with(word, mergeString);
 	static public var word				= lower.or(upper).one_many().token();//[a-z]*
