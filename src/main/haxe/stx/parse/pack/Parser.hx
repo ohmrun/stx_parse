@@ -178,6 +178,12 @@ class ParserLift{
       Arrowlet.Sync(fn)
     ));
   }
+  static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Arrowlet<Input<I>,TT,Noise>{
+    return Arrowlet.Then(
+      p,
+      Arrowlet.Sync(fn)
+    );
+  }
 
   static public inline function notEmpty<T>(arr:Array<T>):Bool return arr.length>0;
 

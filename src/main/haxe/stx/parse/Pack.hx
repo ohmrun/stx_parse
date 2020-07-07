@@ -60,6 +60,19 @@ class Parse{
 		return Parser.SyncAnon(
 			(input:Input<I>)->{
 			return if(input.is_end()){
+				input.nil();
+			}else{
+				__.noop()(input.head()).fold(
+					v 	-> input.tail().ok(v),
+					() 	-> input.tail().nil()
+				);
+			}
+		}).asParser();
+	}
+	static public function something<I>():Parser<I,I>{
+		return Parser.SyncAnon(
+			(input:Input<I>)->{
+			return if(input.is_end()){
 				input.fail('EOF');
 			}else{
 				__.noop()(input.head()).fold(
@@ -151,7 +164,7 @@ class Parse{
 				Arrowlet.Anon(
 					(res:ParseResult<I,I>,cont:Terminal<ParseResult<I,Array<I>>,Noise>) -> res.fold(
 						(ok) -> cont.value(ok.rest.ok(memo)).serve(),
-						(no) -> anything().and_then(
+						(no) -> something().and_then(
 							(x:I) -> Parser.fromInputForward(
 								rec.bind(_,memo.snoc(x))
 							)
@@ -172,9 +185,6 @@ class Parse{
 	}
 	static public function eof<P,R>():Parser<P,R>{
     return new Parser(Parser.SyncAnon(ParserLift.eof,'eof'));
-	}
-	static public function any<I>():Parser<I,I>{
-		return Parse.anything();
 	}
 
   /**
@@ -249,18 +259,17 @@ class LiftParse{
 			).applyII(input,cont)
 		,'lookahead: ${p.tag}').asParser();
 	}
-	static public function sub<I,O,Oi>(p:Parser<I,O>,p0:Option<O>->Couple<Input<O>,Parser<O,Oi>>){
+	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<Input<Oi>,Parser<Oi,Oii>>){
 		return Parser.Anon(
-			(input:Input<I>,cont:Terminal<ParseResult<I,Oi>,Noise>) -> {
+			(input:Input<I>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> {
 				return Arrowlet.Then(
 					p,
 					Arrowlet.Anon(
-						(res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Oi>,Noise>) -> __.noop()(res).fold(
+						(res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> __.noop()(res).fold(
 							(ok) -> {
 								var defer		= Future.trigger();
 								var inner 	= cont.inner(
-									(resI:Outcome<ParseResult<O,Oi>,Noise>) -> {
-										//trace(res);
+									(resI:Outcome<ParseResult<Oi,Oii>,Noise>) -> {
 										defer.trigger(
 											resI.fold(
 												(resII) -> resII.fold(
@@ -273,8 +282,8 @@ class LiftParse{
 									}
 								);
 								var out 		= p0(ok.with);
-								var reader 	: Input<O>	 		= out.fst();
-								var parser 	: Parser<O,Oi> 	= out.snd(); 
+								var reader 	= out.fst();
+								var parser 	= out.snd(); 
 								//trace(out.snd());
 								var result 	= parser.applyII(out.fst(),inner);
 

@@ -15,10 +15,14 @@ class AndThen<I,T,U> extends Base<I,U,Parser<I,T>>{
         (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,U>,Noise>) -> res.fold(
           (ok:ParseSuccess<I,T>) -> 
             ok.with.map(flatmap)
-             .map((parser:Parser<I,U>) -> parser.forward(ok.rest))
-             .defv(Forward.pure(ParseFailure.make(ok.rest,ParseError.at_with(ok.rest,"FAIL",false)).toParseResult()))
+              .map((parser:Parser<I,U>) -> parser.forward(ok.rest))
+              .defv(
+                Forward.pure(
+                 ParseFailure.make(ok.rest,ParseError.at_with(ok.rest,"FAIL",false)).toParseResult()
+                ) 
+              ) 
              .prepare(cont),
-          (no) -> cont.value(Failure(no)).serve()
+          (no) -> cont.value(Failure(no.tack(input))).serve()
         )
       )
     ).applyII(input,cont);

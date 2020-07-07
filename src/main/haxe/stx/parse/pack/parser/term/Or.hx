@@ -21,7 +21,7 @@ class Or<I,O> extends Base<I,O,Couple<Parser<I,O>,Parser<I,O>>>{
         (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,O>,Noise>) -> 
           res.fold(
             (ok) -> cont.value(ParseResult.success(ok)).serve(),
-            (no) -> no.is_fatal() ? cont.value(ParseResult.failure(no)).serve() : delegation.snd().applyII(ipt,cont) 
+            (no) -> no.is_fatal() ? cont.value(no.tack(ipt)).serve() : delegation.snd().applyII(ipt,cont) 
           )         
       )
     ).applyII(ipt,cont);

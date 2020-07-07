@@ -26,6 +26,9 @@ typedef ParseFailureDef<P> = RestWith<P,ParseError>;
   public inline function is_parse_fail(){
     return this.with.is_parse_fail();
   }
+  public function tack(input:Input<P>):ParseFailure<P>{
+    return make(input,this.with);
+  }
   public function mod(fn:ParseError->ParseError):ParseFailure<P>{
     return make(this.rest,fn(this.with));
   }

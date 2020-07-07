@@ -17,4 +17,5 @@
 #-cmd neko test.n
 #--jvm bin/main.jar
 #--hl bin/main.hl
---cpp bin/cpp
+#--cpp bin/cpp
+--cs bin/cs
