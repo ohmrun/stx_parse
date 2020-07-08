@@ -108,8 +108,8 @@ class Parse{
 		);
 	}
 	static public var truth 			= 'true'.id().or('false'.id());
-	static public var integer     = "[\\+\\-]?\\d+".regexParser();
-  static public var float 			= "[\\+\\-]?\\d+(\\.\\d+)?".regexParser();
+	static public var integer     = "^[\\+\\-]?\\d+".regex();
+  static public var float 			= "^[\\+\\-]?\\d+(\\.\\d+)?".regex();
   
 	static public function primitive():Parser<String,Primitive>{
 		return truth.then((x) -> PBool(x == 'true' ? true : false))
