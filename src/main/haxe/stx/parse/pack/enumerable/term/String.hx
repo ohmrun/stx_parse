@@ -1,6 +1,6 @@
 package stx.parse.pack.enumerable.term;
 
-import stx.core.alias.StdString;
+import stx.ext.alias.StdString;
 
 class String extends stx.parse.pack.enumerable.term.Base<StdString,StdString>{
 	public function new(v, ?i) {

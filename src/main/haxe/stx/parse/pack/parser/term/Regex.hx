@@ -1,6 +1,9 @@
 package stx.parse.pack.parser.term;
 
 import hre.*;
+/**
+  The Input pulls from the offset to the end of the string, so I suggest leading the regex with "^".
+**/
 class Regex extends Sync<String,String>{
   var stamp : String;
   public function new(stamp,?id){

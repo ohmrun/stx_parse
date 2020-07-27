@@ -106,7 +106,7 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
     return new Arrow(fn,pos).asParser();
   }
   @:noUsing static public function Anon<P,R>(fn:Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,?pos:Pos):Parser<P,R>{
-    trace(fn);
+    //trace(fn);
     return new Anon(fn,pos).asParser();
   }
   @:noUsing static public function SyncAnon<P,R>(fn:Input<P> -> ParseResult<P,R>,?tag:String,?pos:Pos):Parser<P,R>{

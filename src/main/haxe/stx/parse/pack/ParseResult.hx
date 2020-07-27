@@ -10,13 +10,13 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
     return success(self);
   }
   @:noUsing static public function success<P,R>(self:ParseSuccess<P,R>):ParseResult<P,R>{
-    return Success(self);
+    return lift(Success(self));
   }
   @:from static public inline function fromFailure<P,R>(self:ParseFailure<P>):ParseResult<P,R>{
     return failure(self);
   }
   @:noUsing static public function failure<P,R>(self:ParseFailure<P>):ParseResult<P,R>{
-    return Failure(self);
+    return lift(Failure(self));
   }
   public inline function pos(){
     return rest;
@@ -64,6 +64,13 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       no -> no.toRes()
     );
   }
+  public function toResI():Res<Couple<Option<R>,Input<P>>,ParseErrorInfo>{
+    return fold(
+      ok -> __.success(__.couple(ok.with,ok.rest)),
+      no -> no.toRes()
+    );
+  }
+    
   public function toString():String{
     return fold(
       (success)             -> Std.string(success.with),

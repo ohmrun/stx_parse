@@ -9,9 +9,9 @@ class Test {
 	}
 	public static function main() {
 		__.test([
-			//new SimpleParserTest(),
-			//new SimpleRecursionLangTest(),
-			new PrimitiveTest()
+			new SimpleParserTest(),
+			new SimpleRecursionLangTest(),
+			//new PrimitiveTest()
 		]);
 		//new Parser(new stx.parse.pack.parser.term.Base());
 		//LangParser.numberParserTest();
