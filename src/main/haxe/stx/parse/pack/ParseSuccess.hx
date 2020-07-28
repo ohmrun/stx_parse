@@ -32,7 +32,7 @@ typedef ParseSuccessDef<P,R> = RestWithDef<P,Option<R>>;
     );
   }
   @:to public function toParseResult():ParseResult<P,R>{
-    return Success(this);
+    return __.success(this);
   }
 
   public function prj():ParseSuccessDef<P,R> return this;

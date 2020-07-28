@@ -85,7 +85,7 @@ class LRLift{
     }
     return Forward.fromFunTerminalWork(p.applyII.bind(rest)).process(
       Arrowlet.Anon(
-        (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>) -> switch (res) {
+        (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>) -> switch (res.prj()) {
           case Success(_) :
             if (oldRes.pos().offset < res.pos().offset ) {
               rest.updateCacheAndGet(genKey, MemoParsed(res));

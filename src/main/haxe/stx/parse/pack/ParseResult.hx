@@ -60,13 +60,13 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
   }
   public function toRes():Res<Option<R>,ParseErrorInfo>{
     return fold(
-      ok -> __.success(ok.with),
+      ok -> __.accept(ok.with),
       no -> no.toRes()
     );
   }
   public function toResI():Res<Couple<Option<R>,Input<P>>,ParseErrorInfo>{
     return fold(
-      ok -> __.success(__.couple(ok.with,ok.rest)),
+      ok -> __.accept(__.couple(ok.with,ok.rest)),
       no -> no.toRes()
     );
   }

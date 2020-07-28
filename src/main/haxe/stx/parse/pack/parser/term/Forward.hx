@@ -1,6 +1,6 @@
 package stx.parse.pack.parser.term;
 
-import stx.arrowlet.pack.Forward in ForwardArrow;
+import stx.arw.Forward in ForwardArrow;
 
 class Forward<I,O> extends Direct<I,O>{
 

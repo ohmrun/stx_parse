@@ -7,9 +7,8 @@ class OptionP<I,T> extends Base<I,StdOption<T>,Parser<I,T>>{
     super(delegation,id);
   }
   override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,StdOption<T>>,Noise>):Work{
-    return delegation
-      .then(Some)
-      .or(Succeed.pure(None))
+    return delegation.then(Some)
+      .or(Succeed.pure(Option.unit()).asParser())
       .applyII(input,cont);
   }
 }

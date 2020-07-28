@@ -33,13 +33,13 @@ typedef ParseFailureDef<P> = RestWith<P,ParseError>;
     return make(this.rest,fn(this.with));
   }
   @:to public function toParseResult<R>():ParseResult<P,R>{
-    return Failure(this);
+    return __.failure(this);
   }
   public function prj():ParseFailureDef<P> return this;
   private var self(get,never):ParseFailure<P>;
   private function get_self():ParseFailure<P> return lift(this);
  
   public function toRes<T,E>(?pos:Pos):Res<T,ParseErrorInfo>{
-    return __.failure(this.with);
+    return __.reject(this.with);
   }
 }

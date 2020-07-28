@@ -1,7 +1,7 @@
 package stx.arrowlet.term;
 
 using stx.parse.Pack;
-using stx.Arrowlet;
+using stx.Arw;
 
 typedef ParsererDef<I,O> = ArrowletDef<Input<I>,ParseResult<I,O>,Noise>;
 

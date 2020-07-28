@@ -22,7 +22,7 @@ class AndThen<I,T,U> extends Base<I,U,Parser<I,T>>{
                 ) 
               ) 
              .prepare(cont),
-          (no) -> cont.value(Failure(no.tack(input))).serve()
+          (no) -> cont.value(__.failure(no.tack(input))).serve()
         )
       )
     ).applyII(input,cont);

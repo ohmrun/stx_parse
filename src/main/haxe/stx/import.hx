@@ -12,7 +12,7 @@ using stx.Log;
 using stx.Assert;
 using stx.Ds;
 using stx.Ext;
-using stx.Arrowlet;
+using stx.Arw;
 using stx.async.Pack;
 
 import stx.ext.alias.StdMap;

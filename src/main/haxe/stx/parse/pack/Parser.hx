@@ -134,6 +134,12 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
   @:to public inline function toArrowlet():Arrowlet<Input<I>,ParseResult<I,O>,Noise>{
     return this;
   }
+  public inline function then<Oi>(f : O -> Oi):Parser<I,Oi>{
+    return _.then(lift(this),f);
+  }
+  public inline function or(p2 : Parser<I,O>):Parser <I,O>{
+    return _.or(lift(this),p2);
+  }
 }
 class ParserLift{
   static public inline function or<I,T>(p1 : Parser<I,T>, p2 : Parser<I,T>):Parser <I,T>{
