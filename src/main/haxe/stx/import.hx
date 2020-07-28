@@ -13,7 +13,7 @@ using stx.Assert;
 using stx.Ds;
 using stx.Ext;
 using stx.Arw;
-using stx.async.Pack;
+using stx.Async;
 
 import stx.ext.alias.StdMap;
 
