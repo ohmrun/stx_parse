@@ -23,7 +23,7 @@ class AndL<I,T,U> extends Base<I,T,Couple<Parser<I,T>,Parser<I,U>>>{
           (matchI) -> {
             //trace(delegation.fst());
             //trace(matchI.rest.offset);
-            return delegation.snd().forward(matchI.rest).process(
+            return delegation.snd().forward(matchI.rest).convert(
               Arrowlet.Anon(
                 (res:ParseResult<I,U>,cont:Terminal<ParseResult<I,Couple<Option<T>,Option<U>>>,Noise>) -> res.fold(
                   (matchII) -> cont.value(matchII.rest.ok(__.couple(matchI.with,matchII.with))).serve(),

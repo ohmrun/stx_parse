@@ -2,10 +2,10 @@
 
 
 -lib stx_nano
--lib stx_pico
+-lib stx_pico:1.0.0
 -lib stx_assert
--lib stx_fn
--lib stx_arrowlet
+-lib stx_fn:1.0.0
+-lib stx_arw
 
 -lib hre
 

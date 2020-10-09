@@ -17,7 +17,7 @@ class AndThen<I,T,U> extends Base<I,U,Parser<I,T>>{
             ok.with.map(flatmap)
               .map((parser:Parser<I,U>) -> parser.forward(ok.rest))
               .defv(
-                Forward.pure(
+                Provide.pure(
                  ParseFailure.make(ok.rest,ParseError.at_with(ok.rest,"FAIL",false)).toParseResult()
                 ) 
               ) 

@@ -12,28 +12,28 @@ typedef LRDef = {
   public function pos() : Input<Dynamic> return this.seed.pos();
 }
 class LRLift{
-  static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: Input<I>, growable: LR): Forward<ParseResult<I,T>> {
+  static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: Input<I>, growable: LR): Provide<ParseResult<I,T>> {
     return switch (growable.head) {
-      case None: Forward.pure(ParseError.at_with(input,"E_NoRecursionHead",true,"LR").toParseResultWithInput(input));
+      case None: Provide.pure(ParseError.at_with(input,"E_NoRecursionHead",true,"LR").toParseResultWithInput(input));
       case Some(head):
         if (head.getHead() != p) /*not head rule, so not growing*/{
-          Forward.pure(cast growable.seed);
+          Provide.pure(cast growable.seed);
         } else {
           input.updateCacheAndGet(genKey, MemoParsed(growable.seed));
           growable.seed.fold(
             (_) -> grow(p, genKey, input, head), /*growing*/
-            (_) -> Forward.pure((cast growable.seed))
+            (_) -> Provide.pure((cast growable.seed))
           );
         }
     }
   }
-  static public function recall<I,T>(p : Parser<I,T>, genKey : Int -> String, input : Input<I>) : Forward<Option<MemoEntry>> {
+  static public function recall<I,T>(p : Parser<I,T>, genKey : Int -> String, input : Input<I>) : Provide<Option<MemoEntry>> {
     var cached = input.getFromCache(genKey);
     return switch (input.getRecursionHead()) {
-      case None: Forward.pure(cached);
+      case None: Provide.pure(cached);
       case Some(head):
         if (cached == None && !(head.involvedSet.cons(head.headParser).has(p.elide()))) {
-          Forward.pure(Some(
+          Provide.pure(Some(
             MemoParsed(
               ParseFailure.at_with(input,'dummy')
             )
@@ -42,16 +42,16 @@ class LRLift{
           head.evalSet = head.evalSet
             .filter(function (x:Parser<Dynamic,Dynamic>) return x != p);
 
-          Forward.fromFunTerminalWork(p.applyII.bind(input))
-            .process(
-              Process.fromFun1R((res:ParseResult<I,T>) -> {
+          Provide.fromFunTerminalWork(p.applyII.bind(input))
+            .convert(
+              Convert.fromFun1R((res:ParseResult<I,T>) -> {
                 var memo = MemoParsed(res);
                 input.updateCacheAndGet(genKey, memo); // beware; it won't update lrStack !!! Check that !!!
                 return Some(memo);
               })
             );
         }else{
-          Forward.pure(cached);
+          Provide.pure(cached);
         }
     }
   }
@@ -68,7 +68,7 @@ class LRLift{
       stack = stack.tail();
     }
   }
-  static function grow<I,T>(p: Parser<I,T>, genKey : Int -> String, rest: Input<I>, head: Head): Forward<ParseResult<I,T>> {
+  static function grow<I,T>(p: Parser<I,T>, genKey : Int -> String, rest: Input<I>, head: Head): Provide<ParseResult<I,T>> {
     //store the head into the recursionHeads
     rest.setRecursionHead(head);
     var oldRes =
@@ -83,7 +83,7 @@ class LRLift{
     if( p == null){
        throw('undefined parse delegate'); 
     }
-    return Forward.fromFunTerminalWork(p.applyII.bind(rest)).process(
+    return Provide.fromFunTerminalWork(p.applyII.bind(rest)).convert(
       Arrowlet.Anon(
         (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>) -> switch (res.prj()) {
           case Success(_) :

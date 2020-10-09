@@ -7,7 +7,7 @@ class ErrorTransformer<I,O> extends Delegate<I,O>{
     this.transformer = transformer;
   }
   override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
-    return delegation.forward(input).process(
+    return delegation.forward(input).convert(
       (res:ParseResult<I,O>) -> res.fold(
         ParseResult.success,
         (e) -> ParseResult.failure(e.mod(transformer))

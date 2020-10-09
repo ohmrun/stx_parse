@@ -20,7 +20,7 @@ class AndR<I,T,U> extends Base<I,U,Couple<Parser<I,T>,Parser<I,U>>>{
       Arrowlet.Anon(
         (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,Couple<Option<T>,Option<U>>>,Noise>) -> res.fold(
           (matchI) -> {
-            return delegation.snd().forward(matchI.rest).process(
+            return delegation.snd().forward(matchI.rest).convert(
               Arrowlet.Anon(
                 (res:ParseResult<I,U>,cont:Terminal<ParseResult<I,Couple<Option<T>,Option<U>>>,Noise>) -> res.fold(
                   (matchII) -> {

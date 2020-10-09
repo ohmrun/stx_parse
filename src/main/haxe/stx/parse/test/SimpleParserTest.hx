@@ -86,7 +86,7 @@ class SimpleParserTest extends haxe.unit.TestCase{
   }
   public function test_filter(){
     var reader  = "a".reader();
-    var parser  = Parse.filter((str:String) -> __.logger()(Some(str)));
+    var parser  = Parse.filter((str:String) -> __.log().through()(Some(str)));
     var result  = parser.forward(reader).fudge();
     trace(result);
   }

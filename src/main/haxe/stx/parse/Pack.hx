@@ -158,14 +158,14 @@ class Parse{
 		return p.and_(whitespace.many());
 	}
 	static public function until<I>(p:Parser<I,I>):Parser<I,Array<I>>{
-		function rec(input:Input<I>,memo:Array<I>):Forward<ParseResult<I,Array<I>>>{ 
+		function rec(input:Input<I>,memo:Array<I>):Provide<ParseResult<I,Array<I>>>{ 
 			return Parser.Arrow(Arrowlet.Then(
 				p,
 				Arrowlet.Anon(
 					(res:ParseResult<I,I>,cont:Terminal<ParseResult<I,Array<I>>,Noise>) -> res.fold(
 						(ok) -> cont.value(ok.rest.ok(memo)).serve(),
 						(no) -> something().and_then(
-							(x:I) -> Parser.fromInputForward(
+							(x:I) -> Parser.fromInputProvide(
 								rec.bind(_,memo.snoc(x))
 							)
 						).applyII(input,cont)

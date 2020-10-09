@@ -10,7 +10,7 @@ class Inspect<I,O> extends Delegate<I,O>{
   }
   override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     this.prefix(input);
-    var out = this.delegation.forward(input).process(
+    var out = this.delegation.forward(input).convert(
       (res:ParseResult<I,O>) -> {
         this.postfix(res);
         return res;

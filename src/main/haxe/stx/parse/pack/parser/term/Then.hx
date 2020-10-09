@@ -12,7 +12,7 @@ class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
     __.that(id).exists().errata(e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
   }
   override public function doApplyII(input:Input<I>,cont:Terminal<ParseResult<I,U>,Noise>){
-    return delegation.forward(input).process(
+    return delegation.forward(input).convert(
       (res:ParseResult<I,T>) -> res.fold(
         (match)   -> ParseResult.success(match.map(transform)),
         (err)     -> ParseResult.failure(err)

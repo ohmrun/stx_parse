@@ -17,11 +17,11 @@ class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
     __.that().exists().crunch(delegation);
   }
   override public function doApplyII(input:Input<I>,cont:Terminal<ParseResult<I,V>,Noise>){  
-    return Process.lift(Arrowlet.Then(
+    return Convert.lift(Arrowlet.Then(
       delegation.fst(),
       Arrowlet.Anon(
         (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,Couple<T,U>>,Noise>) -> res.fold(
-          (ok) -> delegation.snd().forward(ok.rest).process(
+          (ok) -> delegation.snd().forward(ok.rest).convert(
             (resI:ParseResult<I,U>) -> resI.fold(
               okI -> ok.with.zip(okI.with).map(okI.rest.ok).defv(input.fail('With')),
               no  -> ParseResult.failure(no)
@@ -30,8 +30,8 @@ class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
           no -> cont.value(ParseResult.failure(no)).serve()
         )
       )
-    )).process(
-      Process.fromFun1R((res:ParseResult<I,Couple<T,U>>) -> res.map(__.decouple(transform)))
-    ).forward(input).prepare(cont);
+    )).convert(
+      Convert.fromFun1R((res:ParseResult<I,Couple<T,U>>) -> res.map(__.decouple(transform)))
+    ).provide(input).prepare(cont);
   }
 }

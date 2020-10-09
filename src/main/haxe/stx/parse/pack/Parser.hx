@@ -84,8 +84,8 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
   @:noUsing static inline public function fromFunction<I,O>(f:Input<I>->ParseResult<I,O>):Parser<I,O>{
     return new SyncAnon(f).asParser();
   }
-  @:noUsing static inline public function fromInputForward<I,O>(self:Input<I>->Forward<ParseResult<I,O>>):Parser<I,O>{
-    return lift(Anon(Process.fromProcessForward(self).toArrowlet().applyII));
+  @:noUsing static inline public function fromInputProvide<I,O>(self:Input<I>->Provide<ParseResult<I,O>>):Parser<I,O>{
+    return lift(Anon(Convert.fromConvertProvide(self).toArrowlet().applyII));
   }
   @:noUsing static inline public function lift<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);
@@ -97,9 +97,9 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
   }
   inline public function elide<U>() : Parser<I,U> return cast(self);
 
-  @:noUsing static public function Forward<P,R>(fn:Input<P>->Forward<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
+  @:noUsing static public function Forward<P,R>(fn:Input<P>->Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
     return Arrow(
-      Process.fromFun1Forward(fn).toArrowlet() 
+      Convert.fromFun1Provide(fn).toArrowlet() 
     ,pos).asParser();
   }
   @:noUsing static public function Arrow<P,R>(fn:Arrowlet<Input<P>,ParseResult<P,R>,Noise>,?pos:Pos):Parser<P,R>{
@@ -121,7 +121,7 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
   @:noUsing static public function Succeed<P,R>(value,?id):Parser<P,R>{
     return new Succeed(value,id).asParser();
   }
-  @:noUsing static public function Closed<P,R>(self:Forward<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
+  @:noUsing static public function Closed<P,R>(self:Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
     return new Closed(self,pos).asParser();
   }
   var self(get,never):Parser<I,O>;
@@ -265,7 +265,7 @@ class ParserLift{
   static public function inspect<I,O>(parser:Parser<I,O>,pre:Input<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
     return new Inspect(parser,pre,post).asParser();
   }
-  static public function forward<I,O>(parser:Parser<I,O>,input:Input<I>):Forward<ParseResult<I,O>>{
-    return Forward.fromFunTerminalWork(parser.applyII.bind(input));
+  static public function forward<I,O>(parser:Parser<I,O>,input:Input<I>):Provide<ParseResult<I,O>>{
+    return Provide.fromFunTerminalWork(parser.applyII.bind(input));
   }
 }

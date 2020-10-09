@@ -4,15 +4,15 @@
   "license": "BSD",
   "tags": ["cross","utility"],
   "description": "LR Parser API based on Parsex",
-  "version": "0.1.0",
-  "releasenote": "",
+  "version": "0.2.0",
+  "releasenote": "see CHANGELOG.md",
   "contributors": ["0b1kn00b"],
   "dependencies": {
-    "stx_pico"      : "",
-    "stx_nano"      : "",
-    "stx_assert"    : "",
-    "hre"           : "",
-    "stx_arrowlet"  : "" 
+    "stx_pico"      : "1.0.0",
+    "stx_nano"      : "0.1.5",
+    "stx_assert"    : "0.1.1",
+    "hre"           : "0.2.1",
+    "stx_arw"       : "1.0.0" 
   },
   "classPath": "src/main/haxe"
 }
