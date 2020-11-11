@@ -99,9 +99,9 @@ class Parse{
 
 	//static public var camel 			= lower.and_with(word, mergeString);
 	static public var word				= lower.or(upper).one_many().token();//[a-z]*
-	static public var quote				= '"'.id().or("'".id());
-	static public var escape			= '\\'.id();
-	static public var not_escaped	= '\\\\'.id();
+	static public var quote				= __.parse().id('"').or(__.parse().id("'"));
+	static public var escape			= __.parse().id('\\');
+	static public var not_escaped	= __.parse().id('\\\\');
 	
 	static public var x 					= not_escaped.not()._and(escape);
 	static public var x_quote 		= x._and(quote);
@@ -145,39 +145,13 @@ class Parse{
     return new stx.parse.parser.term.Eof().asParser();
 	}
 
-  /**
-	 * Takes a predicate function for an item of Input and returns it's parser.
-   */
-   @:noUsing static public function predicated<I>(p:I->Bool) : Parser<I,I> {
-		return Parser.Named(Parser.SyncAnon(function(input:Input<I>) {
-			var res = input.head().map(p).defv(false);
-			//trace(x.offset + ":z" + x.content.at(x.offset)  + " " + Std.string(res));
-			return
-				if ( res && !input.is_end() ) {
-          input.drop(1).ok(input.take(1));
-				}else {
-					input.fail("predicate failed",false);
-				}
-		}).asParser(),'predicated').asParser();
-	}
+
 	static public inline function with_error_tag<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
     return new stx.parse.parser.term.ErrorTransformer(p,
       (err:ParseError) -> err.map(
         info -> info.tag(name)
       )
 	).asParser();
-	
-  @:noUsing static public function choose<I,O>(fn:I->Option<O>): Parser<I,O>{
-    return new stx.parse.parser.term.Choose(fn).asParser();
-	}
-	static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
-    return new stx.parse.parser.term.AndThen(
-      p,
-      function(o:T){
-        return fn(o) ? Parser.lift(Parser.Succeed(o)) : Parser.lift(Parser.Failed('filter failed',false)); 
-      }
-    ).asParser();
-  }
 }
 class LiftParse{
   static public function parse(wildcard:Wildcard){

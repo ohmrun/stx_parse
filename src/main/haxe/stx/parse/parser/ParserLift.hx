@@ -109,4 +109,12 @@ class ParserLift{
 	static public function not<I,O>(p:Parser<I,O>):Parser<I,O>{
 		return new Not(p).asParser();
 	}
+  static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
+    return new stx.parse.parser.term.AndThen(
+      p,
+      function(o:T){
+        return fn(o) ? Parser.lift(Parser.Succeed(o)) : Parser.lift(Parser.Failed('filter failed',false)); 
+      }
+    ).asParser();
+  }
 }

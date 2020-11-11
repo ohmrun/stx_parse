@@ -3,10 +3,12 @@ package stx.parse.test;
 import stx.parse.parser.term.Identifier;
 using stx.parse.test.SimpleParserTest;
 
-public function id(str:String){
-  return stx.parse.Parser.Identifier(str);
+inline function id(str:String){
+  return __.parse().id(str);
 }
-
+inline function regex(str:String){
+  return return __.parse().reg(str);
+}
 
 class SimpleParserTest extends utest.Test{
   public function testIdentifier(){

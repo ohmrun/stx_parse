@@ -11,6 +11,6 @@ class Module extends Clazz{
 		return Parser.Identifier(str);
 	}
 	public inline function alts<I,O>(arr:Array<Parser<I,O>>){
-    return arr.lfold1((next,memo:Parser<I,O>) -> new Or(memo,next).asParser());
+    return arr.lfold1((next,memo:Parser<I,O>) -> Parser.Or(memo,next).asParser());
   }
 }

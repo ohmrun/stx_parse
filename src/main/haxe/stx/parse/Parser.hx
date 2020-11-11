@@ -94,6 +94,12 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function Identifier(str:String):Parser<String,String>{
     return new stx.parse.parser.term.Identifier(str).asParser();
   }
+  @:noUsing static public function Choose<I,O>(fn:I->Option<O>): Parser<I,O>{
+    return new stx.parse.parser.term.Choose(fn).asParser();
+  }
+  @:noUsing static public function Predicated<I,O>(fn:I->Bool): Parser<I,O>{
+    return new stx.parse.parser.term.Predicated(fn).asParser();
+  }
   var self(get,never):Parser<I,O>;
   function get_self():Parser<I,O> return lift(this);
   public inline function asParser():Parser<I,O> return self;
