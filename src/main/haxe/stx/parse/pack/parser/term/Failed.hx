@@ -4,12 +4,12 @@ class Failed<P,R> extends Sync<P,R>{
   var msg       : String;
   var is_error  : Bool;
 
-  public function new(msg,is_error = false,?id){
+  public function new(msg,is_error = false,?id:Pos){
     super(id);
     this.msg        = msg;
     this.is_error   = is_error;
   }
-  override function do_parse(ipt:Input<P>):ParseResult<P,R>{
-    return ipt.fail(msg,is_error,id);
+  override inline function apply(ipt:Input<P>):ParseResult<P,R>{
+    return ipt.fail(msg,is_error,pos);
   }
 }

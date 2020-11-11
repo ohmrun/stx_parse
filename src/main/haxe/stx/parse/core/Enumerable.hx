@@ -1,8 +1,8 @@
-package stx.parse.pack;
+package stx.parse.core;
 
-import stx.parse.pack.enumerable.term.Array;
-import stx.parse.pack.enumerable.term.String;
-import stx.parse.pack.enumerable.term.LinkedList;
+import stx.parse.core.enumerable.term.Array;
+import stx.parse.core.enumerable.term.String;
+import stx.parse.core.enumerable.term.LinkedList;
 
 interface EnumerableApi<C,T>{
 	
@@ -46,3 +46,19 @@ interface EnumerableApi<C,T>{
   private var self(get,never):Enumerable<C,T>;
   private function get_self():Enumerable<C,T> return lift(this);
 }
+abstract class EnumerableCls<C,T> implements EnumerableApi<C,T>{
+	
+	public var data 	: C;
+	public var index 	: Int;
+
+	public function new(data,?index = 0) {
+		this.data 	= data;
+		this.index 	= index;
+	}
+	abstract public function is_end():Bool;
+	abstract public function match(fn:T -> Bool):Bool;
+	abstract public function prepend(v:T):Enumerable<C,T>;
+	abstract public function head():T;
+	abstract public function drop(n:Int):Enumerable<C,T>;
+	abstract public function take(?len : Null<Int>) : C;
+} 

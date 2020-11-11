@@ -1,6 +1,6 @@
 package stx.parse.pack.parser.term;
 
-class Memoise<I,O> extends Delegate<I,O>{ 
+class Memoise<I,O> extends Base<I,O,Parser<I,O>>{ 
   public function new(delegation:Parser<I,O>,?pos){
     super(delegation,pos);
     this.uid = new UID();
@@ -8,18 +8,19 @@ class Memoise<I,O> extends Delegate<I,O>{
   function genKey(pos : Int) {  
     return this.id+"@"+pos;
   }
-  override function applyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  @:privateAccess override inline function defer(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+    __.log().debug('memoise');
     var res =  Arrowlet.Then(
       delegation.recall(genKey, ipt),
       Arrowlet.Anon(
         (memo:Option<MemoEntry>,cont:Terminal<ParseResult<I,O>,Noise>) -> switch(memo){
           case None :
-            var base = ipt.fail(ParseError.FAIL,false,id).mkLR(delegation, None);
+            var base = ipt.fail(ParseError.FAIL,false,pos).mkLR(delegation, None);
 
             ipt.memo.lrStack  = ipt.memo.lrStack.cons(base);
             ipt.updateCacheAndGet(genKey, MemoLR(base));
 
-            __.that().exists().errata(e -> e.fault().of(E_UndefinedParseDelegate(ipt))).crunch(delegation);
+            __.assert().exists(delegation);
 
             return Arrowlet.Then(
               delegation,
@@ -36,7 +37,7 @@ class Memoise<I,O> extends Delegate<I,O>{
                   }
                 }
               )
-            ).applyII(ipt,cont);
+            ).toInternal().defer(ipt,cont);
 
         case Some(mEntry):
           switch(mEntry) {
@@ -50,5 +51,11 @@ class Memoise<I,O> extends Delegate<I,O>{
       )
     );
     return res.prepare(Noise,cont);
+  }
+  override public function apply(i:Input<I>):ParseResult<I,O>{
+    return throw E_Arw_IncorrectCallingConvention;
+  }
+  override public function get_convention(){
+    return ASYNC;
   }
 }

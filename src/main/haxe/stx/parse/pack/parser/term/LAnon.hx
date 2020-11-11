@@ -1,22 +1,45 @@
 package stx.parse.pack.parser.term;
 
-class LAnon<I,O> extends Anon<I,O>{
+class LAnon<I,O> extends Base<I,O,Parser<I,O>>{
   var closure : Void -> Parser<I,O>;
-  public function new(closure:Void->Parser<I,O>,?id){
-    super(id);
+
+  public function new(closure:Void->Parser<I,O>,?id:Pos){
+    super(null,id);
+    #if test
     __.assert().exists(closure);
-    this.closure = closure.fn().cache().prj();
+    #end
+    this.closure = closure;//.fn().cache().prj();
   }
-  override private function doApplyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>){
-    return if(method == null){
-      var delegate = __.option(closure()).fudge();
-      //this.id       = delegate.id;
-      //this.tag      = delegate.tag;
-      this.method     = delegate.applyII;
-      __.that().exists().errata( e -> e.fault().of(E_UndefinedParseDelegate(ipt))).crunch(method);
-      this.method(ipt,cont);
+  private function open(){
+    this.delegation = closure();
+  }
+  override public inline function defer(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+    return if(delegation == null){
+      open();
+      __.assert().exists(delegation);
+
+      //this.id       = delegation.id;
+      //this.tag      = delegation.tag;
+      this.delegation.defer(ipt,cont);
     }else{
-      this.method(ipt,cont);
+      this.delegation.defer(ipt,cont);
     }
+  }
+  override inline function apply(ipt:Input<I>):ParseResult<I,O>{
+    return if(delegation == null){
+      open();
+      this.delegation.apply(ipt);
+    }else{
+      this.delegation.apply(ipt);
+    }
+  } 
+  override function get_convention(){
+    return (this.delegation == null).if_else(
+      () -> {
+        open();
+        this.delegation.convention;
+      },
+      () -> this.delegation.convention
+    );
   }
 }

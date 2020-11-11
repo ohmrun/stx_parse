@@ -1,15 +1,14 @@
 package stx.parse.pack.parser.term;
 
-class SyncAnon<P,R> extends Sync<P,R>{
+class SyncAnon<P,R> extends SyncBase<P,R,Input<P> -> ParseResult<P,R>>{
 
-  var method : Input<P> -> ParseResult<P,R>;
-  public function new(method,?tag:String,?id:Pos){
-    super(id);
-    this.tag    = __.option(tag);
-    this.method = method;
+  public function new(method:Input<P> -> ParseResult<P,R>,?id:Pos){
+    super(method,id);
   }
-  override function do_parse(ipt:Input<P>){
-    __.that(id).exists().errata(e -> e.map( _ -> E_UndefinedParseDelegate(ipt))).crunch(method);
-    return method(ipt);
+  override inline public function apply(ipt:Input<P>):ParseResult<P,R>{
+    #if test
+    __.assert().exists(id);
+    #end
+    return delegation(ipt);
   }
 }

@@ -1,30 +1,16 @@
 package stx.parse.pack.parser.term;
 
-class AndThen<I,T,U> extends Base<I,U,Parser<I,T>>{
-  var flatmap  : T->Parser<I,U>;
+class AndThen<P,Ri,Rii> extends ThroughBind<P,Ri,Rii>{
+  var flat_map  : Ri->Parser<P,Rii>;
 
-  public function new(delegation,flatmap,?id){
-    super(delegation,id);
-    this.flatmap  = flatmap;
+  public function new(delegation,flat_map,?pos:Pos){
+    super(delegation,pos);
+    this.flat_map  = flat_map;
   }
-  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,U>,Noise>):Work{
-    __.assert().exists(delegation);
-    return Arrowlet.Then(
-      delegation,
-      Arrowlet.Anon(
-        (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,U>,Noise>) -> res.fold(
-          (ok:ParseSuccess<I,T>) -> 
-            ok.with.map(flatmap)
-              .map((parser:Parser<I,U>) -> parser.forward(ok.rest))
-              .defv(
-                Provide.pure(
-                 ParseFailure.make(ok.rest,ParseError.at_with(ok.rest,"FAIL",false)).toParseResult()
-                ) 
-              ) 
-             .prepare(cont),
-          (no) -> cont.value(__.failure(no.tack(input))).serve()
-        )
-      )
-    ).applyII(input,cont);
+  override function through_bind(input:Input<P>,result:ParseResult<P,Ri>):Parser<P,Rii>{
+    return result.fold(
+      (ok:ParseSuccess<P,Ri>) -> ok.with.map(flat_map).defv(Parser.Stamp(ok.rest.fail('FAIL'))),
+      (no)                    -> Parser.Stamp(__.failure(no))
+    );
   }
 }

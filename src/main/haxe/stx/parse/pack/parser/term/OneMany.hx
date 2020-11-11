@@ -2,8 +2,8 @@ package stx.parse.pack.parser.term;
 
 class OneMany<I,O> extends Many<I,O>{
 
-  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
-    __.assert(delegation.id).exists(delegation);
+  override function defer(input:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
+    __.assert(delegation.pos).exists(delegation);
 
     return Arrowlet.Then(
       delegation,
@@ -18,6 +18,6 @@ class OneMany<I,O> extends Many<I,O>{
           (no) -> cont.value(no.toParseResult()).serve()
         )
       )
-    ).applyII(input,cont);
+    ).toInternal().defer(input,cont);
   }
 } 

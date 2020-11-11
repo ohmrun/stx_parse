@@ -20,8 +20,13 @@ class Anon<P,R> extends Direct<P,R>{
     super(id);
     this.method = method;
   }
-  override function doApplyII(ipt:Input<P>,cont:Terminal<ParseResult<P,R>,Noise>){
-    __.that(id).exists().errata(e -> e.map( _ -> E_UndefinedParseDelegate(ipt))).crunch(method);
+  override inline public function defer(ipt:Input<P>,cont:Terminal<ParseResult<P,R>,Noise>){
+    #if test
+    __.assert().exists(id);
+    #end
     return this.method(ipt,cont);
+  }
+  override inline public function apply(ipt:Input<P>):ParseResult<P,R>{
+    return throw E_Arw_IncorrectCallingConvention;
   }
 }

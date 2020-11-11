@@ -7,7 +7,7 @@ class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
     super(delegate,pos);
     this.sep = sep;
   }
-  override private function doApplyII(ipt:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>){
+  private inline function actual(){
     return delegation.option().and(
       sep._and(delegation).many()
     ).then(
@@ -17,6 +17,12 @@ class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
           case [None,_]    : [];
         }
       )
-    ).asParser().applyII(ipt,cont);
+    ).asParser();
+  }
+  override public inline function defer(ipt:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
+    return actual().defer(ipt,cont);
+  }
+  override public inline function apply(ipt:Input<I>):ParseResult<I,Array<O>>{
+    return actual().apply(ipt);
   }
 }

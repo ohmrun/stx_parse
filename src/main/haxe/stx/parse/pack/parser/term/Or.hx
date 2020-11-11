@@ -1,29 +1,19 @@
 package stx.parse.pack.parser.term;
+class Or<P,R> extends ThroughBind<P,R,R>{
+  var rhs : Parser<P,R>;
 
-class Or<I,O> extends Base<I,O,Couple<Parser<I,O>,Parser<I,O>>>{
-  public function new(fst,snd,?id){
-    super(
-      __.couple(fst,snd),
-      id
-    );
-    this.tag = switch([fst.tag,snd.tag]){
+  public function new(lhs,rhs,?pos:Pos){
+    super(lhs,pos);
+    this.rhs = rhs;
+    this.tag = switch([lhs.tag,rhs.tag]){
       case [Some(l),Some(r)]  : Some('$l || $r');
       default                 : None;
     }
   }
-  override public function check(){
-    if(delegation == null){  throw('undefined parse delegate'); }
+  override function through_bind(input:Input<P>,result:ParseResult<P,R>):Parser<P,R>{
+    return result.fold(
+      ok -> Parser.Stamp(result),
+      no -> rhs
+    );
   }
-  override function doApplyII(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
-    return Arrowlet.Then(
-      delegation.fst(),
-      Arrowlet.Anon(
-        (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,O>,Noise>) -> 
-          res.fold(
-            (ok) -> cont.value(ParseResult.success(ok)).serve(),
-            (no) -> no.is_fatal() ? cont.value(no.tack(ipt)).serve() : delegation.snd().applyII(ipt,cont) 
-          )         
-      )
-    ).applyII(ipt,cont);
-  }
-}
+}      

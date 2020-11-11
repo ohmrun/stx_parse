@@ -2,12 +2,12 @@ package stx.parse.pack.parser.term;
 
 class Identifier extends Sync<String,String>{
   var stamp : String;
-  public function new(stamp,?id){
+  public function new(stamp,?id:Pos){
     super(id);
     this.stamp = stamp;
     this.tag   = Some('Id($stamp)');
   }
-  override function do_parse(ipt:Input<String>){
+  override inline function apply(ipt:Input<String>){
     var len     = stamp.length;
     var head    = ipt.head();
     var offset  = ipt.offset;
@@ -19,7 +19,7 @@ class Identifier extends Sync<String,String>{
       //trace(next);
       next.ok(stamp);
     }else{
-      ipt.fail('"Identifier expected *** $stamp *** instead found: *** $string ***',false,id);
+      ipt.fail('"Identifier expected *** $stamp *** instead found: *** $string ***',false,pos);
     }
   }
 }

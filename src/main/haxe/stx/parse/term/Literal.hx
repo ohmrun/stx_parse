@@ -2,8 +2,11 @@ package stx.parse.term;
 
 @:note("neko throws without explicit typing of input.content.data")
 @:access(stx.parse) class Literal extends stx.parse.pack.parser.term.Base<String,String,Parser<String,String>>{
-  override function applyII(input:Input<String>,cont:Terminal<ParseResult<String,String>,Noise>):Work{
+  override public function defer(input:Input<String>,cont:Terminal<ParseResult<String,String>,Noise>):Work{
     //trace('"${input.content.data}" ${input.offset}');
+    return cont.value(apply(input)).serve();
+  }
+  override public function apply(input:Input<String>):ParseResult<String,String>{
     var all  : String = input.content.data;
     var data : String = all.substr(input.offset);
     var code = StringTools.fastCodeAt;
@@ -31,6 +34,6 @@ package stx.parse.term;
     }
     var out : String = input.take(idx);
         out = out.substr(1,out.length-2);
-    return cont.value(idx > 1 ? input.drop(idx).ok(out) : input.fail('Literal')).serve();
+    return idx > 1 ? input.drop(idx).ok(out) : input.fail('Literal');
   }
 }

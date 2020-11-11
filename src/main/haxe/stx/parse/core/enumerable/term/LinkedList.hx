@@ -1,8 +1,8 @@
-package stx.parse.pack.enumerable.term;
+package stx.parse.core.enumerable.term;
 
 import stx.ds.LinkedList in StxLinkedList;
 
-class LinkedList<T> extends Base<StxLinkedList<T>,T>{
+class LinkedList<T> extends EnumerableCls<StxLinkedList<T>,T>{
   
   override public function is_end(){
     return !this.data.is_defined();

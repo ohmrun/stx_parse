@@ -15,8 +15,9 @@ typedef LiftStringReader      = stx.parse.lift.LiftStringReader;
 typedef LiftLinkedListReader  = stx.parse.lift.LiftLinkedListReader;
 
 
-typedef EnumerableApi<C,T>    = stx.parse.pack.Enumerable.EnumerableApi<C,T>;
-typedef Enumerable<C,T>       = stx.parse.pack.Enumerable<C,T>;
+typedef EnumerableApi<C,T>    = stx.parse.core.Enumerable.EnumerableApi<C,T>;
+typedef EnumerableCls<C,T>    = stx.parse.core.Enumerable.EnumerableCls<C,T>;
+typedef Enumerable<C,T>       = stx.parse.core.Enumerable<C,T>;
 
 typedef ParseSuccess<P,T>     = stx.parse.pack.ParseSuccess<P,T>;
 
@@ -40,10 +41,10 @@ typedef MemoEntry             = stx.parse.pack.Memo.MemoEntry;
 typedef MemoKey               = stx.parse.pack.Memo.MemoKey;
 
 
-typedef ParserApi<P,R>        = stx.parse.pack.Parser.ParserApi<P,R>;
-typedef ParserBase<P,R>       = stx.parse.pack.Parser.ParserBase<P,R>;
+typedef ParserApi<P,R>        = stx.parse.pack.ParserApi<P,R>;
+typedef ParserCls<P,R>       	= stx.parse.pack.ParserCls<P,R>;
 typedef Parser<P,R>           = stx.parse.pack.Parser<P,R>;
-typedef ParserLift            = stx.parse.pack.Parser.ParserLift;
+typedef ParserLift            = stx.parse.pack.parser.ParserLift;
 
 typedef ParseSystemFailure    = stx.parse.pack.ParseSystemFailure;
 
@@ -57,17 +58,7 @@ class Parse{
 		return new stx.parse.pack.parser.term.Head(fn).asParser();
 	}
   static public function anything<I>():Parser<I,I>{
-		return Parser.SyncAnon(
-			(input:Input<I>)->{
-			return if(input.is_end()){
-				input.nil();
-			}else{
-				__.noop()(input.head()).fold(
-					v 	-> input.tail().ok(v),
-					() 	-> input.tail().nil()
-				);
-			}
-		}).asParser();
+		return new stx.parse.pack.parser.term.Anything().asParser();
 	}
 	static public function something<I>():Parser<I,I>{
 		return Parser.SyncAnon(
@@ -83,14 +74,8 @@ class Parse{
 		}).asParser();
 	}
 	@:note("0b1kn00b","Lua fix")
-	@:noUsing static public function range(min:Int, max:Int):String->Bool{
-		return function(s:String):Bool {
-			var x = StringTools.fastCodeAt(s,0);
-			var v = __.option(x);
-			var l = v.map( x -> x >= min).defv(false);
-			var r = v.map( x -> x <= max).defv(false);
-			return l && r;
-		}
+	@:noUsing static public function range(min:Int, max:Int):Parser<String,String>{
+		return Parser.Range(min,max);
 	}
 	@:noUsing static public function mergeString(a:String,b:String){
 		return a + b;
@@ -119,12 +104,12 @@ class Parse{
 	}
 		
 
-	static public var lower				= Parse.predicated(range(97, 122));
-	static public var upper				= Parse.predicated(range(65, 90));
+	static public var lower				= range(97, 122);
+	static public var upper				= range(65, 90);
 	static public var alpha				= Parser._.or(upper,lower);
-	static public var digit				= Parse.predicated(range(48, 57));
+	static public var digit				= range(48, 57);
 	static public var alphanum		= alpha.or(digit);
-	static public var ascii				= Parse.predicated(range(0, 255));
+	static public var ascii				= range(0, 255);
 	
 	static public var valid				= alpha.or(digit).or('_'.id());
 	
@@ -135,8 +120,8 @@ class Parse{
 	static public var cr					= '\r\n'.id();
 	static public var cr_or_nl		= nl.or(cr);
 
-	static public var gap					= [tab, space].ors();
-	static public var whitespace	= Parse.predicated(range(0, 33));
+	static public var gap					= tab.or(space);
+	static public var whitespace	= range(0, 33);
 	
 
 	//static public var camel 			= lower.and_with(word, mergeString);
@@ -157,41 +142,41 @@ class Parse{
 	static public function returned(p : Parser<String,String>) {
 		return p.and_(whitespace.many());
 	}
-	static public function until<I>(p:Parser<I,I>):Parser<I,Array<I>>{
-		function rec(input:Input<I>,memo:Array<I>):Provide<ParseResult<I,Array<I>>>{ 
-			return Parser.Arrow(Arrowlet.Then(
-				p,
-				Arrowlet.Anon(
-					(res:ParseResult<I,I>,cont:Terminal<ParseResult<I,Array<I>>,Noise>) -> res.fold(
-						(ok) -> cont.value(ok.rest.ok(memo)).serve(),
-						(no) -> something().and_then(
-							(x:I) -> Parser.fromInputProvide(
-								rec.bind(_,memo.snoc(x))
-							)
-						).applyII(input,cont)
-					)
-				)
-			)).forward(input);
-		};
-		return Parser.Forward(rec.bind(_,[])).asParser();
-	}
+	// static public function until<I>(p:Parser<I,I>):Parser<I,Array<I>>{
+	// 	function rec(input:Input<I>,memo:Array<I>):Provide<ParseResult<I,Array<I>>>{ 
+	// 		return Parser.Arrow(Arrowlet.Then(
+	// 			p,
+	// 			Arrowlet.Anon(
+	// 				(res:ParseResult<I,I>,cont:Terminal<ParseResult<I,Array<I>>,Noise>) -> res.fold(
+	// 					(ok) -> cont.value(ok.rest.ok(memo)).serve(),
+	// 					(no) -> something().and_then(
+	// 						(x:I) -> Parser.fromInputProvide(
+	// 							rec.bind(_,memo.snoc(x))
+	// 						)
+	// 					).defer(input,cont)
+	// 				)
+	// 			)
+	// 		)).provide(input);
+	// 	};
+	// 	return Parser.Forward(rec.bind(_,[])).asParser();
+	// }
 	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
-		return Parser.SyncAnon(
+		return Parser.Named(Parser.SyncAnon(
 			(input:Input<I>) -> input.head().fold(
 				(vI) -> v == vI ? input.tail().ok(vI) : input.fail('eq'),
 				() -> input.fail('eq')
 			)
-		,'eq').asParser();
+		).asParser(),'eq').asParser();
 	}
 	static public function eof<P,R>():Parser<P,R>{
-    return new Parser(Parser.SyncAnon(ParserLift.eof,'eof'));
+    return Parser.Named(Parser.SyncAnon(ParserLift.eof).asParser(),'eof').asParser();
 	}
 
   /**
 	 * Takes a predicate function for an item of Input and returns it's parser.
    */
    @:noUsing static public function predicated<I>(p:I->Bool) : Parser<I,I> {
-		return Parser.SyncAnon(function(input:Input<I>) {
+		return Parser.Named(Parser.SyncAnon(function(input:Input<I>) {
 			var res = input.head().map(p).defv(false);
 			//trace(x.offset + ":z" + x.content.at(x.offset)  + " " + Std.string(res));
 			return
@@ -200,16 +185,10 @@ class Parse{
 				}else {
 					input.fail("predicate failed",false);
 				}
-		},'predicated').asParser();
+		}).asParser(),'predicated').asParser();
   }
-  @:noUsing static public function filter<I,O>(fn:I->Option<O>): Parser<I,O>{
-    return Parser.SyncAnon(
-      (i:Input<I>) -> 
-        i.head().flat_map(fn).fold(
-          (o) -> i.drop(1).ok(o),
-          ()  -> i.fail("predicate failed")
-        )
-    );
+  @:noUsing static public function Filter<I,O>(fn:I->Option<O>): Parser<I,O>{
+    return new  stx.parse.pack.parser.term.Filter(fn).asParser();
   }
 }
 class LiftParse{
@@ -240,8 +219,8 @@ class LiftParse{
   static public inline function alts<I,O>(arr:Array<Parser<I,O>>){
     return arr.lfold1((next,memo:Parser<I,O>) -> new Or(memo,next).asParser());
   }
-  static public inline function regex(s:String):Parser<String,String>{
-    return new Regex(s).asParser();
+  static public inline function regex(str:String):Parser<String,String>{
+    return Parser.Regex(str);
   }
   static public inline function defer<I,O>(f:Void->Parser<I,O>):Parser<I,O>{
     return new LAnon(f).asParser();
@@ -256,7 +235,7 @@ class LiftParse{
 						(no)	-> ParseResult.failure(no)
 					) 
 				)
-			).applyII(input,cont)
+			).toInternal().defer(input,cont)
 		,'lookahead: ${p.tag}').asParser();
 	}
 	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<Input<Oi>,Parser<Oi,Oii>>){
@@ -269,14 +248,14 @@ class LiftParse{
 							(ok) -> {
 								var defer		= Future.trigger();
 								var inner 	= cont.inner(
-									(resI:Outcome<ParseResult<Oi,Oii>,Noise>) -> {
+									(resI:Outcome<ParseResult<Oi,Oii>,Array<Noise>>) -> {
 										defer.trigger(
 											resI.fold(
 												(resII) -> resII.fold(
 													ok 		-> Success(ParseSuccess.make(res.rest,ok.with).toParseResult()),
 													no		-> Success(ParseFailure.make(input,no.with).toParseResult())
 												),
-												(no) -> Failure(Noise)
+												(no) -> Failure([Noise])
 											)
 										);
 									}
@@ -285,14 +264,14 @@ class LiftParse{
 								var reader 	= out.fst();
 								var parser 	= out.snd(); 
 								//trace(out.snd());
-								var result 	= parser.applyII(out.fst(),inner);
+								var result 	= parser.defer(out.fst(),inner);
 
-								return cont.defer(defer.asFuture()).after(result);
+								return cont.later(defer.asFuture()).after(result);
 							},
 							(no) -> cont.value(ParseResult.failure(no)).serve()
 						)
 					)
-				).applyII(input,cont);
+				).toInternal().defer(input,cont);
 			}
 		);
 	}
@@ -337,4 +316,5 @@ class LiftParse{
     return new stx.parse.pack.parser.term.Succeed(v).asParser();
   }
 }
-typedef LiftInputForwardToParser = stx.parse.lift.LiftInputForwardToParser;
+typedef LiftInputForwardToParser 	= stx.parse.lift.LiftInputForwardToParser;
+typedef LiftArrayOfParser 				= stx.parse.lift.LiftArrayOfParser;

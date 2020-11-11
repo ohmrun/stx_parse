@@ -1,7 +1,7 @@
 package stx.parse.pack.parser.term;
 
 class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
-  public function new(delegation,?id){
+  public function new(delegation,?id:Pos){
     super(delegation,id);
   }
   override function check(){
@@ -9,7 +9,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       if(delegate == null){  throw('undefined parse delegate in $delegate'); }
     }
   }
-  override function applyII(input:Input<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
+  override function defer(input:Input<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
     var idx = 1;
     return Arrowlet.Then(
       delegation[0],
@@ -24,15 +24,18 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
                   var n = idx;
                   idx   = idx + 1;
                   var d = delegation[n];
-                  Arrowlet.Then(d,Arrowlet.Anon(rec)).applyII(input,cont);//TODO can a failure consume?
+                  Arrowlet.Then(d,Arrowlet.Anon(rec)).toInternal().defer(input,cont);//TODO can a failure consume?
                 }else{
                   var opts = delegation.map(_ -> _.tag);
-                  cont.value(no.rest.fail('Ors $opts',false,id)).serve();
+                  cont.value(no.rest.fail('Ors $opts',false,pos)).serve();
                 }
             )
           );
         }
       )
-    ).applyII(input,cont);
+    ).toInternal().defer(input,cont);
+  }
+  override inline function apply(ipt:Input<I>):ParseResult<I,T>{
+    return throw  E_Arw_IncorrectCallingConvention;
   }
 }

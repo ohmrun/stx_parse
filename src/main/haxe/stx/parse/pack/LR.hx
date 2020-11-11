@@ -42,7 +42,7 @@ class LRLift{
           head.evalSet = head.evalSet
             .filter(function (x:Parser<Dynamic,Dynamic>) return x != p);
 
-          Provide.fromFunTerminalWork(p.applyII.bind(input))
+          Provide.fromFunTerminalWork(p.defer.bind(input))
             .convert(
               Convert.fromFun1R((res:ParseResult<I,T>) -> {
                 var memo = MemoParsed(res);
@@ -83,7 +83,7 @@ class LRLift{
     if( p == null){
        throw('undefined parse delegate'); 
     }
-    return Provide.fromFunTerminalWork(p.applyII.bind(rest)).convert(
+    return Provide.fromFunTerminalWork(p.defer.bind(rest)).convert(
       Arrowlet.Anon(
         (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>) -> switch (res.prj()) {
           case Success(_) :

@@ -1,15 +1,13 @@
 package stx.parse.pack.parser.term;
 
-class Succeed<P,R> extends Sync<P,R>{
-  var value : R;
-  public function new(value:R,?id){
-    super(id);
-    this.value = value;
+class Succeed<P,R> extends SyncBase<P,R,R>{
+  public function new(value:R,?id:Pos){
+    super(value,id);
   }
-  @:noUsing static public function pure<P,R>(r:R):Parser<P,R>{
-    return Parser.Succeed(r).asParser();
+  @:noUsing static inline public function pure<P,R>(r:R):Parser<P,R>{
+    return new Succeed(r).asParser();
   }
-  override function do_parse(ipt:Input<P>):ParseResult<P,R>{
-    return ipt.ok(this.value);
+  override inline function apply(ipt:Input<P>):ParseResult<P,R>{
+    return ipt.ok(this.delegation);
   }
 }

@@ -1,76 +1,7 @@
 package stx.parse.pack;
 
-import stx.parse.pack.parser.term.Arrow;
-import stx.parse.pack.parser.term.AndThen;
-import stx.parse.pack.parser.term.AndL;
-import stx.parse.pack.parser.term.AndR;
-import stx.parse.pack.parser.term.Anon;
-import stx.parse.pack.parser.term.Base;
-import stx.parse.pack.parser.term.Closed;
-import stx.parse.pack.parser.term.Commit;
-import stx.parse.pack.parser.term.Delegate;
-import stx.parse.pack.parser.term.Direct;
-import stx.parse.pack.parser.term.ErrorTransformer;
-import stx.parse.pack.parser.term.Forward in ForwardP;
-import stx.parse.pack.parser.term.Failed;
-import stx.parse.pack.parser.term.Identifier;
-import stx.parse.pack.parser.term.Inspect;
-import stx.parse.pack.parser.term.LAnon;
-import stx.parse.pack.parser.term.Many;
-import stx.parse.pack.parser.term.Memoise;
-import stx.parse.pack.parser.term.OneMany;
-import stx.parse.pack.parser.term.Option;
-import stx.parse.pack.parser.term.Or;
-import stx.parse.pack.parser.term.Ors;
-//import stx.parse.pack.parser.term.Predicate;
-import stx.parse.pack.parser.term.Pure;
-import stx.parse.pack.parser.term.Regex;
-import stx.parse.pack.parser.term.Rep1Sep;
-import stx.parse.pack.parser.term.RepSep;
-import stx.parse.pack.parser.term.Succeed;
-import stx.parse.pack.parser.term.Sync;
-import stx.parse.pack.parser.term.SyncAnon;
-import stx.parse.pack.parser.term.TaggedAnon;
-import stx.parse.pack.parser.term.Then;
-import stx.parse.pack.parser.term.With;
-
-
-interface ParserApi<I,O> extends ArrowletApi<Input<I>,ParseResult<I,O>,Noise>{
-  public var tag                            : Option<String>;
-  public var id(default,null)               : Pos;
-  
-  public var uid(default,null)              : Int;
-  
-  public function identifier():String;
-  public function asParser():Parser<I,O>;
-}
-
-class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,ParseResult<I,O>,Noise>{
-  public function new(?tag:Option<String>,?id:Pos){
-    super();
-    this.tag = tag;
-    this.id  = id;
-  }
-  public var tag                            : Option<String>;
-  public var id(default,null)               : Pos;
-  
-  public var uid(default,null)              : Int;
-  
-  inline public function name(){
-    return this.identifier();
-  }
-  public final inline function definition():Class<Dynamic>{
-    return Type.getClass(this);
-  }
-  public final inline function identifier():String{
-    return Type.getClassName(definition());
-  }
-  public function asParser():Parser<I,O>{
-    return new Parser(this);
-  }
-}
-
-@:using(stx.parse.pack.Parser.ParserLift)
+import stx.parse.pack.parser.term.*;
+@:using(stx.parse.pack.parser.ParserLift)
 @:forward abstract Parser<I,O>(ParserApi<I,O>) to ParserApi<I,O>{
   public function new(self:ParserApi<I,O>) this = self;
   static public var _(default,never) = ParserLift;
@@ -85,7 +16,7 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
     return new SyncAnon(f).asParser();
   }
   @:noUsing static inline public function fromInputProvide<I,O>(self:Input<I>->Provide<ParseResult<I,O>>):Parser<I,O>{
-    return lift(Anon(Convert.fromConvertProvide(self).toArrowlet().applyII));
+    return lift(Anon(Convert.fromConvertProvide(self).toArrowlet().defer));
   }
   @:noUsing static inline public function lift<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);
@@ -97,175 +28,76 @@ class ParserBase<I,O> implements ParserApi<I,O> extends ArrowletBase<Input<I>,Pa
   }
   inline public function elide<U>() : Parser<I,U> return cast(self);
 
-  @:noUsing static public function Forward<P,R>(fn:Input<P>->Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function Forward<P,R>(fn:Input<P>->Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
     return Arrow(
       Convert.fromFun1Provide(fn).toArrowlet() 
     ,pos).asParser();
   }
-  @:noUsing static public function Arrow<P,R>(fn:Arrowlet<Input<P>,ParseResult<P,R>,Noise>,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function Arrow<P,R>(fn:Arrowlet<Input<P>,ParseResult<P,R>,Noise>,?pos:Pos):Parser<P,R>{
     return new Arrow(fn,pos).asParser();
   }
-  @:noUsing static public function Anon<P,R>(fn:Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function Anon<P,R>(fn:Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,?pos:Pos):Parser<P,R>{
     //trace(fn);
     return new Anon(fn,pos).asParser();
   }
-  @:noUsing static public function SyncAnon<P,R>(fn:Input<P> -> ParseResult<P,R>,?tag:String,?pos:Pos):Parser<P,R>{
-    return new SyncAnon(fn,tag,pos).asParser();
+  @:noUsing static inline public function SyncAnon<P,R>(fn:Input<P> -> ParseResult<P,R>,?pos:Pos):Parser<P,R>{
+    return new SyncAnon(fn,pos).asParser();
   }
-  @:noUsing static public function TaggedAnon<P,R>(fn:Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function TaggedAnon<P,R>(fn:Input<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag,?pos:Pos):Parser<P,R>{
     return new TaggedAnon(fn,tag,pos).asParser();
   }
-  @:noUsing static public function Failed<P,R>(msg,is_error = false,?id):Parser<P,R>{
+  @:noUsing static inline public function Failed<P,R>(msg,is_error = false,?id:Pos):Parser<P,R>{
     return new Failed(msg,is_error,id).asParser();
   }
-  @:noUsing static public function Succeed<P,R>(value,?id):Parser<P,R>{
-    return new Succeed(value,id).asParser();
+  @:noUsing static inline public function Succeed<P,R>(value:R,?pos:Pos):Parser<P,R>{
+    return new Succeed(value,pos).asParser();
   }
-  @:noUsing static public function Closed<P,R>(self:Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function Stamp<P,R>(result:ParseResult<P,R>,?pos:Pos):Parser<P,R>{
+    return new Stamp(result,pos).asParser();
+  }
+  @:noUsing static inline public function Closed<P,R>(self:Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
     return new Closed(self,pos).asParser();
   }
+  @:noUsing static inline public function Range(min:Int,max:Int):Parser<String,String>{
+    return new stx.parse.pack.parser.term.Range(min,max).asParser();
+  }
+  @:noUsing static inline public function Named<P,R>(self:Parser<P,R>,name:String):Parser<P,R>{
+    return new stx.parse.pack.parser.term.Named(self,name).asParser();
+  }
+  @:noUsing static inline public function Regex(str:String):Parser<String,String>{
+    return new stx.parse.pack.parser.term.Regex(str).asParser();
+  }
+  @:noUsing static inline public function Or<I,T>(pI : Parser<I,T>, pII : Parser<I,T>):Parser <I,T>{
+    return new stx.parse.pack.parser.term.Or(pI,pII).asParser();
+  }
+  @:noUsing static inline public function Ors<I,T>(ps : Array<Parser<I,T>>):Parser <I,T>{
+    return new stx.parse.pack.parser.term.Ors(ps).asParser();
+  }
+  @:noUsing static inline public function Then<I,T,U>(p : Parser<I,T>, f : T -> U):Parser <I,U>{
+    return new stx.parse.pack.parser.term.Then(p,f).asParser();
+  }
+  @:noUsing static inline public function AndThen<I,T,U>(p: Parser<I,T>, f : T -> Parser<I,U>):Parser <I,U>{
+    return new stx.parse.pack.parser.term.AndThen(p,f).asParser();
+  }
+  @:noUsing static inline public function Many<I,T>(p: Parser<I,T>):Parser<I,Array<T>>{
+    return new stx.parse.pack.parser.term.Many(p).asParser();
+  }
+  @:noUsing static inline public function OneMany<I,T>(p: Parser<I,T>):Parser<I,Array<T>>{
+    return new stx.parse.pack.parser.term.OneMany(p).asParser();
+  }
   var self(get,never):Parser<I,O>;
-  function get_self():Parser<I,O>{
-    return lift(this);
-  }
-  public inline function asParser():Parser<I,O>{
-    return self;
-  }
+  function get_self():Parser<I,O> return lift(this);
+  public inline function asParser():Parser<I,O> return self;
+
   @:to public inline function toArrowlet():Arrowlet<Input<I>,ParseResult<I,O>,Noise>{
-    return this;
+    return Arrowlet.lift(this.asArrowletDef());
   }
-  public inline function then<Oi>(f : O -> Oi):Parser<I,Oi>{
-    return _.then(lift(this),f);
+  @:to public inline function toArrowletDef():ArrowletDef<Input<I>,ParseResult<I,O>,Noise>{
+    return this.asArrowletDef();
   }
-  public inline function or(p2 : Parser<I,O>):Parser <I,O>{
-    return _.or(lift(this),p2);
-  }
-}
-class ParserLift{
-  static public inline function or<I,T>(p1 : Parser<I,T>, p2 : Parser<I,T>):Parser <I,T>{
-    return new Or(p1,p2).asParser();
-  }
-  static public inline function ors<I,T>(ps:Array<Parser<I,T>>):Parser<I,T>{
-    return new Ors(ps).asParser();
-  }
-  static public inline function then<I,T,U>(p:Parser<I,T>,f : T -> U):Parser<I,U>{
-    return new Then(p,f).asParser();
-  }
-  static public inline function and_then<I,T,U>(p:Parser<I,T>,fn:T->Parser<I,U>):Parser<I,U>{
-    return new AndThen(p,fn).asParser();
-  }
-  static public inline function many<I,T>(p1:Parser<I,T>):Parser<I,Array<T>>{
-    return new Many(p1).asParser();
-  }
-  static public inline function one_many<I,T>(p1:Parser<I,T>):Parser<I,Array<T>>{
-    return new OneMany(p1).asParser();
-  }
-  static public inline function and_<I,T,U>(p1:Parser<I,T>,p2 : Parser<I, U>):Parser <I,T> {
-    return new AndL(p1,p2).asParser();
-  }
-  static public inline function and<I,T,U>(p1:Parser<I,T>,p2 : Parser<I,U>):Parser<I,Couple<T,U>>{
-    return new With(p1,p2,(l:T,r:U) ->__.couple(l,r)).asParser();
-  }
-  static public inline function and_seq<I,T>(p1:Parser<I,T>,p2 : Parser<I,T>):Parser<I,Array<T>>{
-    return new With(p1,p2,(l:T,r:T) -> [l,r]).asParser();
-  }
-  //@:native("__and") // Prevent a bug with hxcpp
-  static public inline function _and<I,T,U>(p1:Parser<I,T>, p2 : Parser<I,U>):Parser<I,U> {
-    return new AndR(p1,p2).asParser();
-  }
-  static public inline function and_with<I,T,U,V>(p1:Parser<I,T>,p2:Parser<I,U>,f:T->U->V):Parser<I,V>{
-    return new With(p1,p2,f).asParser();
-  }
-  static public inline function commit<I,T> (p1 : Parser<I,T>):Parser <I,T>{
-    return new Commit(p1).asParser();
-  }
-  static public inline function mod<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->ParseResult<I,TT>):Parser<I,TT>{
-    return Parser.Arrow(Arrowlet.Then(
-      p,
-      Arrowlet.Sync(fn)
-    ));
-  }
-  static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Arrowlet<Input<I>,TT,Noise>{
-    return Arrowlet.Then(
-      p,
-      Arrowlet.Sync(fn)
-    );
-  }
-
-  static public inline function notEmpty<T>(arr:Array<T>):Bool return arr.length>0;
-
-
-  static public inline function trace<I,T>(p : Parser<I,T>, f : T -> String):Parser<I,T> return
-    return then(p,function (x:T) { trace(f(x)); return x;} );
-
-  //static public inline function print<I,O>(p : Parser<I,O>,f : Input<I> -> String):Parser<I,I>{
-    //return Parser.
-  //}
-  // static public inline function xs<I,T>(p:Parser<I,T>, f : Input<I> -> Void):Parser<I,T>{
-  //   return new Parser(new Anon(function(i:Input<I>):ParseResult<I,T>{
-  //     var out = p.parse(i);
-  //     f(out.pos());
-  //     return out;
-  //   }));
-  // }
-  static public inline function identifier(x : String):Parser<String,String>{
-    return new Identifier(x).asParser();
-  }
-
-  static public inline function regexParser(str : String):Parser<String,String>{
-    return new Parser(new Regex(str));
-  }
-    
-  static public inline function rep1sep<I,T,U>(p1:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
-    return new Rep1Sep(p1,sep).asParser(); /* Optimize that! */
-  }
-  static public inline function rep1sep0<I,T,U>(p1:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Array<T>> {
-    var next : Parser<I,Array<Couple<T,T>>> = many(and(sep,p1)).asParser();
-    return then(and(p1,next).asParser(),
-      function (t){ 
-        var fst = t.fst();
-        var snd = Lambda.array(Lambda.flatMap(t.snd(),
-          (tp) -> [tp.fst(),tp.snd()]
-        ));
-        var out = [t.fst()].concat(snd);
-        return out;
-      }
-    ).asParser(); /* Optimize that! */
-  }
-  static public inline function repsep0<I,T>(p1:Parser<I,T>,sep : Parser<I,T> ):Parser < I, Array<T> > {
-    return or(rep1sep0(p1,sep),Succeed.pure([])).asParser();
-  }
-  static public inline function repsep<I,T,U>(p1:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
-    return new RepSep(p1,sep).asParser(); /* Optimize that! */
-  }
-  static public inline function with_error_tag<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
-    return new ErrorTransformer(p,
-      (err:ParseError) -> err.map(
-        info -> info.tag(name)
-      )
-  ).asParser();
- 
-  static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
-    return new AndThen(
-      p,
-      function(o:T){
-        return fn(o) ? Parser.lift(new Succeed(o)) : Parser.lift(new Failed('filter failed',false)); 
-      }
-    ).asParser();
-  }
-  static public inline function option<I,T>(p:Parser<I,T>):Parser<I,Option<T>>{
-    return new Parser(new OptionP(p));
-  }
-  static public inline function eof<I,U>(input:Input<I>):ParseResult<I,U>{
-    //trace(input);
-    //trace(input.offset);
-    //trace(input.is_end());
-    return input.is_end() ? input.nil() : input.fail('not at end');
-  }
-  static public function inspect<I,O>(parser:Parser<I,O>,pre:Input<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
-    return new Inspect(parser,pre,post).asParser();
-  }
-  static public function forward<I,O>(parser:Parser<I,O>,input:Input<I>):Provide<ParseResult<I,O>>{
-    return Provide.fromFunTerminalWork(parser.applyII.bind(input));
-  }
+  /**implicit override issue**/
+  public inline function then<Oi>(f : O -> Oi):Parser<I,Oi>   return _.then(lift(this),f);
+  /**implicit override issue**/
+  public inline function or(p2 : Parser<I,O>):Parser <I,O>    return _.or(lift(this),p2);
+  
 }

@@ -1,18 +1,26 @@
 package stx.parse.pack;
 
+class RestWithCls<P,T>{
+  public var rest(default,null) : Input<P>;
+  public var with(default,null) : T;
+  public function new(rest,with){
+    this.rest = rest;
+    this.with = with;
+  }
+  public function toString(){
+    return @:privateAccess 'RestWith@${rest.content.index}(${with.toString()})';
+  }
+}
 typedef RestWithDef<P,T> = {
-  public var rest : Input<P>;
-  public var with : T;
+  public var rest(default,null) : Input<P>;
+  public var with(default,null) : T;
 }
 @:forward abstract RestWith<P,T>(RestWithDef<P,T>) from RestWithDef<P,T> to RestWithDef<P,T>{
   public function new(self) this = self;
   static public function lift<P,T>(self:RestWithDef<P,T>):RestWith<P,T> return new RestWith(self);
   
   static public function make<P,T>(rest:Input<P>,with:T){
-    return lift({
-      rest : rest,
-      with : with
-    });
+    return lift(new RestWithCls(rest,with));
   }
   
 

@@ -1,8 +1,8 @@
-package stx.parse.pack.enumerable.term;
+package stx.parse.core.enumerable.term;
 
 import stx.ext.alias.StdString;
 
-class String extends stx.parse.pack.enumerable.term.Base<StdString,StdString>{
+class String extends EnumerableCls<StdString,StdString>{
 	public function new(v, ?i) {
 		__.assert().exists(v);
 		super(v, i);

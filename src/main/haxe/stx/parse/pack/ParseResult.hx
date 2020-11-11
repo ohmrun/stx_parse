@@ -1,7 +1,9 @@
 package stx.parse.pack;
 
+@:using(stx.parse.pack.ParseResult.ParseResultLift)
 typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
 
+@:using(stx.parse.pack.ParseResult.ParseResultLift)
 @:forward abstract ParseResult<P,R>(ParseResultDef<P,R>) from ParseResultDef<P,R> to ParseResultDef<P,R>{
   public function new(self) this = self;
   static public function lift<P,R>(self:ParseResultDef<P,R>):ParseResult<P,R> return new ParseResult(self);
@@ -22,25 +24,25 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
     return rest;
   }
   public var rest(get,never) : Input<P>;
-  private function get_rest(){
+  private inline function get_rest(){
     return this.fold(
       (s)   -> s.rest,
       (f)   -> f.rest
     );
   }
-  public function fold<Ri>(succ:ParseSuccess<P,R> -> Ri,fail:ParseFailure<P> -> Ri):Ri{
+  public inline function fold<Ri>(succ:ParseSuccess<P,R> -> Ri,fail:ParseFailure<P> -> Ri):Ri{
     return switch(this){
       case Success(_succ)                 : succ(_succ);
       case Failure(_fail)                 : fail(_fail);
     }
   }
-  public function map<Ri>(fn:R->Ri):ParseResult<P,Ri>{
+  public inline function map<Ri>(fn:R->Ri):ParseResult<P,Ri>{
     return lift(fold(
       (s) -> success(s.map(fn)),
       failure
     ));
   }
-  public function map_o<Ri>(fn:R->Option<Ri>):ParseResult<P,Ri>{
+  public inline function map_o<Ri>(fn:R->Option<Ri>):ParseResult<P,Ri>{
     return lift(fold(
       (s) -> success(s.map_o(fn)),
       failure
@@ -70,13 +72,6 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       no -> no.toRes()
     );
   }
-    
-  public function toString():String{
-    return fold(
-      (success)             -> Std.string(success.with),
-      (failure)             -> Std.string(failure.with)
-    );
-  }
   public function value():Option<R> {
     return fold(
       (s) -> s.with,
@@ -89,11 +84,23 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       (e) -> Some(e)
     );
   }
+  public inline function ok(){
+    return fold(
+      _ -> true,
+      _ -> false
+    );
+  }
   public function prj():ParseResultDef<P,R> return this;
   private var self(get,never):ParseResult<P,R>;
   private function get_self():ParseResult<P,R> return lift(this);
 }
 class ParseResultLift{
+  static public function toString<I,O>(self:ParseResult<I,O>):String{
+    return self.fold(
+      (success)             -> 'OK: '    + Std.string(success.with),
+      (failure)             -> 'FAIL: '  + Std.string(failure.with)
+    );
+  }
   static public function mkLR<I,T>(seed: ParseResult<I,Dynamic>, rule: Parser<I,T>, head: Option<Head>) : LR return {
     seed: seed,
     rule: rule.elide(),
