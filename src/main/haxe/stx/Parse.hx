@@ -65,9 +65,9 @@ class Parse{
 			() 	-> b
 		);
 	}
-	static public var truth 			= 'true'.id().or('false'.id());
-	static public var integer     = "^[\\+\\-]?\\d+".regex();
-  static public var float 			= "^[\\+\\-]?\\d+(\\.\\d+)?".regex();
+	static public var truth 			= __.parse().id('true').or(__.parse().id('false'));
+	static public var integer     = __.parse().reg("^[\\+\\-]?\\d+");
+  static public var float 			= __.parse().reg("^[\\+\\-]?\\d+(\\.\\d+)?");
   
 	static public function primitive():Parser<String,Primitive>{
 		return truth.then((x) -> PBool(x == 'true' ? true : false))
@@ -84,13 +84,13 @@ class Parse{
 	static public var alphanum		= alpha.or(digit);
 	static public var ascii				= range(0, 255);
 	
-	static public var valid				= alpha.or(digit).or('_'.id());
+	static public var valid				= alpha.or(digit).or(__.parse().id('_'));
 	
-	static public var tab					= '	'.id();
-	static public var space				= ' '.id();
+	static public var tab					= __.parse().id('	');
+	static public var space				= __.parse().id(' ');
 	
-	static public var nl					= '\n'.id();
-	static public var cr					= '\r\n'.id();
+	static public var nl					= __.parse().id('\n');
+	static public var cr					= __.parse().id('\r\n');
 	static public var cr_or_nl		= nl.or(cr);
 
 	static public var gap					= tab.or(space);
@@ -142,7 +142,7 @@ class Parse{
 		).asParser(),'eq').asParser();
 	}
 	static public function eof<P,R>():Parser<P,R>{
-    return Parser.Named(Parser.SyncAnon(ParserLift.eof).asParser(),'eof').asParser();
+    return new stx.parse.parser.term.Eof().asParser();
 	}
 
   /**
@@ -161,20 +161,20 @@ class Parse{
 		}).asParser(),'predicated').asParser();
 	}
 	static public inline function with_error_tag<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
-    return new ErrorTransformer(p,
+    return new stx.parse.parser.term.ErrorTransformer(p,
       (err:ParseError) -> err.map(
         info -> info.tag(name)
       )
 	).asParser();
 	
   @:noUsing static public function choose<I,O>(fn:I->Option<O>): Parser<I,O>{
-    return new  stx.parse.parser.term.Choose(fn).asParser();
+    return new stx.parse.parser.term.Choose(fn).asParser();
 	}
 	static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
-    return new AndThen(
+    return new stx.parse.parser.term.AndThen(
       p,
       function(o:T){
-        return fn(o) ? Parser.lift(new Succeed(o)) : Parser.lift(new Failed('filter failed',false)); 
+        return fn(o) ? Parser.lift(Parser.Succeed(o)) : Parser.lift(Parser.Failed('filter failed',false)); 
       }
     ).asParser();
   }
@@ -201,31 +201,11 @@ class LiftParse{
     data = data.substr(ipt.offset);
     return regex.exec(data);
   }
-  static public inline function identifier(str:String,?pos:Pos):Parser<String,String>{
-    return new Identifier(str,pos).asParser();
-  }
-  static public inline function alts<I,O>(arr:Array<Parser<I,O>>){
-    return arr.lfold1((next,memo:Parser<I,O>) -> new Or(memo,next).asParser());
-  }
-  static public inline function regex(str:String):Parser<String,String>{
-    return Parser.Regex(str);
-  }
+  
   static public inline function defer<I,O>(f:Void->Parser<I,O>):Parser<I,O>{
     return new LAnon(f).asParser();
   }
-  static public function lookahead<I,O>(p:Parser<I,O>):Parser<I,O>{
-		return Parser.TaggedAnon((input:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>)->
-			Arrowlet.Then(
-				p,
-				Arrowlet.Sync(
-					(res:ParseResult<I,O>) -> res.fold(
-						(ok) 	-> input.nil(),
-						(no)	-> ParseResult.failure(no)
-					) 
-				)
-			).toInternal().defer(input,cont)
-		,'lookahead: ${p.tag}').asParser();
-	}
+  
 	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<Input<Oi>,Parser<Oi,Oii>>){
 		return Parser.Anon(
 			(input:Input<I>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> {
@@ -268,16 +248,6 @@ class LiftParse{
 			(arr) -> __.option(arr).defv([]).join("")
 		);
 	}
-  /**
-	 * Returns true if the parser fails and vice versa.
-	 */
-	static public function not<I,O>(p:Parser<I,O>):Parser<I,O>{
-		return new Not(p).asParser();
-	}
-	
-  public static function id(s:String) {
-		return identifier(s);
-	}
 	static public function inspector<I,O>(__:Wildcard,?pre:Input<I>->Void,?post:ParseResult<I,O>->Void,?pos:Pos):Parser<I,O>->Parser<I,O>{
 		return (prs:Parser<I,O>) -> {
 			return prs.inspect(
@@ -298,7 +268,7 @@ class LiftParse{
 	}
 	static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
     p.tag = Some(tag);
-    return Parser._.with_error_tag(p, tag);
+    return Parse.with_error_tag(p, tag);
 	}
 	@:noUsing static public inline function succeed<I,O>(v:O):Parser<I,O>{
     return new stx.parse.parser.term.Succeed(v).asParser();

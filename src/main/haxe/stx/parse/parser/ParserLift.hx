@@ -100,4 +100,13 @@ class ParserLift{
   static public function provide<I,O>(parser:Parser<I,O>,input:Input<I>):Provide<ParseResult<I,O>>{
     return Provide.fromFunTerminalWork(parser.defer.bind(input));
   }
+  static public function lookahead<I,O>(p:Parser<I,O>):Parser<I,O>{
+    return Parser.Lookahead(p);
+  }
+  /**
+	 * Returns true if the parser fails and vice versa.
+	 */
+	static public function not<I,O>(p:Parser<I,O>):Parser<I,O>{
+		return new Not(p).asParser();
+	}
 }

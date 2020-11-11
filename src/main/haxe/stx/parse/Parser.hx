@@ -86,7 +86,13 @@ import stx.parse.parser.term.*;
     return new stx.parse.parser.term.OneMany(p).asParser();
   }
   @:noUsing static inline public function Eof<I,O>():Parser<I,O>{
-    return new stx.parse.parser.term.Eof();
+    return new stx.parse.parser.term.Eof().asParser();
+  }
+  @:noUsing static inline public function Lookahead<I,O>(parser:Parser<I,O>):Parser<I,O>{
+    return new stx.parse.parser.term.Lookahead(parser).asParser();
+  }
+  @:noUsing static inline public function Identifier(str:String):Parser<String,String>{
+    return new stx.parse.parser.term.Identifier(str).asParser();
   }
   var self(get,never):Parser<I,O>;
   function get_self():Parser<I,O> return lift(this);

@@ -1,6 +1,12 @@
 package stx.parse.test;
 
 import stx.parse.parser.term.Identifier;
+using stx.parse.test.SimpleParserTest;
+
+public function id(str:String){
+  return stx.parse.Parser.Identifier(str);
+}
+
 
 class SimpleParserTest extends utest.Test{
   public function testIdentifier(){
@@ -70,7 +76,7 @@ class SimpleParserTest extends utest.Test{
   }
   public function testAndR(){
     var reader = " a".reader();
-    var parser = " ".id()._and("a".id());
+    var parser = __.parse().id(" ")._and(__.parse().id("a"));
     var result = parser.provide(reader).fudge();
     equals("a",result.value().defv(""));
   }
