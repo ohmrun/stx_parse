@@ -1,6 +1,6 @@
 package stx.parse.test;
 
-import stx.parse.pack.parser.term.Identifier;
+import stx.parse.parser.term.Identifier;
 
 class SimpleParserTest extends utest.Test{
   public function testIdentifier(){

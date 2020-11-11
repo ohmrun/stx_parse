@@ -6,7 +6,7 @@ using stx.Nano;
 using stx.Fn;
 using stx.Assert;
 
-import stx.parse.Pack;
+import stx.Parse;
 import stx.parse.test.*;
 import stx.Test;
 

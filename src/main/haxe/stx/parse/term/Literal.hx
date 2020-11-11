@@ -1,7 +1,7 @@
 package stx.parse.term;
 
 @:note("neko throws without explicit typing of input.content.data")
-@:access(stx.parse) class Literal extends stx.parse.pack.parser.term.Base<String,String,Parser<String,String>>{
+@:access(stx.parse) class Literal extends stx.parse.parser.term.Base<String,String,Parser<String,String>>{
   override public function defer(input:Input<String>,cont:Terminal<ParseResult<String,String>,Noise>):Work{
     //trace('"${input.content.data}" ${input.offset}');
     return cont.value(apply(input)).serve();

@@ -1,6 +1,6 @@
 package stx.parse.term;
 
-import stx.parse.pack.parser.term.LAnon;
+import stx.parse.parser.term.LAnon;
 
 enum JsonSum<T>{
   JsObject(record : Array<Couple<String,JsonSum<T>>>);
