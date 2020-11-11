@@ -86,9 +86,9 @@ class SimpleParserTest extends utest.Test{
     var result  = parser.provide(reader).fudge();
     equals("",result.value().defv([]).join(""));
   }
-  public function test_filter(){
+  public function test_choose(){
     var reader  = "a".reader();
-    var parser  = Parse.Filter((str:String) -> __.log().through()(Some(str)));
+    var parser  = Parse.Choose((str:String) -> __.log().through()(Some(str)));
     var result  = parser.provide(reader).fudge();
     trace(result);
   }

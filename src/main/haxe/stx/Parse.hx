@@ -25,9 +25,7 @@ typedef Parser<P,R>           = stx.parse.Parser<P,R>;
 typedef ParserLift            = stx.parse.parser.ParserLift;
 
 
-class Pack{
 
-}
 class Parse{
 	static public function head<I,O>(fn:I->Option<Couple<O,Option<I>>>):Parser<I,O>{
 		return new stx.parse.parser.term.Head(fn).asParser();
@@ -161,9 +159,24 @@ class Parse{
 					input.fail("predicate failed",false);
 				}
 		}).asParser(),'predicated').asParser();
-  }
-  @:noUsing static public function Filter<I,O>(fn:I->Option<O>): Parser<I,O>{
-    return new  stx.parse.parser.term.Filter(fn).asParser();
+	}
+	static public inline function with_error_tag<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
+    return new ErrorTransformer(p,
+      (err:ParseError) -> err.map(
+        info -> info.tag(name)
+      )
+	).asParser();
+	
+  @:noUsing static public function choose<I,O>(fn:I->Option<O>): Parser<I,O>{
+    return new  stx.parse.parser.term.Choose(fn).asParser();
+	}
+	static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
+    return new AndThen(
+      p,
+      function(o:T){
+        return fn(o) ? Parser.lift(new Succeed(o)) : Parser.lift(new Failed('filter failed',false)); 
+      }
+    ).asParser();
   }
 }
 class LiftParse{

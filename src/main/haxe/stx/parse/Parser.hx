@@ -85,6 +85,9 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function OneMany<I,T>(p: Parser<I,T>):Parser<I,Array<T>>{
     return new stx.parse.parser.term.OneMany(p).asParser();
   }
+  @:noUsing static inline public function Eof<I,O>():Parser<I,O>{
+    return new stx.parse.parser.term.Eof();
+  }
   var self(get,never):Parser<I,O>;
   function get_self():Parser<I,O> return lift(this);
   public inline function asParser():Parser<I,O> return self;

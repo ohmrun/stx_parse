@@ -68,15 +68,7 @@ class ParserLift{
   //     f(out.pos());
   //     return out;
   //   }));
-  // }
-  static public inline function identifier(x : String):Parser<String,String>{
-    return new Identifier(x).asParser();
-  }
-
-  static public inline function regexParser(str : String):Parser<String,String>{
-    return new Parser(new stx.parse.parser.term.Regex(str));
-  }
-    
+  // }  
   static public inline function repIsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
     return new Rep1Sep(pI,sep).asParser(); /* Optimize that! */
   }
@@ -99,29 +91,8 @@ class ParserLift{
   static public inline function repsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
     return new RepSep(pI,sep).asParser(); /* Optimize that! */
   }
-  static public inline function with_error_tag<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
-    return new ErrorTransformer(p,
-      (err:ParseError) -> err.map(
-        info -> info.tag(name)
-      )
-  ).asParser();
- 
-  static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
-    return new AndThen(
-      p,
-      function(o:T){
-        return fn(o) ? Parser.lift(new Succeed(o)) : Parser.lift(new Failed('filter failed',false)); 
-      }
-    ).asParser();
-  }
   static public inline function option<I,T>(p:Parser<I,T>):Parser<I,StdOption<T>>{
     return new Parser(new stx.parse.parser.term.Option(p));
-  }
-  static public inline function eof<I,U>(input:Input<I>):ParseResult<I,U>{
-    //trace(input);
-    //trace(input.offset);
-    //trace(input.is_end());
-    return input.is_end() ? input.nil() : input.fail('not at end');
   }
   static public function inspect<I,O>(parser:Parser<I,O>,pre:Input<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
     return new Inspect(parser,pre,post).asParser();
