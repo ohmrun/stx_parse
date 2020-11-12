@@ -2,11 +2,11 @@ package stx.parse.parser.term;
 
 class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
   var transformer : ParseError -> ParseError;
-  public function new(delegation,transformer,?id:Pos){
-    super(delegation,id);
+  public function new(delegation,transformer,?pos:Pos){
+    super(delegation,pos);
     this.transformer = transformer;
   }
-  override inline public function defer(input:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  override inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return delegation.defer(
       input,
       cont.joint(joint.bind(_,cont))
@@ -24,7 +24,7 @@ class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
       (e) -> e.mod(transformer)
     );
   }
-  override inline public function apply(input:Input<I>):ParseResult<I,O>{
+  override inline public function apply(input:ParseInput<I>):ParseResult<I,O>{
     return mod(this.apply(input));
   }
 }

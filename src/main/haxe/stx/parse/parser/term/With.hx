@@ -16,7 +16,7 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   override function check(){
     __.that().exists().crunch(delegation);
   }
-  override inline public function defer(input:Input<I>,cont:Terminal<ParseResult<I,V>,Noise>){  
+  override inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,V>,Noise>){  
     return delegation.fst().toInternal().defer(
       input,
       cont.joint(
@@ -51,7 +51,7 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   // private function mod(lhs:Outcome<ParseResult<I,T>,Defect<Noise>>,rhs:Outcome<ParseResult<I,T>,Defect<Noise>>){
   //   return lhs.
   // }
-  override inline public function apply(input:Input<I>):ParseResult<I,V>{
+  override inline public function apply(input:ParseInput<I>):ParseResult<I,V>{
     return delegation.fst().apply(input).fold(
       (ok) -> delegation.snd().apply(ok.rest).fold(
         (okI) -> transform(ok.with.defv(null),okI.with.defv(null)).map( z -> okI.rest.ok(z)).def(okI.rest.nil),

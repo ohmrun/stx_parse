@@ -22,7 +22,7 @@ typedef ParseErrorInfoDef = {
   }
 }
 @:forward abstract ParseError(Err<ParseErrorInfo>) from Err<ParseErrorInfo> to Err<ParseErrorInfo>{
-  @:noUsing static public function at_with(input:Input<Dynamic>,msg,?fatal=false,?label:String,?pos:Pos):ParseError{
+  @:noUsing static public function at_with(input:ParseInput<Dynamic>,msg,?fatal=false,?label:String,?pos:Pos):ParseError{
     return new Err(Some(ERR_OF(ParseErrorInfo.make(input.offset,msg,fatal,label))),null,pos);
   }
   static public var FAIL(default,never) = 'FAIL';
@@ -36,7 +36,7 @@ typedef ParseErrorInfoDef = {
   public function toString(){
     return Std.string(this.data);
   }
-  public function toParseResultWithInput<P,R>(ipt:Input<P>):ParseResult<P,R>{
+  public function toParseResultWithParseInput<P,R>(ipt:ParseInput<P>):ParseResult<P,R>{
     return ParseResult.fromFailure(ParseFailure.make(ipt,this));
   }
 }

@@ -7,9 +7,9 @@ abstract class ThroughBind<P,Ri,Rii> extends ParserCls<P,Rii>{
     super(pos);
     this.delegate       = delegate; 
   }
-  abstract function through_bind(input:Input<P>,result:ParseResult<P,Ri>):Parser<P,Rii>;
+  abstract function through_bind(input:ParseInput<P>,result:ParseResult<P,Ri>):Parser<P,Rii>;
 
-  @:privateAccess override inline function defer(input:Input<P>,cont:Terminal<ParseResult<P,Rii>,Noise>):Work{
+  @:privateAccess override inline function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,Rii>,Noise>):Work{
     var later : FutureTrigger<Work> = Future.trigger();
     var inner = cont.inner(
       (outcome:Outcome<ParseResult<P,Ri>,Defect<Noise>>) -> 
@@ -22,7 +22,7 @@ abstract class ThroughBind<P,Ri,Rii> extends ParserCls<P,Rii>{
     );
     return this.delegate.defer(input,inner).seq(later);
   }
-  override inline function apply(input:Input<P>):ParseResult<P,Rii>{
+  override inline function apply(input:ParseInput<P>):ParseResult<P,Rii>{
     return this.convention.fold(
       () -> throw E_Arw_IncorrectCallingConvention,
       () -> {

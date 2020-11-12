@@ -7,7 +7,7 @@ class Identifier extends Sync<String,String>{
     this.stamp = stamp;
     this.tag   = Some('Id($stamp)');
   }
-  override inline function apply(ipt:Input<String>){
+  override inline function apply(ipt:ParseInput<String>){
     var len     = stamp.length;
     var head    = ipt.head();
     var offset  = ipt.offset;

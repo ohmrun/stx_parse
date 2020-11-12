@@ -46,7 +46,7 @@ class ParserLift{
       Arrowlet.Sync(fn)
     ));
   }
-  static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Arrowlet<Input<I>,TT,Noise>{
+  static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Arrowlet<ParseInput<I>,TT,Noise>{
     return Arrowlet.Then(
       p,
       Arrowlet.Sync(fn)
@@ -59,11 +59,11 @@ class ParserLift{
   static public inline function trace<I,T>(p : Parser<I,T>, f : T -> String):Parser<I,T> return
     return then(p,function (x:T) { trace(f(x)); return x;} );
 
-  //static public inline function print<I,O>(p : Parser<I,O>,f : Input<I> -> String):Parser<I,I>{
+  //static public inline function print<I,O>(p : Parser<I,O>,f : ParseInput<I> -> String):Parser<I,I>{
     //return Parser.
   //}
-  // static public inline function xs<I,T>(p:Parser<I,T>, f : Input<I> -> Void):Parser<I,T>{
-  //   return new Parser(new Anon(function(i:Input<I>):ParseResult<I,T>{
+  // static public inline function xs<I,T>(p:Parser<I,T>, f : ParseInput<I> -> Void):Parser<I,T>{
+  //   return new Parser(new Anon(function(i:ParseInput<I>):ParseResult<I,T>{
   //     var out = p.parse(i);
   //     f(out.pos());
   //     return out;
@@ -94,10 +94,10 @@ class ParserLift{
   static public inline function option<I,T>(p:Parser<I,T>):Parser<I,StdOption<T>>{
     return new Parser(new stx.parse.parser.term.Option(p));
   }
-  static public function inspect<I,O>(parser:Parser<I,O>,pre:Input<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
+  static public function inspect<I,O>(parser:Parser<I,O>,pre:ParseInput<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
     return new Inspect(parser,pre,post).asParser();
   }
-  static public function provide<I,O>(parser:Parser<I,O>,input:Input<I>):Provide<ParseResult<I,O>>{
+  static public function provide<I,O>(parser:Parser<I,O>,input:ParseInput<I>):Provide<ParseResult<I,O>>{
     return Provide.fromFunTerminalWork(parser.defer.bind(input));
   }
   static public function lookahead<I,O>(p:Parser<I,O>):Parser<I,O>{
@@ -117,4 +117,18 @@ class ParserLift{
       }
     ).asParser();
   }
+  static public function tokenize(p:Parser<String,Array<String>>):Parser<String,String>{
+		return p.then(
+			(arr) -> __.option(arr).defv([]).join("")
+		);
+  }
+  static public inline function tag_error<I,T>(p:Parser<I,T>, name : String, ?pos: Pos ):Parser<I,T>
+    return Parser.TagError(p,name,pos);
+
+  /**
+   * Lift a parser to a packrat parser (memo is derived from scala's library)
+   */
+	 public static function memo<I,T>(p : Parser<I,T>) : Parser<I,T>{
+    return new stx.parse.parser.term.Memoise(p).asParser();
+  };
 }

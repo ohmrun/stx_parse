@@ -8,7 +8,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
   function genKey(pos : Int) {  
     return this.id+"@"+pos;
   }
-  @:privateAccess override inline function defer(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  @:privateAccess override inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     __.log().debug('memoise');
     var res =  Arrowlet.Then(
       delegation.recall(genKey, ipt),
@@ -52,7 +52,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
     );
     return res.prepare(Noise,cont);
   }
-  override public function apply(i:Input<I>):ParseResult<I,O>{
+  override public function apply(i:ParseInput<I>):ParseResult<I,O>{
     return throw E_Arw_IncorrectCallingConvention;
   }
   override public function get_convention(){

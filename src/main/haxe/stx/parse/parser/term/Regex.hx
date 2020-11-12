@@ -2,7 +2,7 @@ package stx.parse.parser.term;
 
 import hre.*;
 /**
-  The Input pulls from the offset to the end of the string, so I suggest leading the regex with "^".
+  The ParseInput pulls from the offset to the end of the string, so I suggest leading the regex with "^".
 **/
 class Regex extends Sync<String,String>{
   var stamp : String;
@@ -11,7 +11,7 @@ class Regex extends Sync<String,String>{
     this.stamp = stamp;
     this.tag   = Some('Regex($stamp)');
   }
-  override inline function apply(ipt:Input<String>){
+  override inline function apply(ipt:ParseInput<String>){
     var ereg        = new RegExp(stamp,"g");
     var is_matched  = ipt.matchedBy(ereg.test);
     __.log().debug('stamp="$stamp" is_matched="$is_matched" ');

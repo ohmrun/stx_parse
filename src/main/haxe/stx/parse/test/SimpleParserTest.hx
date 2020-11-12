@@ -66,7 +66,7 @@ class SimpleParserTest extends utest.Test{
   public function testSyncAnon(){
     var reader = "a".reader();
     var parser   = Parser.SyncAnon(
-      function (input:Input<String>):ParseResult<String,String>{
+      function (input:ParseInput<String>):ParseResult<String,String>{
         return input.head().fold(
           (v:String) 	-> input.tail().ok(v),
           () 	        -> input.tail().nil()
@@ -96,7 +96,7 @@ class SimpleParserTest extends utest.Test{
   }
   public function test_choose(){
     var reader  = "a".reader();
-    var parser  = Parse.Choose((str:String) -> __.log().through()(Some(str)));
+    var parser  = Parser.Choose((str:String) -> __.log().through()(Some(str)));
     var result  = parser.provide(reader).fudge();
     trace(result);
   }

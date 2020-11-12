@@ -9,12 +9,12 @@ typedef LRDef = {
 }
 @:forward abstract LR(LRDef) from LRDef{
   static public var _(default,never) = LRLift;
-  public function pos() : Input<Dynamic> return this.seed.pos();
+  public function pos() : ParseInput<Dynamic> return this.seed.pos();
 }
 class LRLift{
-  static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: Input<I>, growable: LR): Provide<ParseResult<I,T>> {
+  static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: ParseInput<I>, growable: LR): Provide<ParseResult<I,T>> {
     return switch (growable.head) {
-      case None: Provide.pure(ParseError.at_with(input,"E_NoRecursionHead",true,"LR").toParseResultWithInput(input));
+      case None: Provide.pure(ParseError.at_with(input,"E_NoRecursionHead",true,"LR").toParseResultWithParseInput(input));
       case Some(head):
         if (head.getHead() != p) /*not head rule, so not growing*/{
           Provide.pure(cast growable.seed);
@@ -27,7 +27,7 @@ class LRLift{
         }
     }
   }
-  static public function recall<I,T>(p : Parser<I,T>, genKey : Int -> String, input : Input<I>) : Provide<Option<MemoEntry>> {
+  static public function recall<I,T>(p : Parser<I,T>, genKey : Int -> String, input : ParseInput<I>) : Provide<Option<MemoEntry>> {
     var cached = input.getFromCache(genKey);
     return switch (input.getRecursionHead()) {
       case None: Provide.pure(cached);
@@ -55,7 +55,7 @@ class LRLift{
         }
     }
   }
-  static public function setupLR<I>(p: Parser<I,Dynamic>, input: Input<I>, recDetect: LR) {
+  static public function setupLR<I>(p: Parser<I,Dynamic>, input: ParseInput<I>, recDetect: LR) {
     if (recDetect.head == None)
       recDetect.head = Some(p.mkHead());
 
@@ -68,7 +68,7 @@ class LRLift{
       stack = stack.tail();
     }
   }
-  static function grow<I,T>(p: Parser<I,T>, genKey : Int -> String, rest: Input<I>, head: Head): Provide<ParseResult<I,T>> {
+  static function grow<I,T>(p: Parser<I,T>, genKey : Int -> String, rest: ParseInput<I>, head: Head): Provide<ParseResult<I,T>> {
     //store the head into the recursionHeads
     rest.setRecursionHead(head);
     var oldRes =
@@ -112,11 +112,4 @@ class LRLift{
       )
     );
   }
-
-  /**
-   * Lift a parser to a packrat parser (memo is derived from scala's library)
-   */
-  public static function memo<I,T>(p : Parser<I,T>) : Parser<I,T>{
-    return new Memoise(p).asParser();
-  };
 }

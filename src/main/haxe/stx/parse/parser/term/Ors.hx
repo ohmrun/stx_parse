@@ -9,7 +9,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       if(delegate == null){  throw('undefined parse delegate in $delegate'); }
     }
   }
-  override function defer(input:Input<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
+  override function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
     var idx = 1;
     return Arrowlet.Then(
       delegation[0],
@@ -35,7 +35,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       )
     ).toInternal().defer(input,cont);
   }
-  override inline function apply(ipt:Input<I>):ParseResult<I,T>{
+  override inline function apply(ipt:ParseInput<I>):ParseResult<I,T>{
     return throw  E_Arw_IncorrectCallingConvention;
   }
 }

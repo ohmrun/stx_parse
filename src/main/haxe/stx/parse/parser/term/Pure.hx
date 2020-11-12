@@ -6,7 +6,7 @@ class Pure<I,O> extends Sync<I,O>{
     this.value = value;
     super(pos);
   }
-  override inline public function do_parse(ipt:Input<I>):ParseResult<I,O>{
+  override inline public function do_parse(ipt:ParseInput<I>):ParseResult<I,O>{
     return value;
   }
   

@@ -10,7 +10,7 @@ class Or<P,R> extends ThroughBind<P,R,R>{
       default                 : None;
     }
   }
-  override function through_bind(input:Input<P>,result:ParseResult<P,R>):Parser<P,R>{
+  override function through_bind(input:ParseInput<P>,result:ParseResult<P,R>):Parser<P,R>{
     return result.fold(
       ok -> Parser.Stamp(result),
       no -> rhs

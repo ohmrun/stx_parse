@@ -17,7 +17,7 @@ interface EnumerableApi<C,T>{
 	public function drop(n:Int):Enumerable<C,T>;
 
 	/**
-		Inputing the implementation allows this interface not to leak information about the internals into the type definitions.
+		ParseInputing the implementation allows this interface not to leak information about the internals into the type definitions.
 	**/
 	public function match(fn:T -> Bool):Bool;
 

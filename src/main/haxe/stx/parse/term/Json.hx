@@ -55,7 +55,7 @@ class Json{
         .asParser()
     ).asParser().tagged('json').memo();
   }
-  function parse(ipt:Input<String>):ParseResult<String,JsonSum<String>>{
+  function parse(ipt:ParseInput<String>):ParseResult<String,JsonSum<String>>{
     return parser().and_(Parse.eof()).parse(ipt);
   }
 }

@@ -10,7 +10,7 @@ abstract class Base<I,O,T> extends ParserCls<I,O>{
     this.tag        = Some(name());
   }
   function check(){}
-  override public function defer(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  override public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return cont.value(apply(ipt)).serve();
   }
 

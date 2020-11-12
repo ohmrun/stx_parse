@@ -1,6 +1,6 @@
 package stx.parse.parser.term;
 
-class Predicated<I,O> extends Base<I,O,Parser<I,O>>{
+class Filter<I,O> extends Base<I,O,Parser<I,O>>{
   var predicate : O -> Bool;
   public function new(delegation:Parser<I,O>,predicate:O->Bool,?id:Pos){
     super(delegation,id);
@@ -10,10 +10,10 @@ class Predicated<I,O> extends Base<I,O,Parser<I,O>>{
       ,id
     );
   }
-  override public function defer(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  override public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return this.delegation.defer(ipt,cont);
   }
-  override public function apply(i:Input<I>):ParseResult<I,O>{
+  override public function apply(i:ParseInput<I>):ParseResult<I,O>{
     return throw IncorrectCallingConvention;
   }
 }

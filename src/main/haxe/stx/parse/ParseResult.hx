@@ -23,7 +23,7 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
   public inline function pos(){
     return rest;
   }
-  public var rest(get,never) : Input<P>;
+  public var rest(get,never) : ParseInput<P>;
   private inline function get_rest(){
     return this.fold(
       (s)   -> s.rest,
@@ -51,7 +51,7 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
   /**
     If you run a parser with a subset of the input, remember to hook up the rest of the original input using this.
   **/
-  public function tack<Q>(success:Input<Q>,failure:Input<Q>):ParseResult<Q,R>{
+  public function tack<Q>(success:ParseInput<Q>,failure:ParseInput<Q>):ParseResult<Q,R>{
     return lift(fold(
       (ok) -> Success(ParseSuccess.make(success,ok.with)),
       (no) -> Failure(ParseFailure.make(failure,no.with))
@@ -66,7 +66,7 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       no -> no.toRes()
     );
   }
-  public function toResI():Res<Couple<Option<R>,Input<P>>,ParseErrorInfo>{
+  public function toResI():Res<Couple<Option<R>,ParseInput<P>>,ParseErrorInfo>{
     return fold(
       ok -> __.accept(__.couple(ok.with,ok.rest)),
       no -> no.toRes()

@@ -14,7 +14,7 @@ class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
   override public function check(){
     __.that(pos).exists().errata(e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
   }
-  override inline public function defer(input:Input<I>,cont:Terminal<ParseResult<I,U>,Noise>){
+  override inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,U>,Noise>){
     return delegation.provide(input).convert(
       (res:ParseResult<I,T>) -> res.fold(
         (match)   -> ParseResult.success(match.map(transform)),
@@ -22,7 +22,7 @@ class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
       )
     ).prepare(cont);
   }
-  override inline public function apply(input:Input<I>):ParseResult<I,U>{
+  override inline public function apply(input:ParseInput<I>):ParseResult<I,U>{
     return this.delegation.apply(input).map(this.transform);
   }
 }

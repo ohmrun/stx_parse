@@ -15,10 +15,10 @@ class Rep1Sep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
       )
     ).asParser();
   }
-  override inline public function defer(ipt:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>){
+  override inline public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>){
     return actual().defer(ipt,cont);
   }
-  override inline public function apply(ipt:Input<I>):ParseResult<I,Array<O>>{
+  override inline public function apply(ipt:ParseInput<I>):ParseResult<I,Array<O>>{
     return actual().apply(ipt);
   }
 }

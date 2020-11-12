@@ -1,6 +1,6 @@
 package stx.parse;
 
-interface ParserApi<I,O> extends ArrowletApi<Input<I>,ParseResult<I,O>,Noise>{
+interface ParserApi<I,O> extends ArrowletApi<ParseInput<I>,ParseResult<I,O>,Noise>{
   public var tag                            : Option<String>;
   public var pos(default,null)              : Pos;
   
@@ -9,5 +9,5 @@ interface ParserApi<I,O> extends ArrowletApi<Input<I>,ParseResult<I,O>,Noise>{
   public function identifier():String;
   public function asParser():Parser<I,O>;
 
-  public function toInternal():Internal<Input<I>,ParseResult<I,O>,Noise>;
+  public function toInternal():Internal<ParseInput<I>,ParseResult<I,O>,Noise>;
 }

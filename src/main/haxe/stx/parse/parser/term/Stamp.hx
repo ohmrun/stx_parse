@@ -6,10 +6,10 @@ class Stamp<P,R> extends ParserCls<P,R>{
     super(pos);
     this.value = value;
   }
-  override inline public function defer(input:Input<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
+  override inline public function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
     return cont.value(value).serve();
   }
-  override inline public function apply(input:Input<P>):ParseResult<P,R>{
+  override inline public function apply(input:ParseInput<P>):ParseResult<P,R>{
     return value;
   }
 }

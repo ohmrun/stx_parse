@@ -12,7 +12,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   override public function check(){
     __.that(pos).exists().errata( e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
   }
-  override public function defer(input:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
+  override public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
     var arr     = [];
     return  Arrowlet._.then(
       delegation,
@@ -31,8 +31,8 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
       )
     ).toInternal().defer(input,cont);
   }
-  override inline public function apply(input:Input<I>){
-    function rec(input:Input<I>,array:Array<O>):ParseResult<I,Array<O>>{
+  override inline public function apply(input:ParseInput<I>){
+    function rec(input:ParseInput<I>,array:Array<O>):ParseResult<I,Array<O>>{
       var res = delegation.apply(input);
       return res.fold(
         ok -> rec(ok.rest,array).map(

@@ -6,7 +6,7 @@ typedef ParseSuccessDef<P,R> = RestWithDef<P,Option<R>>;
   public function new(self) this = self;
   static public function lift<P,R>(self:ParseSuccessDef<P,R>):ParseSuccess<P,R> return new ParseSuccess(self);
   
-  @:noUsing static public function make<P,R>(rest:Input<P>,match:Option<R>):ParseSuccess<P,R>{
+  @:noUsing static public function make<P,R>(rest:ParseInput<P>,match:Option<R>):ParseSuccess<P,R>{
     return lift(
       RestWith.make(
         rest,
@@ -25,7 +25,7 @@ typedef ParseSuccessDef<P,R> = RestWithDef<P,Option<R>>;
       this.rest,
       this.with.flat_map(fn)
     );
-  public function then(rest:Input<P>):ParseSuccess<P,R>{
+  public function then(rest:ParseInput<P>):ParseSuccess<P,R>{
     return make(
       rest,
       this.with

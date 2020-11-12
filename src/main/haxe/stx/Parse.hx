@@ -15,7 +15,7 @@ typedef LiftStringReader      = stx.parse.lift.LiftStringReader;
 typedef LiftLinkedListReader  = stx.parse.lift.LiftLinkedListReader;
 
 
-typedef Input<P>              = stx.parse.Input<P>;
+typedef ParseInput<P>              = stx.parse.ParseInput<P>;
 typedef ParseResult<P,T>      = stx.parse.ParseResult<P,T>;
 typedef ParseResultLift       = stx.parse.ParseResult.ParseResultLift;
 
@@ -35,7 +35,7 @@ class Parse{
 	}
 	static public function something<I>():Parser<I,I>{
 		return Parser.SyncAnon(
-			(input:Input<I>)->{
+			(input:ParseInput<I>)->{
 			return if(input.is_end()){
 				input.fail('EOF');
 			}else{
@@ -98,7 +98,7 @@ class Parse{
 	
 
 	//static public var camel 			= lower.and_with(word, mergeString);
-	static public var word				= lower.or(upper).one_many().token();//[a-z]*
+	static public var word				= lower.or(upper).one_many().tokenize();//[a-z]*
 	static public var quote				= __.parse().id('"').or(__.parse().id("'"));
 	static public var escape			= __.parse().id('\\');
 	static public var not_escaped	= __.parse().id('\\\\');
@@ -115,58 +115,29 @@ class Parse{
 	static public function returned(p : Parser<String,String>) {
 		return p.and_(whitespace.many());
 	}
-	// static public function until<I>(p:Parser<I,I>):Parser<I,Array<I>>{
-	// 	function rec(input:Input<I>,memo:Array<I>):Provide<ParseResult<I,Array<I>>>{ 
-	// 		return Parser.Arrow(Arrowlet.Then(
-	// 			p,
-	// 			Arrowlet.Anon(
-	// 				(res:ParseResult<I,I>,cont:Terminal<ParseResult<I,Array<I>>,Noise>) -> res.fold(
-	// 					(ok) -> cont.value(ok.rest.ok(memo)).serve(),
-	// 					(no) -> something().and_then(
-	// 						(x:I) -> Parser.fromInputProvide(
-	// 							rec.bind(_,memo.snoc(x))
-	// 						)
-	// 					).defer(input,cont)
-	// 				)
-	// 			)
-	// 		)).provide(input);
-	// 	};
-	// 	return Parser.Forward(rec.bind(_,[])).asParser();
-	// }
 	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
 		return Parser.Named(Parser.SyncAnon(
-			(input:Input<I>) -> input.head().fold(
+			(input:ParseInput<I>) -> input.head().fold(
 				(vI) -> v == vI ? input.tail().ok(vI) : input.fail('eq'),
 				() -> input.fail('eq')
 			)
 		).asParser(),'eq').asParser();
 	}
-	static public function eof<P,R>():Parser<P,R>{
-    return new stx.parse.parser.term.Eof().asParser();
-	}
-
-
-	static public inline function with_error_tag<I,T>(p:Parser<I,T>, name : String ):Parser<I,T>
-    return new stx.parse.parser.term.ErrorTransformer(p,
-      (err:ParseError) -> err.map(
-        info -> info.tag(name)
-      )
-	).asParser();
 }
 class LiftParse{
   static public function parse(wildcard:Wildcard){
     return new stx.parse.Module();
   }
-  static public inline function ok<P,R>(rest:Input<P>,match:R):ParseResult<P,R>{
+  static public inline function ok<P,R>(rest:ParseInput<P>,match:R):ParseResult<P,R>{
     return ParseSuccess.make(rest,Some(match));
 	}
-	static public inline function nil<P,R>(rest:Input<P>):ParseResult<P,R>{
+	static public inline function nil<P,R>(rest:ParseInput<P>):ParseResult<P,R>{
     return ParseSuccess.make(rest,None);
   }
-  static public inline function fail<P,R>(rest:Input<P>,message:String,fatal:Bool=false,?pos:Pos):ParseResult<P,R>{
+  static public inline function fail<P,R>(rest:ParseInput<P>,message:String,fatal:Bool=false,?pos:Pos):ParseResult<P,R>{
     return ParseFailure.at_with(rest,message,fatal,pos);
   }
-  static public function parsify(regex:hre.RegExp,ipt:Input<String>):hre.Match{
+  static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
     //trace(ipt.content.data);
     var data : String = (cast ipt).content.data;
     if(data == null){
@@ -180,9 +151,9 @@ class LiftParse{
     return new LAnon(f).asParser();
   }
   
-	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<Input<Oi>,Parser<Oi,Oii>>){
+	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<ParseInput<Oi>,Parser<Oi,Oii>>){
 		return Parser.Anon(
-			(input:Input<I>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> {
+			(input:ParseInput<I>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> {
 				return Arrowlet.Then(
 					p,
 					Arrowlet.Anon(
@@ -217,36 +188,13 @@ class LiftParse{
 			}
 		);
 	}
-	static public function token(p:Parser<String,Array<String>>):Parser<String,String>{
-		return p.then(
-			(arr) -> __.option(arr).defv([]).join("")
-		);
-	}
-	static public function inspector<I,O>(__:Wildcard,?pre:Input<I>->Void,?post:ParseResult<I,O>->Void,?pos:Pos):Parser<I,O>->Parser<I,O>{
-		return (prs:Parser<I,O>) -> {
-			return prs.inspect(
-				__.option(pre).defv(
-					(v) -> {
-						if(v.tag!=null){
-							__.log()('${v.tag} "${v.head()}"',pos);
-						}
-					}
-				),
-				__.option(post).defv(
-					(v) -> {
-						__.log()(v.toString(),pos);
-					}
-				)
-			);
-		};
-	}
 	static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
     p.tag = Some(tag);
-    return Parse.with_error_tag(p, tag);
+    return Parser.TagError(p, tag);
 	}
 	@:noUsing static public inline function succeed<I,O>(v:O):Parser<I,O>{
     return new stx.parse.parser.term.Succeed(v).asParser();
-  }
+	}
 }
-typedef LiftInputForwardToParser 	= stx.parse.lift.LiftInputForwardToParser;
-typedef LiftArrayOfParser 				= stx.parse.lift.LiftArrayOfParser;
+typedef LiftParseInputForwardToParser 	= stx.parse.lift.LiftParseInputForwardToParser;
+typedef LiftArrayOfParser 							= stx.parse.lift.LiftArrayOfParser;

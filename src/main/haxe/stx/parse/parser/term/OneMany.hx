@@ -2,7 +2,7 @@ package stx.parse.parser.term;
 
 class OneMany<I,O> extends Many<I,O>{
 
-  override function defer(input:Input<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
+  override function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
     __.assert(delegation.pos).exists(delegation);
 
     return Arrowlet.Then(

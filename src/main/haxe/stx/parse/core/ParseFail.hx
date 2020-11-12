@@ -6,7 +6,7 @@ abstract ParseFail(ParseResult<Dynamic,Dynamic>) to ParseResult<Dynamic,Dynamic>
   private function new(self){
     this = self;
   }
-  @:noUsing static public function at<I,T>(ipt:Input<I>,?pos:Pos):ParseFail{
+  @:noUsing static public function at<I,T>(ipt:ParseInput<I>,?pos:Pos):ParseFail{
     return new ParseFail(ipt.fail(FAIL,pos));
   }
 }

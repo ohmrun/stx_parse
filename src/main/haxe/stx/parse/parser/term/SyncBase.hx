@@ -7,7 +7,7 @@ abstract class SyncBase<I,O,T> extends Base<I,O,T>{
     this.delegation = delegation;
     this.tag        = Some(name());
   }
-  public override inline function defer(ipt:Input<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  public override inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     this.result = apply(ipt);
     this.status = Secured;
 

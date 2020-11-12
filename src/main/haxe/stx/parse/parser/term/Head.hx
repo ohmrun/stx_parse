@@ -6,7 +6,7 @@ class Head<I,O> extends Sync<I,O>{
     super(id);
     this.delegate = delegate;
   }
-  override inline public function apply(ipt:Input<I>){
+  override inline public function apply(ipt:ParseInput<I>){
     var head = ipt.head();
     var next = head.flat_map(delegate);
     

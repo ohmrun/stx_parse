@@ -6,13 +6,13 @@ typedef ParseFailureDef<P> = RestWith<P,ParseError>;
   public inline function new(self) this = self;
   static public inline function lift<P>(self:ParseFailureDef<P>):ParseFailure<P> return new ParseFailure(self);
   
-  static public inline function make<P,R>(rest:Input<P>,stack:ParseError):ParseFailure<P>{
+  static public inline function make<P,R>(rest:ParseInput<P>,stack:ParseError):ParseFailure<P>{
     return lift({
       rest : rest,
       with : stack
     });
   }
-  static public function at_with<P>(input:Input<P>,msg:String,?fatal:Bool = false,?pos:Pos):ParseFailure<P>{
+  static public function at_with<P>(input:ParseInput<P>,msg:String,?fatal:Bool = false,?pos:Pos):ParseFailure<P>{
     return make(input,
       ParseError.at_with(input,msg,fatal,pos)
     );
@@ -26,7 +26,7 @@ typedef ParseFailureDef<P> = RestWith<P,ParseError>;
   public inline function is_parse_fail(){
     return this.with.is_parse_fail();
   }
-  public function tack(input:Input<P>):ParseFailure<P>{
+  public function tack(input:ParseInput<P>):ParseFailure<P>{
     return make(input,this.with);
   }
   public function mod(fn:ParseError->ParseError):ParseFailure<P>{

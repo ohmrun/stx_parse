@@ -1,29 +1,29 @@
 package stx.parse;
  
-typedef InputDef<I> = {
+typedef ParseInputDef<I> = {
   content   : Enumerable<Dynamic,I>,
   memo      : Memo,
   ?tag      : String
 }
 
-@:forward(memo,tag)abstract Input<I>(InputDef<I>) from InputDef<I>{
-  @:noUsing static public function lift<I>(self:InputDef<I>):Input<I>{
+@:forward(memo,tag)abstract ParseInput<I>(ParseInputDef<I>) from ParseInputDef<I>{
+  @:noUsing static public function lift<I>(self:ParseInputDef<I>):ParseInput<I>{
     return self;
   }
-  @:noUsing static public function make<I>(content:Enumerable<Dynamic,I>,memo:Memo,?tag:String):Input<I>{
+  @:noUsing static public function make<I>(content:Enumerable<Dynamic,I>,memo:Memo,?tag:String):ParseInput<I>{
     return {
       content : content,
       memo    : memo,
       tag     : tag
     };
   }
-  static public function pure<T>(en:Enumerable<Dynamic,T>):Input<T>{
+  static public function pure<T>(en:Enumerable<Dynamic,T>):ParseInput<T>{
     return {
       content : en,
       memo    : Memo.unit()
     };
   }
-  inline public function drop(len : Int) : Input<I> {
+  inline public function drop(len : Int) : ParseInput<I> {
     return {
       content : this.content.drop(len),
       memo    : this.memo
@@ -45,7 +45,7 @@ typedef InputDef<I> = {
     return memo;
   }
 
-  inline public function tail():Input<I>{
+  inline public function tail():ParseInput<I>{
     return drop(1);
   }
   inline public function matchedBy(e:I->Bool) : Bool {
@@ -55,9 +55,9 @@ typedef InputDef<I> = {
     return __.option(this.content.head());
   }
 
-  inline public function position<I>(r : Input<I>) : Int return this.content.index;
+  inline public function position<I>(r : ParseInput<I>) : Int return this.content.index;
   
-  public function prepend(i:I):Input<I>{
+  public function prepend(i:I):ParseInput<I>{
     return make(this.content.prepend(i),this.memo,this.tag);
   }
   public inline function setRecursionHead(head : Head) {

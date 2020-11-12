@@ -1,6 +1,6 @@
 package stx.parse;
 
-abstract class ParserCls<I,O> implements ParserApi<I,O> extends ArrowletCls<Input<I>,ParseResult<I,O>,Noise>{
+abstract class ParserCls<I,O> implements ParserApi<I,O> extends ArrowletCls<ParseInput<I>,ParseResult<I,O>,Noise>{
   public function new(?tag:Option<String>,?pos:Pos){
     super();
     this.tag  = __.option(tag).flatten().def(name);
@@ -17,7 +17,7 @@ abstract class ParserCls<I,O> implements ParserApi<I,O> extends ArrowletCls<Inpu
   public function asParser():Parser<I,O>{
     return new Parser(this);
   }
-  public function toInternal():Internal<Input<I>,ParseResult<I,O>,Noise>{
+  public function toInternal():Internal<ParseInput<I>,ParseResult<I,O>,Noise>{
     return this;
   }
   override public function toString(){
