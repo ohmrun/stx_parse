@@ -1,11 +1,10 @@
 package stx.parse.parser.term;
 
-
 class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
   var sep : Parser<I,S>;
   public function new(delegate,sep:Parser<I,S>,?pos){
     super(delegate,pos);
-    this.sep = sep;
+    this.sep = Parser.Materialize(sep);
   }
   private inline function actual(){
     return delegation.option().and(

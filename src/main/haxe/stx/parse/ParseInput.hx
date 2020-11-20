@@ -1,33 +1,64 @@
 package stx.parse;
  
-typedef ParseInputDef<I> = {
-  content   : Enumerable<Dynamic,I>,
-  memo      : Memo,
-  ?tag      : String
+@:structInit
+class ParseInputCls<I>{
+  static public inline function make<I>(content,memo,tag,cursor:Array<String>,tree:Lung):ParseInputCls<I>{
+    return new ParseInputCls(content,memo,tag,cursor,tree);
+  }
+  public var content(default,null):Enumerable<Dynamic,I>;
+  public var memo(default,null):Memo;
+  public var cursor(default,null):Array<String>;
+  public var tree(default,null):Lung;
+  
+  public var tag(default,null):String;
+
+  public function toString(){
+    return 'path: $cursor at ${this.content.index}:#(${head()})';
+  }
+  inline public function head() : Option<I> {
+    return __.option(this.content.head());
+  }
+  public function copy(?content,?memo,?tag,?cursor,?tree):ParseInputCls<I>{
+    return make(
+      __.option(content).defv(this.content),
+      __.option(memo).defv(this.memo),
+      __.option(tag).defv(this.tag),
+      __.option(cursor).defv(this.cursor),
+      __.option(tree).defv(this.tree)
+    );
+  }
+  private function new(content,memo,tag,cursor:Array<String>,tree){
+    this.content  = content;
+    this.memo     = memo;
+    this.tag      = tag;
+    this.cursor   = __.option(cursor).defv([]);
+    this.tree     = __.option(tree).def(Lung.unit);
+  }
+  public function inside(index:Int,name:String){
+    return this.copy(
+      null,null,null,null,this.tree.push(index,name)
+    );
+  }
+  public function push(tag:String){
+    return copy(null,null,null,cursor.snoc(tag));
+  }
+  public function pop(){
+    return copy(null,null,null,cursor.ltaken(cursor.length-1));
+  }
 }
 
-@:forward(memo,tag)abstract ParseInput<I>(ParseInputDef<I>) from ParseInputDef<I>{
-  @:noUsing static public function lift<I>(self:ParseInputDef<I>):ParseInput<I>{
+@:forward(memo,tag,head,inside,push,pop)abstract ParseInput<I>(ParseInputCls<I>) from ParseInputCls<I>{
+  @:noUsing static public function lift<I>(self:ParseInputCls<I>):ParseInput<I>{
     return self;
   }
-  @:noUsing static public function make<I>(content:Enumerable<Dynamic,I>,memo:Memo,?tag:String):ParseInput<I>{
-    return {
-      content : content,
-      memo    : memo,
-      tag     : tag
-    };
+  @:noUsing static public function make<I>(content:Enumerable<Dynamic,I>,memo:Memo,?tag:String,?cursor,?tree):ParseInput<I>{
+    return ParseInputCls.make(content,memo,tag,cursor,tree);
   }
   static public function pure<T>(en:Enumerable<Dynamic,T>):ParseInput<T>{
-    return {
-      content : en,
-      memo    : Memo.unit()
-    };
+    return make(en,Memo.unit());
   }
   inline public function drop(len : Int) : ParseInput<I> {
-    return {
-      content : this.content.drop(len),
-      memo    : this.memo
-    };
+    return this.copy(this.content.drop(len));
   }
   inline public function take<T>(?len):T{
     return this.content.take(len);
@@ -50,9 +81,6 @@ typedef ParseInputDef<I> = {
   }
   inline public function matchedBy(e:I->Bool) : Bool {
     return this.content.match(e);
-  }
-  inline public function head() : Option<I> {
-    return __.option(this.content.head());
   }
 
   inline public function position<I>(r : ParseInput<I>) : Int return this.content.index;
@@ -80,9 +108,6 @@ typedef ParseInputDef<I> = {
     this.memo.memoEntries.set(key, entry);
     return entry;
   }
-  public function toString(){
-    return 'at ${this.content.index}:#(${head()})';
-  }
   public function is_end(){
     return this.content.is_end();
   }
@@ -93,5 +118,12 @@ typedef ParseInputDef<I> = {
   private var content(get,never):Enumerable<Dynamic,I>;
   function get_content(){
     return this.content;
+  }
+  public var index(get,never):Int;
+  function get_index(){
+    return this.content.index;
+  }
+  public function prj(){
+    return this;
   }
 }

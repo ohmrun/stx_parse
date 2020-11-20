@@ -12,12 +12,14 @@ class Regex extends Sync<String,String>{
     this.tag   = Some('Regex($stamp)');
   }
   override inline function apply(ipt:ParseInput<String>){
-    var ereg        = new RegExp(stamp,"g");
-    var is_matched  = ipt.matchedBy(ereg.test);
-    __.log().debug('stamp="$stamp" is_matched="$is_matched" ');
+    var reg         = new EReg(stamp,"g");
+    //var ereg        = new RegExp(stamp,"g");
+    var is_matched  = ipt.matchedBy(reg.match);
+    //__.log().debug('stamp="$stamp" is_matched="$is_matched" ');
     return if (is_matched) {
-      var match         = new RegExp(stamp,"g").parsify(ipt);//TODO
-      var length        = match.groups[0].length;
+      var match         = reg.matched(0);
+      //new RegExp(stamp,"g").parsify(ipt);//TODO
+      var length        = match.length;
       ipt.drop(length).ok(ipt.take(length));
     }else{
       ipt.fail('$stamp not matched to |||${ipt.take()}|||',false,pos);

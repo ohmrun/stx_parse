@@ -1,16 +1,16 @@
 package stx.parse.parser.term;
 
-class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
-  var transform : T -> U;
-
-  public function new(delegation:Parser<I,T>,transform:T->U,?id:Pos){
-    super(delegation,id);
+abstract class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
+  
+  public function new(delegation:Parser<I,T>,?pos:Pos){
+    super(delegation,pos);
     #if debug
-      __.assert().exists(id);
+      __.assert().exists(pos);
     #end
-    this.transform  = transform; 
     this.tag        = delegation.tag;
   }
+  abstract function transform(t:T):U;
+
   override public function check(){
     __.that(pos).exists().errata(e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
   }

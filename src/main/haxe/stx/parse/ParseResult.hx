@@ -78,6 +78,12 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       (_) -> None
     );
   }
+  public function fudge():R{
+    return fold(
+      (s) -> s.with.defv(null),
+      (e) -> throw e
+    );
+  }
   public function error():Option<ParseFailure<P>>{
     return fold(
       (_) -> None,
@@ -88,6 +94,12 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
     return fold(
       _ -> true,
       _ -> false
+    );
+  }
+  public inline function is_defined(){
+    return fold(
+      ok -> ok.is_defined(),
+      no -> false
     );
   }
   public function prj():ParseResultDef<P,R> return this;
@@ -105,5 +117,21 @@ class ParseResultLift{
     seed: seed,
     rule: rule.elide(),
     head: head
+  }
+  static public function mod<P,R>(self:ParseResult<P,R>,fn:ParseInput<P> -> ParseInput<P>):ParseResult<P,R>{
+    return self.fold(
+      ok -> ok.mod(fn).toParseResult(),
+      no -> no.mod(fn).toParseResult()
+    );
+  }
+  static public function flat_map<P,Ri,Rii>(self:ParseResult<P,Ri>,fn:Ri->ParseResult<P,Rii>):ParseResult<P,Rii>{
+    return self.fold(
+      succ -> succ.with.map(
+        (rI) -> fn(rI)
+      ).def(
+        () -> ParseSuccess.make(succ.rest,None).toParseResult()
+      ),
+      fail -> fail.toParseResult()
+    );   
   }
 }

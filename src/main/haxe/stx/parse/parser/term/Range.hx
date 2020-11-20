@@ -22,4 +22,9 @@ class Range extends Sync<String,String>{
         ipt.fail('null head');
     }
   }
+  override public function toString(){
+    var l = String.fromCharCode(min);
+    var r = String.fromCharCode(max);
+    return 'Range($l...$r)';
+  }
 }

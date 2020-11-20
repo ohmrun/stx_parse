@@ -16,4 +16,7 @@ class Or<P,R> extends ThroughBind<P,R,R>{
       no -> rhs
     );
   }
-}      
+  override public function toString(){
+    return 'Or($delegate $rhs)';
+  }
+}       

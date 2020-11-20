@@ -33,3 +33,6 @@ typedef MemoDef = {
     }
   }
 }
+class MemoEntryLift{
+  //static public function 
+}

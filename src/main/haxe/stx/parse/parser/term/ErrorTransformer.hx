@@ -21,7 +21,7 @@ class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
   private function mod(result:ParseResult<I,O>):ParseResult<I,O>{
     return result.fold(
       ParseResult.success,
-      (e) -> e.mod(transformer)
+      (e) -> e.errata(transformer)
     );
   }
   override inline public function apply(input:ParseInput<I>):ParseResult<I,O>{

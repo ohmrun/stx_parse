@@ -34,24 +34,17 @@ class Parse{
 		return new stx.parse.parser.term.Anything().asParser();
 	}
 	static public function something<I>():Parser<I,I>{
-		return Parser.SyncAnon(
-			(input:ParseInput<I>)->{
-			return if(input.is_end()){
-				input.fail('EOF');
-			}else{
-				__.noop()(input.head()).fold(
-					v 	-> input.tail().ok(v),
-					() 	-> input.tail().fail('anything')
-				);
-			}
-		}).asParser();
+		return Parser.Something();
 	}
 	@:note("0b1kn00b","Lua fix")
-	@:noUsing static public function range(min:Int, max:Int):Parser<String,String>{
+	@:noUsing static public inline function range(min:Int, max:Int):Parser<String,String>{
 		return Parser.Range(min,max);
 	}
 	@:noUsing static public function mergeString(a:String,b:String){
 		return a + b;
+	}
+	@:noUsing static public function mergeArray<T>(a:Array<T>,b:Array<T>){
+		return a.concat(b);
 	}
 	@:noUsing static public function mergeOption<T>(a:String, b:Option<String>){
 		return switch (b){ case Some(v) : a += v ; default : ''; } return a; 
@@ -116,12 +109,12 @@ class Parse{
 		return p.and_(whitespace.many());
 	}
 	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
-		return Parser.Named(Parser.SyncAnon(
+		return Parser.SyncAnon(
 			(input:ParseInput<I>) -> input.head().fold(
 				(vI) -> v == vI ? input.tail().ok(vI) : input.fail('eq'),
 				() -> input.fail('eq')
 			)
-		).asParser(),'eq').asParser();
+		,'eq').asParser();
 	}
 }
 class LiftParse{
@@ -185,7 +178,8 @@ class LiftParse{
 						)
 					)
 				).toInternal().defer(input,cont);
-			}
+			},
+			Some('sub')
 		);
 	}
 	static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {

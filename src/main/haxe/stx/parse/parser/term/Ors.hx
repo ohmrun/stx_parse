@@ -1,12 +1,14 @@
 package stx.parse.parser.term;
 
+
+//TODO Broken
 class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
   public function new(delegation,?id:Pos){
     super(delegation,id);
   }
   override function check(){
     for(delegate in delegation){
-      if(delegate == null){  throw('undefined parse delegate in $delegate'); }
+      __.assert().exists(delegate);
     }
   }
   override function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
@@ -24,6 +26,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
                   var n = idx;
                   idx   = idx + 1;
                   var d = delegation[n];
+                  trace('${res.rest.index} $d');
                   Arrowlet.Then(d,Arrowlet.Anon(rec)).toInternal().defer(input,cont);//TODO can a failure consume?
                 }else{
                   var opts = delegation.map(_ -> _.tag);

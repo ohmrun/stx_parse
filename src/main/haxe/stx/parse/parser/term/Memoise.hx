@@ -9,7 +9,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
     return this.id+"@"+pos;
   }
   @:privateAccess override inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
-    __.log().debug('memoise');
+    //__.log().debug('memoise');
     var res =  Arrowlet.Then(
       delegation.recall(genKey, ipt),
       Arrowlet.Anon(

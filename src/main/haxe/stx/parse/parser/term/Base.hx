@@ -4,10 +4,10 @@ abstract class Base<I,O,T> extends ParserCls<I,O>{
 
   private var delegation        : T;
 
-  public function new(?delegation:T,?pos:Pos){
+  public function new(?delegation:T,?tag:Option<String>,?pos:Pos){
     super(pos);
     this.delegation = delegation;
-    this.tag        = Some(name());
+    this.tag        = __.option(tag).flatten().or(() -> Some(name()));
   }
   function check(){}
   override public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{

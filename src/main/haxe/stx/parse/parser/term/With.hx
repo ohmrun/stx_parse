@@ -4,8 +4,8 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   public function new(l:Parser<I,T>,r:Parser<I,U>,?pos:Pos){
     __.assert().exists(l);
     __.assert().exists(r);
-    __.log().debug('${l} ${r}');
-    __.log().debug('${l.tag} ${r.tag}');
+    //__.log().debug('${l} ${r}');
+    //__.log().debug('${l.tag} ${r.tag}');
     super(__.couple(l,r),pos);
     this.tag = switch([l.tag,r.tag]){
       case [Some(l),Some(r)]  : Some('($l) ($r)');
@@ -20,31 +20,38 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
     return delegation.fst().toInternal().defer(
       input,
       cont.joint(
-        (outcome:Outcome<ParseResult<I,T>,Defect<Noise>>) -> outcome.fold(
-          result -> result.fold(
-            (ok) -> delegation.snd().toInternal().defer(
-              ok.rest,
-              cont.joint(
-                (outcomeI:Outcome<ParseResult<I,U>,Defect<Noise>>) -> outcomeI.fold(
-                  (result) -> result.fold(
-                    (okI) -> cont.value(
-                        transform(ok.with.defv(null),okI.with.defv(null))
-                        .map(
-                          (z) -> okI.rest.ok(z)
-                        ).defv(okI.rest.nil())
-                    ).serve(),
-                    (no)  -> cont.value(
-                        no.tack(input).toParseResult()
-                    ).serve()
-                  ),
-                  error -> cont.error(error).serve()
-                )
-              )  
-            ),
-            (no) -> cont.value(no.toParseResult()).serve()
-            ),
-          error  -> cont.error(error).serve()
-        )
+        (outcome:Outcome<ParseResult<I,T>,Defect<Noise>>) -> {
+          __.assert().exists(outcome);
+          return outcome.fold(
+            result -> {
+              __.assert().exists(result);
+              return result.fold(
+                (ok) -> delegation.snd().toInternal().defer(
+                  ok.rest,
+                  cont.joint(
+                    (outcomeI:Outcome<ParseResult<I,U>,Defect<Noise>>) -> outcomeI.fold(
+                      (result) -> result.fold(
+                        (okI) -> cont.value(
+                            transform(ok.with.defv(null),okI.with.defv(null))
+                            .map(
+                              (z) -> okI.rest.ok(z)
+                            ).defv(okI.rest.nil())
+                        ).serve(),
+                        (no)  -> cont.value(
+                            no.tack(input).toParseResult()
+                        ).serve()
+                      ),
+                      error -> cont.error(error).serve()
+                    )
+                  )  
+                ),
+                (no) -> cont.value(no.toParseResult()).serve()
+              );
+            },
+            error  -> cont.error(error).serve()
+                      
+          );
+        }
       )
     );
   }
@@ -62,5 +69,8 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   }
   override public function get_convention(){
     return delegation.fst().convention || delegation.snd().convention;
+  }
+  override public function toString(){
+    return '${name()}(${delegation.toString()})';
   }
 }

@@ -4,34 +4,24 @@ class EofTest extends utest.Test{
   
   public function testSucceed(){
     var ipt = "";
-    var prs = Parser.eof();
-    var out = prs.parse(ipt.reader());
-    switch(out){
-      case Success(x,xs):
-      case Failure(er,xs,e):
-        throw(er);
-    }
+    var prs = Parser.Eof();
+    var res = prs.apply(ipt.reader());
+    var out = res.fudge();
+    equals(res.rest.index,0);
   }
   
   public function testFail(){
     var ipt = "x";
-    var prs = Parser.eof();
-    var out = prs.parse(ipt.reader());
-    switch(out){
-      case Success(x,xs):
-        throw "should not have succeeded";
-      case Failure(er,xs,e):
-    }
+    var prs = Parser.Eof();
+    utest.Assert.raises(
+      () -> prs.apply(ipt.reader()).fudge()
+    );
   }
-  @Ignored
   public function testConsumeThen(){
     var ipt = "x";
-    var prs = Base.anything()._and(Parser.eof());
-    var out = prs.parse(ipt.reader());
-    switch(out){
-      case Success(x,xs):
-        throw "should not have succeeded";
-      case Failure(er,xs,e):
-    }
+    var prs = Parse.anything()._and(Parser.Eof());
+    var res = prs.apply(ipt.reader());
+    var out = res.fudge();
+    equals(res.rest.index,1);
   }
 }

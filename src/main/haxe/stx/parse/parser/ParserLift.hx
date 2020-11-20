@@ -7,10 +7,11 @@ class ParserLift{
     return Parser.Or(pI,p2).asParser();
   }
   static public inline function ors<I,T>(self:Parser<I,T>,rest:Array<Parser<I,T>>):Parser<I,T>{
-    return Parser.Ors([self].concat(rest)).asParser();
+    //return Parser.Ors([self].concat(rest)).asParser();
+    return [self].concat(rest).lfold1((memo,next) -> memo.or(next)).defv(self);
   }
   static public inline function then<I,T,U>(p:Parser<I,T>,f : T -> U):Parser<I,U>{
-    return Parser.Then(p,f).asParser();
+    return Parser.AnonThen(p,f).asParser();
   }
   static public inline function and_then<I,T,U>(p:Parser<I,T>,fn:T->Parser<I,U>):Parser<I,U>{
     return Parser.AndThen(p,fn).asParser();
@@ -59,9 +60,6 @@ class ParserLift{
   static public inline function trace<I,T>(p : Parser<I,T>, f : T -> String):Parser<I,T> return
     return then(p,function (x:T) { trace(f(x)); return x;} );
 
-  //static public inline function print<I,O>(p : Parser<I,O>,f : ParseInput<I> -> String):Parser<I,I>{
-    //return Parser.
-  //}
   // static public inline function xs<I,T>(p:Parser<I,T>, f : ParseInput<I> -> Void):Parser<I,T>{
   //   return new Parser(new Anon(function(i:ParseInput<I>):ParseResult<I,T>{
   //     var out = p.parse(i);
@@ -69,10 +67,10 @@ class ParserLift{
   //     return out;
   //   }));
   // }  
-  static public inline function repIsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
+  static public inline function repIsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser <I, Array<T>> {
     return new Rep1Sep(pI,sep).asParser(); /* Optimize that! */
   }
-  static public inline function repIsep0<I,T,U>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Array<T>> {
+  static public inline function repIsep0<I,T,U>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Array<T>>{
     var next : Parser<I,Array<Couple<T,T>>> = many(and(sep,pI)).asParser();
     return then(and(pI,next).asParser(),
       function (t){ 
@@ -89,7 +87,7 @@ class ParserLift{
     return or(repIsep0(pI,sep),Succeed.pure([])).asParser();
   }
   static public inline function repsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
-    return new RepSep(pI,sep).asParser(); /* Optimize that! */
+    return new Rep1Sep(pI,sep).asParser(); /* Optimize that! */
   }
   static public inline function option<I,T>(p:Parser<I,T>):Parser<I,StdOption<T>>{
     return new Parser(new stx.parse.parser.term.Option(p));
@@ -106,8 +104,8 @@ class ParserLift{
   /**
 	 * Returns true if the parser fails and vice versa.
 	 */
-	static public function not<I,O>(p:Parser<I,O>):Parser<I,O>{
-		return new Not(p).asParser();
+	static public inline function not<I,O>(p:Parser<I,O>,?pos:Pos):Parser<I,O>{
+		return new Not(p,pos).asParser();
 	}
   static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
     return new stx.parse.parser.term.AndThen(

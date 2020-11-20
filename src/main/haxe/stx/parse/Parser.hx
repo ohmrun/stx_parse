@@ -3,7 +3,7 @@ package stx.parse;
 import stx.parse.parser.term.*;
 @:using(stx.parse.parser.ParserLift)
 @:forward abstract Parser<I,O>(ParserApi<I,O>) to ParserApi<I,O>{
-  public function new(self:ParserApi<I,O>) this = self;
+  public inline function new(self:ParserApi<I,O>) this = self;
   static public var _(default,never) = ParserLift;
    
   @:noUsing static inline public function fromConstructor<I,O>(fn:Void->Parser<I,O>):Parser<I,O>{
@@ -12,11 +12,11 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function fromParserApi<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);
   }
-  @:noUsing static inline public function fromFunction<I,O>(f:ParseInput<I>->ParseResult<I,O>):Parser<I,O>{
-    return new SyncAnon(f).asParser();
+  @:noUsing static inline public function fromFunction<I,O>(f:ParseInput<I>->ParseResult<I,O>,tag):Parser<I,O>{
+    return new SyncAnon(f,tag).asParser();
   }
-  @:noUsing static inline public function fromParseInputProvide<I,O>(self:ParseInput<I>->Provide<ParseResult<I,O>>):Parser<I,O>{
-    return lift(Anon(Convert.fromConvertProvide(self).toArrowlet().defer));
+  @:noUsing static inline public function fromParseInputProvide<I,O>(self:ParseInput<I>->Provide<ParseResult<I,O>>,tag):Parser<I,O>{
+    return lift(Anon(Convert.fromConvertProvide(self).toArrowlet().defer,tag));
   }
   @:noUsing static inline public function lift<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);
@@ -36,12 +36,12 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function Arrow<P,R>(fn:Arrowlet<ParseInput<P>,ParseResult<P,R>,Noise>,?pos:Pos):Parser<P,R>{
     return new Arrow(fn,pos).asParser();
   }
-  @:noUsing static inline public function Anon<P,R>(fn:ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function Anon<P,R>(fn:ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag:Option<String>,?pos:Pos):Parser<P,R>{
     //trace(fn);
-    return new Anon(fn,pos).asParser();
+    return new Anon(fn,tag,pos).asParser();
   }
-  @:noUsing static inline public function SyncAnon<P,R>(fn:ParseInput<P> -> ParseResult<P,R>,?pos:Pos):Parser<P,R>{
-    return new SyncAnon(fn,pos).asParser();
+  @:noUsing static inline public function SyncAnon<P,R>(fn:ParseInput<P> -> ParseResult<P,R>,tag:Option<String>,?pos:Pos):Parser<P,R>{
+    return new SyncAnon(fn,tag,pos).asParser();
   }
   @:noUsing static inline public function TaggedAnon<P,R>(fn:ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag,?pos:Pos):Parser<P,R>{
     return new TaggedAnon(fn,tag,pos).asParser();
@@ -73,8 +73,8 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function Ors<I,T>(ps : Array<Parser<I,T>>):Parser <I,T>{
     return new stx.parse.parser.term.Ors(ps).asParser();
   }
-  @:noUsing static inline public function Then<I,T,U>(p : Parser<I,T>, f : T -> U):Parser <I,U>{
-    return new stx.parse.parser.term.Then(p,f).asParser();
+  @:noUsing static inline public function AnonThen<I,T,U>(p : Parser<I,T>, f : T -> U):Parser <I,U>{
+    return new stx.parse.parser.term.AnonThen(p,f).asParser();
   }
   @:noUsing static inline public function AndThen<I,T,U>(p: Parser<I,T>, f : T -> Parser<I,U>):Parser <I,U>{
     return new stx.parse.parser.term.AndThen(p,f).asParser();
@@ -94,17 +94,29 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function Identifier(str:String):Parser<String,String>{
     return new stx.parse.parser.term.Identifier(str).asParser();
   }
-  @:noUsing static public function Choose<I,O>(fn:I->Option<O>): Parser<I,O>{
-    return new stx.parse.parser.term.Choose(fn).asParser();
+  @:noUsing static public function Option<I,O>(p:Parser<I,O>): Parser<I,Option<O>>{
+    return new stx.parse.parser.term.Option(p).asParser();
   }
-  @:noUsing static public function When<I>(fn:I->Bool):Parser<I,I>{
-    return new stx.parse.parser.term.When(fn).asParser();
+  @:noUsing static public inline function Choose<I,O>(fn:I->Option<O>,?tag:Option<String>,?pos:Pos): Parser<I,O>{
+    return new stx.parse.parser.term.Choose(fn,tag,pos).asParser();
+  }
+  @:noUsing static public inline function When<I>(fn:I->Bool,?tag:Option<String>,?pos:Pos):Parser<I,I>{
+    return new stx.parse.parser.term.When(fn,tag,pos).asParser();
+  }
+  @:noUsing static public inline function Materialize<I,O>(parser:Parser<I,O>):Parser<I,O>{
+    return new stx.parse.parser.term.Materialize(parser).asParser();
   }
   @:noUsing static public function Inspect<I,O>(parser:Parser<I,O>,?prefix:ParseInput<I>->Void,?postfix:ParseResult<I,O>->Void,?pos:Pos):Parser<I,O>{
     return new stx.parse.parser.term.Inspect(parser,prefix,postfix,pos).asParser();
   }
   @:noUsing static inline public function TagError<I,O>(parser:Parser<I,O>,name:String,?pos:Pos):Parser<I,O>{
     return new stx.parse.parser.term.TagError(parser,name,pos).asParser();
+  }
+  @:noUsing static inline public function Debug<P,R>(parser:Parser<P,R>):Parser<P,R>{
+    return new stx.parse.parser.term.Debug(parser).asParser();
+  }
+  @:noUsing static inline public function Something<P>():Parser<P,P>{
+    return new stx.parse.parser.term.Something().asParser();
   }
   var self(get,never):Parser<I,O>;
   function get_self():Parser<I,O> return lift(this);

@@ -4,9 +4,9 @@ typedef ParseSuccessDef<P,R> = RestWithDef<P,Option<R>>;
 
 @:forward abstract ParseSuccess<P,R>(ParseSuccessDef<P,R>) from ParseSuccessDef<P,R> to ParseSuccessDef<P,R>{
   public function new(self) this = self;
-  static public function lift<P,R>(self:ParseSuccessDef<P,R>):ParseSuccess<P,R> return new ParseSuccess(self);
+  static public inline function lift<P,R>(self:ParseSuccessDef<P,R>):ParseSuccess<P,R> return new ParseSuccess(self);
   
-  @:noUsing static public function make<P,R>(rest:ParseInput<P>,match:Option<R>):ParseSuccess<P,R>{
+  @:noUsing static public inline function make<P,R>(rest:ParseInput<P>,match:Option<R>):ParseSuccess<P,R>{
     return lift(
       RestWith.make(
         rest,
@@ -31,10 +31,15 @@ typedef ParseSuccessDef<P,R> = RestWithDef<P,Option<R>>;
       this.with
     );
   }
+  public inline function is_defined(){
+    return this.with.is_defined();
+  }
   @:to public function toParseResult():ParseResult<P,R>{
     return __.success(this);
   }
-
+  public function mod(fn:ParseInput<P>->ParseInput<P>):ParseSuccess<P,R>{
+    return make(fn(this.rest),this.with);
+  }
   public function prj():ParseSuccessDef<P,R> return this;
   private var self(get,never):ParseSuccess<P,R>;
   private function get_self():ParseSuccess<P,R> return lift(this);

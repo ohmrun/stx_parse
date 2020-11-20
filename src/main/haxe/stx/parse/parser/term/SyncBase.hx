@@ -2,15 +2,13 @@ package stx.parse.parser.term;
 
 abstract class SyncBase<I,O,T> extends Base<I,O,T>{
 
-  public function new(?delegation:T,?pos:Pos){
-    super(pos);
+  public function new(?delegation:T,?tag:Option<String>,?pos:Pos){
+    super(tag,pos);
     this.delegation = delegation;
-    this.tag        = Some(name());
   }
   public override inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     this.result = apply(ipt);
     this.status = Secured;
-
-    return cont.lense(this).serve();
+    return cont.value(result).serve();
   }
 }

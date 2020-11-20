@@ -1,23 +1,17 @@
 package stx.parse.parser.term;
 
-class OneMany<I,O> extends Many<I,O>{
+using stx.parse.parser.term.OneMany;
 
-  override function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
-    __.assert(delegation.pos).exists(delegation);
-
-    return Arrowlet.Then(
-      delegation,
-      Arrowlet.Anon(
-        (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Array<O>>,Noise>) -> (res).fold(
-          (ok:ParseSuccess<I,O>) -> Convert.lift(new Many(delegation)).provide(ok.rest).convert(
-            ((nxt:ParseResult<I,Array<O>>) -> (nxt).fold(
-                okI -> okI.rest.ok(ok.with.toArray().concat(okI.with.defv([]))),
-                no  -> no.is_fatal() ? ParseResult.failure(no) : nxt.rest.ok(ok.with.toArray())
-            ))
-          ).prepare(cont),
-          (no) -> cont.value(no.toParseResult()).serve()
-        )
-      )
-    ).toInternal().defer(input,cont);
+function log(wildcard:Wildcard){
+  return stx.parse.Log.log(wildcard).tag('stx.parse.OneMany');
+}
+class OneMany<P,R> extends With<P,R,Array<R>,Array<R>>{
+  public function new(l:Parser<P,R>,?pos:Pos){
+    super(l,Parser.Many(l),pos);
+  }
+  override public function transform(lhs:Null<R>,rhs:Null<Array<R>>):stx.Option<Array<R>>{
+    return __.option(lhs).map(
+      (oI:R) -> [oI].concat(__.option(rhs).defv([]))
+    );
   }
 } 

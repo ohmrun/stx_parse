@@ -5,7 +5,10 @@ class SimpleRecursionLangTest extends utest.Test{
     var reader = '1+2'.reader();
     Lang.p_expr.provide(reader).environment(
       (x) -> {
-        //trace(x);
+        same(
+          x.value().defv(null),
+          Plus(Num(1),Num(2))
+        );
         async.done();
       }
     ).crunch();
@@ -14,10 +17,10 @@ class SimpleRecursionLangTest extends utest.Test{
     var t   = "1+2+3x4x9x10";
     var t0  = haxe.Timer.stamp();
     var o   = Lang.p_expr.provide(t.reader()).fudge();
-    trace(haxe.Timer.stamp() - t0);
-    //trace(o);
-    isTrue(true);
-    //Some(Mult(Num(3),Mult(Num(4),Mult(Num(9),Num(10)))))
+    //__.log().info(haxe.Timer.stamp() - t0);
+    //__.log().info(o);
+    
+    same(Plus(Num(1),Plus(Num(2),Mult(Num(3),Mult(Num(4),Mult(Num(9),Num(10)))))),o.value().defv(null));
   }
 }
 

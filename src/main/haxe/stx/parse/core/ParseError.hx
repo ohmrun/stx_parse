@@ -20,6 +20,9 @@ typedef ParseErrorInfoDef = {
   public function tag(name):ParseErrorInfo{
     return make(this.idx,name,this.fatal);
   }
+  public function toString(){
+    return '${this.msg}@${this.idx}';
+  }
 }
 @:forward abstract ParseError(Err<ParseErrorInfo>) from Err<ParseErrorInfo> to Err<ParseErrorInfo>{
   @:noUsing static public function at_with(input:ParseInput<Dynamic>,msg,?fatal=false,?label:String,?pos:Pos):ParseError{

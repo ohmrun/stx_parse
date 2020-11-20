@@ -16,8 +16,8 @@ class Anon<P,R> extends Direct<P,R>{
 
   var method : ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work;
   
-  public function new(method: ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,?id:Pos){
-    super(id);
+  public function new(method: ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag:Option<String>,?pos:Pos){
+    super(tag,pos);
     this.method = method;
   }
   override inline public function defer(ipt:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>){
@@ -28,5 +28,8 @@ class Anon<P,R> extends Direct<P,R>{
   }
   override inline public function apply(ipt:ParseInput<P>):ParseResult<P,R>{
     return throw E_Arw_IncorrectCallingConvention;
+  }
+  override public function toString(){
+    return 'Anon($tag)';
   }
 }

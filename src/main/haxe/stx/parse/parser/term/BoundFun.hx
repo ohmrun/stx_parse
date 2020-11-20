@@ -9,7 +9,7 @@ abstract class BoundFun<I,O,Oi> extends ParserCls<I,Oi>{
   }
   abstract private function bound(input:ParseInput<I>,result:ParseResult<I,O>):ParseResult<I,Oi>;
 
-  override public inline function defer(i:ParseInput<I>,cont:Terminal<ParseResult<I,Oi>,Noise>):Work{
+  override public function defer(i:ParseInput<I>,cont:Terminal<ParseResult<I,Oi>,Noise>):Work{
     return @:privateAccess Arrowlet.ThenFun(parser.toArrowlet(),bound.bind(i)).toInternal().defer(i,cont);
   }
   override public function apply(input:ParseInput<I>):ParseResult<I,Oi>{
@@ -22,6 +22,7 @@ abstract class BoundFun<I,O,Oi> extends ParserCls<I,Oi>{
   override public function get_convention(){
     return this.parser.toInternal().convention;
   }
-
-  
+  override public function toString(){
+    return parser.toString();
+  }  
 }

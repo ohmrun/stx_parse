@@ -1,13 +1,13 @@
 package stx.parse.parser.term;
 
-class Inspect<I,O> extends Base<I,O,Parser<I,O>>{
+class Inspect<I,O> extends Delegate<I,O>{
   private dynamic function prefix(input:ParseInput<I>){
     if(input.tag!=null){
-      __.log()('${input.tag} "${input.head()}"',pos);
+      //__.log()('${input.tag} "${input.head()}"',pos);
     }
   }
   private dynamic function postfix(result:ParseResult<I,O>){
-    __.log()(result.toString(),pos);
+    //__.log()(result.toString(),pos);
   }
   public function new(delegation,?prefix:ParseInput<I> -> Void,?postfix:ParseResult<I,O> -> Void,?id:Pos){
     super(delegation,id);
@@ -36,5 +36,8 @@ class Inspect<I,O> extends Base<I,O,Parser<I,O>>{
   }
   override public function get_convention(){
     return this.delegation.convention;
+  }
+  override public function toString(){
+    return '${name()}($delegation)';
   }
 }

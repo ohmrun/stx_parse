@@ -71,8 +71,8 @@ class SimpleParserTest extends utest.Test{
           (v:String) 	-> input.tail().ok(v),
           () 	        -> input.tail().nil()
         );
-      } 
-    );
+      }
+    ,Some('stat'));
     var result = parser.provide(reader).fudge();
     equals("a",result.value().defv(""));
   }
@@ -96,8 +96,8 @@ class SimpleParserTest extends utest.Test{
   }
   public function test_choose(){
     var reader  = "a".reader();
-    var parser  = Parser.Choose((str:String) -> __.log().through()(Some(str)));
+    var parser  = Parser.Choose((str:String) -> (Some(str)));
     var result  = parser.provide(reader).fudge();
-    trace(result);
+    same("a",result.value().fudge());
   }
 }
