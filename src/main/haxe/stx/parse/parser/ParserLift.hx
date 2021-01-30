@@ -67,10 +67,10 @@ class ParserLift{
   //     return out;
   //   }));
   // }  
-  static public inline function repIsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser <I, Array<T>> {
+  static public inline function rep1sep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser <I, Array<T>> {
     return new Rep1Sep(pI,sep).asParser(); /* Optimize that! */
   }
-  static public inline function repIsep0<I,T,U>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Array<T>>{
+  static public inline function rep1sep0<I,T,U>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Array<T>>{
     var next : Parser<I,Array<Couple<T,T>>> = many(and(sep,pI)).asParser();
     return then(and(pI,next).asParser(),
       function (t){ 
@@ -84,10 +84,10 @@ class ParserLift{
     ).asParser(); /* Optimize that! */
   }
   static public inline function repsep0<I,T>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser < I, Array<T> > {
-    return or(repIsep0(pI,sep),Succeed.pure([])).asParser();
+    return or(rep1sep0(pI,sep),Succeed.pure([])).asParser();
   }
   static public inline function repsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
-    return new Rep1Sep(pI,sep).asParser(); /* Optimize that! */
+    return new Rep1Sep(pI,sep).asParser(); /* Optimize that! */ 
   }
   static public inline function option<I,T>(p:Parser<I,T>):Parser<I,StdOption<T>>{
     return new Parser(new stx.parse.parser.term.Option(p));
@@ -123,6 +123,9 @@ class ParserLift{
   static public inline function tag_error<I,T>(p:Parser<I,T>, name : String, ?pos: Pos ):Parser<I,T>
     return Parser.TagError(p,name,pos);
 
+  static public inline function with_tag<P,R>(p:Parser<P,R>,tag:String){
+    return Parser.Named(p,tag);
+  }
   /**
    * Lift a parser to a packrat parser (memo is derived from scala's library)
    */

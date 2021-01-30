@@ -1,7 +1,7 @@
 package stx.parse.parser.term;
 
 class Something<I> extends Sync<I,I>{
-  override inline public function apply(input:ParseInput<I>):ParseResult<I,I>{
+  inline public function apply(input:ParseInput<I>):ParseResult<I,I>{
     return if(input.is_end()){
       input.fail('EOF');
     }else{
@@ -10,5 +10,8 @@ class Something<I> extends Sync<I,I>{
         () 	-> input.tail().fail('Something')
       );
     }
+  }
+  override public function toString(){
+    return "()";
   }
 }

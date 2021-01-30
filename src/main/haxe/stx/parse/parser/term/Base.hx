@@ -7,15 +7,14 @@ abstract class Base<I,O,T> extends ParserCls<I,O>{
   public function new(?delegation:T,?tag:Option<String>,?pos:Pos){
     super(pos);
     this.delegation = delegation;
-    this.tag        = __.option(tag).flatten().or(() -> Some(name()));
   }
   function check(){}
-  override public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return cont.value(apply(ipt)).serve();
   }
 
   override public function toString(){
     //var id_s = Position.fromPos(pos).toStringClassMethodLine();
-    return '$tag';
+    return '${name()}';
   }
 }

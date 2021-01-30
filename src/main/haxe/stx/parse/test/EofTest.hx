@@ -19,7 +19,7 @@ class EofTest extends utest.Test{
   }
   public function testConsumeThen(){
     var ipt = "x";
-    var prs = Parse.anything()._and(Parser.Eof());
+    var prs = Parser.Whatever()._and(Parser.Eof());
     var res = prs.apply(ipt.reader());
     var out = res.fudge();
     equals(res.rest.index,1);

@@ -12,12 +12,11 @@ using stx.Nano;
 using stx.Log;
 using stx.Assert;
 using stx.Ds;
-using stx.Ext;
 using stx.Arw;
 using stx.Async;
 
 
-import stx.ext.alias.StdMap;
+import haxe.ds.Map in StdMap;
 
 
 using stx.parse.Core;

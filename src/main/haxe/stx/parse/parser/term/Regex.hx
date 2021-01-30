@@ -11,7 +11,7 @@ class Regex extends Sync<String,String>{
     this.stamp = stamp;
     this.tag   = Some('Regex($stamp)');
   }
-  override inline function apply(ipt:ParseInput<String>){
+  inline function apply(ipt:ParseInput<String>){
     var reg         = new EReg(stamp,"g");
     //var ereg        = new RegExp(stamp,"g");
     var is_matched  = ipt.matchedBy(reg.match);
@@ -24,5 +24,8 @@ class Regex extends Sync<String,String>{
     }else{
       ipt.fail('$stamp not matched to |||${ipt.take()}|||',false,pos);
     }
+  }
+  override public function toString(){
+    return '~/$stamp/';
   }
 }

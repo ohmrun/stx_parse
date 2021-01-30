@@ -4,16 +4,16 @@ import stx.ds.LinkedList in StxLinkedList;
 
 class LinkedList<T> extends EnumerableCls<StxLinkedList<T>,T>{
   
-  override public function is_end(){
+  public function is_end(){
     return !this.data.is_defined();
   }
-  override public function match(fn){
+  public function match(fn){
     return fn(head());
   }
-  override public function prepend(v:T):Enumerable<StxLinkedList<T>,T>{
+  public function prepend(v:T):Enumerable<StxLinkedList<T>,T>{
     return new LinkedList(this.data.cons(v),index);
   }
-  override public function take(?len:Null<Int>):StxLinkedList<T>{
+  public function take(?len:Null<Int>):StxLinkedList<T>{
     return if(len == null){
       this.data;
     }else{
@@ -28,7 +28,7 @@ class LinkedList<T> extends EnumerableCls<StxLinkedList<T>,T>{
       go(this.data,len);
     }
   }
-  override public function drop(n:Int):Enumerable<StxLinkedList<T>,T>{
+  public function drop(n:Int):Enumerable<StxLinkedList<T>,T>{
     var i = n;
     var x = this.data;
     while(i>0){
@@ -40,7 +40,7 @@ class LinkedList<T> extends EnumerableCls<StxLinkedList<T>,T>{
     }
     return new LinkedList(x,index+n);
   }
-  override public function head():T{
+  public function head():T{
     return this.data.head();
   }
   public function asEnumerable():Enumerable<StxLinkedList<T>,T>{

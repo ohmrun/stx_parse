@@ -25,10 +25,13 @@ class Option<I,T> extends Base<I,StdOption<T>,Parser<I,T>>{
       )
     );
   }
-  override public function apply(input:ParseInput<I>):ParseResult<I,StdOption<T>>{
+  public function apply(input:ParseInput<I>):ParseResult<I,StdOption<T>>{
     return throw E_Arw_IncorrectCallingConvention;
   }
   override public function get_convention(){
     return this.delegation.convention;
+  }
+  override public function toString(){
+    return '$delegation?';
   }
 }

@@ -1,11 +1,13 @@
 -main Main
 
+-D debug
 -D analyzer-optimize
 
+-lib stx_pico
 -lib stx_nano
--lib stx_pico:1.0.0
+-lib stx_ds
 -lib stx_assert
--lib stx_fn:1.0.0
+-lib stx_fn
 -lib stx_arw
 -lib stx_test
 #-D no-inline
@@ -16,7 +18,7 @@
 -cp src/main/haxe
 -dce no
 --interp
-#-js test.js
+#--js bin/main.js
 #-neko bin/main.n
 #-cmd neko bin/main.n
 #--jvm bin/main.jar

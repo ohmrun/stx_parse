@@ -8,7 +8,7 @@ class ManyTest extends utest.Test{
       @:privateAccess new Terminal()
     );
   }
-  public function _test_1(){
+  public function test_1(){
     var reader = 'a'.reader();
     var parser = cons(reader);
     trace(parser);
@@ -24,7 +24,17 @@ class ManyTest extends utest.Test{
     trace('pursue');
     parser.pursue();
     trace(parser);
-    trace(parser.result);
+    trace('pursue');
+    parser.pursue();
+    trace(parser);
+    trace('pursue');
+    parser.pursue();
+    parser.pursue();
+    parser.pursue();
+    parser.pursue();
+    parser.pursue();
+    trace(parser);
+    trace(@:privateAccess parser.accum);
   }
 	public function test_eof_ok(){
 		var input 	= 'aa'.reader();

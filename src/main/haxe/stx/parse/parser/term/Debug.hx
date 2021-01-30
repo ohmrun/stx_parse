@@ -4,7 +4,7 @@ package stx.parse.parser.term;
 class Debug<P,R> extends Delegate<P,R>{
   override public function defer(ipt:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
     var base  = ipt.index;
-    var key   = this.delegation.identifier().split(".").last().defv("?");
+    var key   = this.delegation.identifier().name;
         //__.log()('+ $key');
         ipt   = ipt.push(key);
         //__.log()('${ipt.prj().cursor}');
@@ -30,7 +30,7 @@ class Debug<P,R> extends Delegate<P,R>{
     );
   }
   override public function apply(input:ParseInput<P>):ParseResult<P,R>{
-    var key   = this.delegation.identifier().split(".").last().defv("?");
+    var key   = this.delegation.identifier().name;
     //__.log()(key);
     input = input.push(key);
     

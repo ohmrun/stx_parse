@@ -6,7 +6,7 @@ package stx.parse.term;
     //trace('"${input.content.data}" ${input.offset}');
     return cont.value(apply(input)).serve();
   }
-  override public function apply(input:ParseInput<String>):ParseResult<String,String>{
+  public function apply(input:ParseInput<String>):ParseResult<String,String>{
     var all  : String = input.content.data;
     var data : String = all.substr(input.offset);
     var code = StringTools.fastCodeAt;

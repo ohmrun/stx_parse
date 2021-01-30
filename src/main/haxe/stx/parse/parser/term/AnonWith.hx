@@ -8,7 +8,7 @@ class AnonWith<I,T,U,V> extends With<I,T,U,V>{
   public dynamic function __transform(lhs:Null<T>,rhs:Null<U>){
     return throw 'constructor not called';
   }
-  override public inline function transform(lhs:Null<T>,rhs:Null<U>):Option<V>{
+  public inline function transform(lhs:Null<T>,rhs:Null<U>):Option<V>{
     return __transform(lhs,rhs);
   }
 }

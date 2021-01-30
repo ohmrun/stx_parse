@@ -22,7 +22,10 @@ abstract class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
       )
     ).prepare(cont);
   }
-  override inline public function apply(input:ParseInput<I>):ParseResult<I,U>{
+  inline public function apply(input:ParseInput<I>):ParseResult<I,U>{
     return this.delegation.apply(input).map(this.transform);
+  }
+  override public function toString(){
+    return '$delegation&';
   }
 }

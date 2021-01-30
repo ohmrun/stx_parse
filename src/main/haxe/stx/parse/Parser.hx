@@ -118,6 +118,15 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function Something<P>():Parser<P,P>{
     return new stx.parse.parser.term.Something().asParser();
   }
+  @:noUsing static inline public function Whatever<P>():Parser<P,P>{
+    return new stx.parse.parser.term.Whatever().asParser();
+  }
+  @:noUsing static inline public function Nothing<P>():Parser<P,P>{
+    return new stx.parse.parser.term.Nothing().asParser();
+  }
+  @:noUsing static inline public function Never<P>():Parser<P,P>{
+    return new stx.parse.parser.term.Never().asParser();
+  } 
   var self(get,never):Parser<I,O>;
   function get_self():Parser<I,O> return lift(this);
   public inline function asParser():Parser<I,O> return self;

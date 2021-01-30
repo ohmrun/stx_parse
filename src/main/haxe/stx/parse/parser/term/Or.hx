@@ -1,22 +1,37 @@
 package stx.parse.parser.term;
-class Or<P,R> extends ThroughBind<P,R,R>{
+class Or<P,R> extends ParserCls<P,R>{
+  var lhs : Parser<P,R>;
   var rhs : Parser<P,R>;
 
   public function new(lhs,rhs,?pos:Pos){
-    super(lhs,pos);
+    super(pos);
+    this.lhs = lhs;
     this.rhs = rhs;
-    this.tag = switch([lhs.tag,rhs.tag]){
-      case [Some(l),Some(r)]  : Some('$l || $r');
-      default                 : None;
-    }
   }
-  override function through_bind(input:ParseInput<P>,result:ParseResult<P,R>):Parser<P,R>{
-    return result.fold(
-      ok -> Parser.Stamp(result),
-      no -> rhs
+  inline function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
+    return lhs.defer(
+      input,
+      cont.joint(
+        (outcome:Reaction<ParseResult<P,R>>) -> outcome.fold(
+          (result)  -> {
+            return result.fold(
+              ok -> cont.value(ok.toParseResult()).serve(),
+              no -> rhs.defer(input,cont)
+            );
+          },
+          (error)   -> cont.error(error).serve()
+        )
+      )
+    );
+  }
+  inline public function apply(input:ParseInput<P>):ParseResult<P,R>{
+    var fst = lhs.apply(input);
+    return fst.ok().if_else(
+      () -> fst,
+      () -> rhs.apply(input)
     );
   }
   override public function toString(){
-    return 'Or($delegate $rhs)';
+    return '$lhs | $rhs';
   }
 }       

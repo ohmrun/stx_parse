@@ -17,15 +17,12 @@ class LAnon<I,O> extends Base<I,O,Parser<I,O>>{
     return if(delegation == null){
       open();
       __.assert().exists(delegation);
-
-      //this.id       = delegation.id;
-      //this.tag      = delegation.tag;
       this.delegation.defer(ipt,cont);
     }else{
       this.delegation.defer(ipt,cont);
     }
   }
-  override inline function apply(ipt:ParseInput<I>):ParseResult<I,O>{
+  inline function apply(ipt:ParseInput<I>):ParseResult<I,O>{
     return if(delegation == null){
       open();
       this.delegation.apply(ipt);

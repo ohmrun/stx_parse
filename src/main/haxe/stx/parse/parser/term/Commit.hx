@@ -7,7 +7,7 @@ class Commit<I,T> extends Base<I,T,Parser<I,T>>{
       cont.joint(joint.bind(_,cont))
     );
   }
-  override inline function apply(input:ParseInput<I>){
+  inline function apply(input:ParseInput<I>){
     return mod(delegation.apply(input));
   }
   private function joint(outcome:Outcome<ParseResult<I,T>,Defect<Noise>>,cont:Terminal<ParseResult<I,T>,Noise>):Work{

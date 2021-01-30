@@ -24,7 +24,10 @@ class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
       (e) -> e.errata(transformer)
     );
   }
-  override inline public function apply(input:ParseInput<I>):ParseResult<I,O>{
+  inline public function apply(input:ParseInput<I>):ParseResult<I,O>{
     return mod(this.apply(input));
+  }
+  override public function toString(){
+    return this.delegation.toString();
   }
 }

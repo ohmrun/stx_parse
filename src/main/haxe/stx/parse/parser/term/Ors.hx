@@ -38,7 +38,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       )
     ).toInternal().defer(input,cont);
   }
-  override inline function apply(ipt:ParseInput<I>):ParseResult<I,T>{
+  inline function apply(ipt:ParseInput<I>):ParseResult<I,T>{
     return throw  E_Arw_IncorrectCallingConvention;
   }
 }

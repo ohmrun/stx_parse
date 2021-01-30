@@ -6,7 +6,6 @@ interface ParserApi<I,O> extends ArrowletApi<ParseInput<I>,ParseResult<I,O>,Nois
   
   public var uid(default,null)              : Int;
   
-  public function identifier():String;
   public function asParser():Parser<I,O>;
 
   public function toInternal():Internal<ParseInput<I>,ParseResult<I,O>,Noise>;

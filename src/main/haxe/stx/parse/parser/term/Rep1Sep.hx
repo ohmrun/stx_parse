@@ -8,17 +8,20 @@ class Rep1Sep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
   }
   private inline function actual():Parser<I,Array<O>>{
     return delegation.and(
-      sep._and(delegation).many()
+      sep._and(delegation.option()).many()
     ).then(
       __.decouple(
-        (l:O,r:Array<O>) -> r.cons(l)
+        (l:O,r:Array<Option<O>>) -> r.flat_map(opt -> opt.toArray()).cons(l)
       )
     ).asParser();
   }
   override inline public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>){
     return actual().defer(ipt,cont);
   }
-  override inline public function apply(ipt:ParseInput<I>):ParseResult<I,Array<O>>{
+  inline public function apply(ipt:ParseInput<I>):ParseResult<I,Array<O>>{
     return actual().apply(ipt);
   }
-}
+  override public function toString(){
+    return 'Rep1Sep($delegation,$sep)';
+  } 
+} 

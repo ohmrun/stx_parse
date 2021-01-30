@@ -2,7 +2,7 @@ Left Recursive Parser Combinator Library.
 
 25/06/2020
   - Now supports incremental data, asyncronous Parsers
-      `Process<Input<I>,Input<I>>` at the input stage or
+      `Process<ParseInput<I>,ParseInput<I>>` at the input stage or
       `Process<ParseResult<I,O>,ParseResult<I,O>> at the output
       
 Forked from https://github.com/sledorze/parsex
@@ -19,4 +19,4 @@ Special thanks goes to Marc Weber and Laurence Taylor for supporting the effort.
   https://github.com/sledorze/monax
 
 
-Uses the Arrowlet function type: `Input<I> -> Terminal<ParseResult<O>> -> Work`.
+Uses the Arrowlet function type: `ParseInput<I> -> Terminal<ParseResult<O>> -> Work`.

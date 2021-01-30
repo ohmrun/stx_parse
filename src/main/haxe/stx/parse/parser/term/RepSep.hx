@@ -7,13 +7,12 @@ class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
     this.sep = Parser.Materialize(sep);
   }
   private inline function actual(){
-    return delegation.option().and(
+    return delegation.and(
       sep._and(delegation).many()
     ).then(
       __.decouple(
-        (l:Option<O>,r:Array<O>) -> switch([l,r]){
-          case [Some(l),r] : r.cons(l);
-          case [None,_]    : [];
+        (l:O,r:Array<O>) -> switch([l,r]){
+          case [l,r]        : r.cons(l);
         }
       )
     ).asParser();
@@ -24,4 +23,4 @@ class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
   override public inline function apply(ipt:ParseInput<I>):ParseResult<I,Array<O>>{
     return actual().apply(ipt);
   }
-}
+} 

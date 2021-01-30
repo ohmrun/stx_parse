@@ -5,13 +5,25 @@ using stx.parse.parser.term.OneMany;
 function log(wildcard:Wildcard){
   return stx.parse.Log.log(wildcard).tag('stx.parse.OneMany');
 }
-class OneMany<P,R> extends With<P,R,Array<R>,Array<R>>{
+class OneMany<P,R> extends With<P,R,Option<Array<R>>,Array<R>>{
   public function new(l:Parser<P,R>,?pos:Pos){
-    super(l,Parser.Many(l),pos);
+    super(l,Parser.Many(l).option(),pos);
   }
-  override public function transform(lhs:Null<R>,rhs:Null<Array<R>>):stx.Option<Array<R>>{
+  public function transform(lhs:Null<R>,rhs:Null<Option<Array<R>>>):stx.Option<Array<R>>{
     return __.option(lhs).map(
-      (oI:R) -> [oI].concat(__.option(rhs).defv([]))
+      (oI:R) -> {
+        var arr = [];
+            arr.push(oI);
+        for (a in __.option(rhs).flatten()){
+          for (v in a){
+            arr.push(v);
+          }
+        }
+        return arr;
+      }
     );
+  }
+  override public function toString(){
+    return '$delegation+';
   }
 } 

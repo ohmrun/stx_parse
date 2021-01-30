@@ -52,7 +52,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
     );
     return res.prepare(Noise,cont);
   }
-  override public function apply(i:ParseInput<I>):ParseResult<I,O>{
+  public function apply(i:ParseInput<I>):ParseResult<I,O>{
     return throw E_Arw_IncorrectCallingConvention;
   }
   override public function get_convention(){

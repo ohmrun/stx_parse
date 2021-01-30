@@ -8,7 +8,7 @@ class RestWithCls<P,T>{
     this.with = with;
   }
   public function toString(){
-    return @:privateAccess 'RestWith@${rest.content.index}(${with.toString()})';
+    return @:privateAccess 'RestWith@${rest.content.index}(${with})';
   }
 }
 typedef RestWithDef<P,T> = {

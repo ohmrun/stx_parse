@@ -8,7 +8,7 @@ abstract class SyncBase<I,O,T> extends Base<I,O,T>{
   }
   public override inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     this.result = apply(ipt);
-    this.status = Secured;
+    this.set_status(Secured);
     return cont.value(result).serve();
   }
 }

@@ -30,12 +30,6 @@ class Parse{
 	static public function head<I,O>(fn:I->Option<Couple<O,Option<I>>>):Parser<I,O>{
 		return new stx.parse.parser.term.Head(fn).asParser();
 	}
-  static public function anything<I>():Parser<I,I>{
-		return new stx.parse.parser.term.Anything().asParser();
-	}
-	static public function something<I>():Parser<I,I>{
-		return Parser.Something();
-	}
 	@:note("0b1kn00b","Lua fix")
 	@:noUsing static public inline function range(min:Int, max:Int):Parser<String,String>{
 		return Parser.Range(min,max);

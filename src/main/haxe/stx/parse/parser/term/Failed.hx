@@ -9,7 +9,7 @@ class Failed<P,R> extends Sync<P,R>{
     this.msg        = msg;
     this.is_error   = is_error;
   }
-  override inline function apply(ipt:ParseInput<P>):ParseResult<P,R>{
+  inline function apply(ipt:ParseInput<P>):ParseResult<P,R>{
     return ipt.fail(msg,is_error,pos);
   }
 }

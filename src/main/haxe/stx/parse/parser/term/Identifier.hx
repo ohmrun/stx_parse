@@ -5,9 +5,8 @@ class Identifier extends Sync<String,String>{
   public function new(stamp,?id:Pos){
     super(id);
     this.stamp = stamp;
-    this.tag   = Some('Id($stamp)');
   }
-  override inline function apply(ipt:ParseInput<String>){
+  inline function apply(ipt:ParseInput<String>){
     //__.log().info(ipt);
     var len     = stamp.length;
     var head    = ipt.head();
@@ -22,5 +21,8 @@ class Identifier extends Sync<String,String>{
     }else{
       ipt.fail('"Identifier expected *** $stamp *** instead found: *** $string ***',false,pos);
     }
+  }
+  override public function toString(){
+    return '"$stamp"';
   }
 }

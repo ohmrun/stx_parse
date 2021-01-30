@@ -38,6 +38,6 @@ class Inspect<I,O> extends Delegate<I,O>{
     return this.delegation.convention;
   }
   override public function toString(){
-    return '${name()}($delegation)';
+    return '$delegation';
   }
 }

@@ -26,7 +26,7 @@ class Anon<P,R> extends Direct<P,R>{
     #end
     return this.method(ipt,cont);
   }
-  override inline public function apply(ipt:ParseInput<P>):ParseResult<P,R>{
+  inline public function apply(ipt:ParseInput<P>):ParseResult<P,R>{
     return throw E_Arw_IncorrectCallingConvention;
   }
   override public function toString(){
