@@ -13,9 +13,9 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
   }
   override function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
     var idx = 1;
-    return Arrowlet.Then(
+    return Fletcher.Then(
       delegation[0],
-      Arrowlet.Anon(
+      Fletcher.Anon(
         function rec(res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
           return res.fold(
             (ok) -> cont.value(ParseResult.success(ok)).serve(),
@@ -27,7 +27,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
                   idx   = idx + 1;
                   var d = delegation[n];
                   trace('${res.rest.index} $d');
-                  Arrowlet.Then(d,Arrowlet.Anon(rec)).toInternal().defer(input,cont);//TODO can a failure consume?
+                  Fletcher.Then(d,Fletcher.Anon(rec))(input,cont);//TODO can a failure consume?
                 }else{
                   var opts = delegation.map(_ -> _.tag);
                   cont.value(no.rest.fail('Ors $opts',false,pos)).serve();
@@ -36,9 +36,6 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
           );
         }
       )
-    ).toInternal().defer(input,cont);
-  }
-  inline function apply(ipt:ParseInput<I>):ParseResult<I,T>{
-    return throw  E_Arw_IncorrectCallingConvention;
+    )(input,cont);
   }
 }

@@ -84,18 +84,18 @@ class LRLift{
        throw('undefined parse delegate'); 
     }
     return Provide.fromFunTerminalWork(p.defer.bind(rest)).convert(
-      Arrowlet.Anon(
+      Fletcher.Anon(
         (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>) -> switch (res.prj()) {
           case Success(_) :
             if (oldRes.pos().offset < res.pos().offset ) {
               rest.updateCacheAndGet(genKey, MemoParsed(res));
-              return grow(p, genKey, rest, head).prepare(cont);
+              return cont.receive(grow(p, genKey, rest, head).receive(Noise));
             } else {
               //we're done with growing, we can remove data from recursion head
               rest.removeRecursionHead();
               switch (rest.getFromCache(genKey).fudge()) {
-                case MemoParsed(ans): return cont.value(cast ans).serve();
-                default: throw "impossible match";
+                case MemoParsed(ans)  : return cont.value(cast ans).serve();
+                default               : throw "impossible match";
               }
             }
           case Failure(_.is_fatal() => isError):

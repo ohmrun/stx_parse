@@ -7,16 +7,9 @@ class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
     this.transformer = transformer;
   }
   override inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
-    return delegation.defer(
-      input,
-      cont.joint(joint.bind(_,cont))
-    );
-  }
-  private function joint(outcome:Outcome<ParseResult<I,O>,Defect<Noise>>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
-    return outcome.fold(
-      ok -> cont.value(mod(ok)).serve(),
-      no -> cont.error(no).serve()
-    );
+    return cont.receive(delegation.toFletcher().then(
+      Fletcher.Sync(mod)
+    ).receive(input));
   }
   private function mod(result:ParseResult<I,O>):ParseResult<I,O>{
     return result.fold(

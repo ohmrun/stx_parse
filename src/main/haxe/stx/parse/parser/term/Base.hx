@@ -12,6 +12,7 @@ abstract class Base<I,O,T> extends ParserCls<I,O>{
   public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return cont.value(apply(ipt)).serve();
   }
+  abstract public function apply(ipt:ParseInput<I>):ParseResult<I,O>;
 
   override public function toString(){
     //var id_s = Position.fromPos(pos).toStringClassMethodLine();

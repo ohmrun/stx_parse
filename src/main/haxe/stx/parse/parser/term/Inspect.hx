@@ -34,9 +34,6 @@ class Inspect<I,O> extends Delegate<I,O>{
     this.postfix(result);
     return result;
   }
-  override public function get_convention(){
-    return this.delegation.convention;
-  }
   override public function toString(){
     return '$delegation';
   }

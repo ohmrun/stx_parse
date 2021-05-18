@@ -15,6 +15,6 @@ class Delegate<I,O> extends Base<I,O,Parser<I,O>>{
     return this.delegation.apply(input);
   }
   override public function toString(){
-    return '${name()}(${delegation.toString()})';
+    return '${name()}(${delegation})';
   }
 }

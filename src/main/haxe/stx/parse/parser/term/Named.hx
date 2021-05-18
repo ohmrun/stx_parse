@@ -8,9 +8,6 @@ class Named<I,O> extends Base<I,O,Parser<I,O>>{
   override inline public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return this.delegation.defer(ipt,cont);
   }
-  inline public function apply(ipt:ParseInput<I>):ParseResult<I,O>{
-    return this.delegation.apply(ipt);
-  }
   override public function toString(){
     return tag.defv('named');
   }

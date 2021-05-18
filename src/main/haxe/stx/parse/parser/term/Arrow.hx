@@ -1,7 +1,7 @@
 package stx.parse.parser.term;
 
 
-class Arrow<I,O> extends Base<I,O,Arrowlet<ParseInput<I>,ParseResult<I,O>,Noise>>{
+class Arrow<I,O> extends Base<I,O,Fletcher<ParseInput<I>,ParseResult<I,O>,Noise>>{
 
   override public inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>){
     return @:privateAccess delegation.toInternal().defer(ipt,cont);

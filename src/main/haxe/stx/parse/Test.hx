@@ -1,5 +1,4 @@
 package stx.parse;
-import utest.Assert.*;
 
 using stx.Nano;
 using stx.Fn;
@@ -7,7 +6,7 @@ using stx.Assert;
 
 import stx.Parse;
 import stx.parse.test.*;
-import stx.Test;
+import stx.unit.Test;
 
 using stx.parse.Test;
 
@@ -28,7 +27,7 @@ class Test {
 				f.includes.push("stx.async.work.Crunch");
 				//f.level = DEBUG;
 
-		stx.Test.test(
+		__.unit(
 			[
 				new SimpleParserTest(),
 				new SimpleRecursionLangTest(),
@@ -50,9 +49,9 @@ class Test {
 		);
 	} 
 }
-class Issue1 extends utest.Test{
+class Issue1 extends TestCase{
 	@:timeout(1000000000)
-	public function test(async:utest.Async){
+	public function test(async:Async){
 		var reader = 'abac'.reader();
 		var parser = Parser.Never().not()._and(Parser.Something()).many(); 
     //var parser = __.parse().id('x').not()._and(Parser.Something()).many(); 
@@ -64,9 +63,9 @@ class Issue1 extends utest.Test{
 		).submit();
 	}
 }
-class Issue2 extends utest.Test{
+class Issue2 extends TestCase{
 	@:timeout(-1)
-	public function test(async:utest.Async){
+	public function test(async:Async){
 		var reader = 'abac'.reader();
 		var parser = Parser.Regex('abac').and_(Parser.Eof());
 		parser.provide(

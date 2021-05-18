@@ -6,13 +6,13 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
     this.uid = new UID();
   }
   function genKey(pos : Int) {  
-    return this.id+"@"+pos;
+    return this.uid+"@"+pos;
   }
   @:privateAccess override inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     //__.log().debug('memoise');
-    var res =  Arrowlet.Then(
+    var res =  Fletcher.Then(
       delegation.recall(genKey, ipt),
-      Arrowlet.Anon(
+      Fletcher.Anon(
         (memo:Option<MemoEntry>,cont:Terminal<ParseResult<I,O>,Noise>) -> switch(memo){
           case None :
             var base = ipt.fail(ParseError.FAIL,false,pos).mkLR(delegation, None);
@@ -22,9 +22,9 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
 
             __.assert().exists(delegation);
 
-            return Arrowlet.Then(
+            return Fletcher.Then(
               delegation,
-              Arrowlet.Anon(
+              Fletcher.Anon(
                 (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,O>,Noise>) -> {
                   ipt.memo.lrStack = ipt.memo.lrStack.tail();
                   return switch (base.head) {
@@ -33,11 +33,11 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
                       cont.value(res).serve();
                     case Some(_):
                       base.seed = res;
-                      delegation.lrAnswer(genKey, ipt, base).prepare(cont);
+                      cont.receive(delegation.lrAnswer(genKey, ipt, base).receive(Noise));
                   }
                 }
               )
-            ).toInternal().defer(ipt,cont);
+            )(ipt,cont);
 
         case Some(mEntry):
           switch(mEntry) {
@@ -50,12 +50,6 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
         }
       )
     );
-    return res.prepare(Noise,cont);
-  }
-  public function apply(i:ParseInput<I>):ParseResult<I,O>{
-    return throw E_Arw_IncorrectCallingConvention;
-  }
-  override public function get_convention(){
-    return ASYNC;
+    return cont.receive(res.receive(Noise));
   }
 }

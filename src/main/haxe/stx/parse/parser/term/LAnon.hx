@@ -21,22 +21,5 @@ class LAnon<I,O> extends Base<I,O,Parser<I,O>>{
     }else{
       this.delegation.defer(ipt,cont);
     }
-  }
-  inline function apply(ipt:ParseInput<I>):ParseResult<I,O>{
-    return if(delegation == null){
-      open();
-      this.delegation.apply(ipt);
-    }else{
-      this.delegation.apply(ipt);
-    }
   } 
-  override function get_convention(){
-    return (this.delegation == null).if_else(
-      () -> {
-        open();
-        this.delegation.convention;
-      },
-      () -> this.delegation.convention
-    );
-  }
 }

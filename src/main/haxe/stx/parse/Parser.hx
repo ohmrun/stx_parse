@@ -16,7 +16,7 @@ import stx.parse.parser.term.*;
     return new SyncAnon(f,tag).asParser();
   }
   @:noUsing static inline public function fromParseInputProvide<I,O>(self:ParseInput<I>->Provide<ParseResult<I,O>>,tag):Parser<I,O>{
-    return lift(Anon(Convert.fromConvertProvide(self).toArrowlet().defer,tag));
+    return lift(Anon(Convert.fromConvertProvide(self).toFletcher(),tag));
   }
   @:noUsing static inline public function lift<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);
@@ -30,10 +30,10 @@ import stx.parse.parser.term.*;
 
   @:noUsing static inline public function Forward<P,R>(fn:ParseInput<P>->Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
     return Arrow(
-      Convert.fromFun1Provide(fn).toArrowlet() 
+      Convert.fromFun1Provide(fn).toFletcher() 
     ,pos).asParser();
   }
-  @:noUsing static inline public function Arrow<P,R>(fn:Arrowlet<ParseInput<P>,ParseResult<P,R>,Noise>,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function Arrow<P,R>(fn:Fletcher<ParseInput<P>,ParseResult<P,R>,Noise>,?pos:Pos):Parser<P,R>{
     return new Arrow(fn,pos).asParser();
   }
   @:noUsing static inline public function Anon<P,R>(fn:ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag:Option<String>,?pos:Pos):Parser<P,R>{
@@ -131,11 +131,11 @@ import stx.parse.parser.term.*;
   function get_self():Parser<I,O> return lift(this);
   public inline function asParser():Parser<I,O> return self;
 
-  @:to public inline function toArrowlet():Arrowlet<ParseInput<I>,ParseResult<I,O>,Noise>{
-    return Arrowlet.lift(this.asArrowletDef());
+  @:to public inline function toFletcher():Fletcher<ParseInput<I>,ParseResult<I,O>,Noise>{
+    return Fletcher.lift(this.toFletcher());
   }
-  @:to public inline function toArrowletDef():ArrowletDef<ParseInput<I>,ParseResult<I,O>,Noise>{
-    return this.asArrowletDef();
+  @:to public inline function toFletcherDef():FletcherDef<ParseInput<I>,ParseResult<I,O>,Noise>{
+    return this.toFletcher();
   }
   /**implicit override issue**/
   public inline function then<Oi>(f : O -> Oi):Parser<I,Oi>   return _.then(lift(this),f);

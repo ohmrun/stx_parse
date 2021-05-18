@@ -1,7 +1,7 @@
 package stx.parse.parser.term;
 
 class Postfix<I,Oi,Oii> extends stx.arw.arrowlet.term.Then<ParseInput<I>,ParseResult<I,Oi>,ParseResult<I,Oii>,Noise> implements ParserApi<I,Oii>{
-  public function new(lhs:Parser<I,Oi>,rhs:Arrowlet<ParseResult<I,Oi>,ParseResult<I,Oii>,Noise>,?tag:Option<String>,?id:Pos){
+  public function new(lhs:Parser<I,Oi>,rhs:Fletcher<ParseResult<I,Oi>,ParseResult<I,Oii>,Noise>,?tag:Option<String>,?id:Pos){
     super(@:privateAccess lhs.toInternal(),@:privateAccess rhs.toInternal());
     this.tag = __.option(tag).flatten().defv(None);
     this.id  = id;

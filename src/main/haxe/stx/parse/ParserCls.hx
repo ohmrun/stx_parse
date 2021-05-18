@@ -1,10 +1,12 @@
 package stx.parse;
 
-abstract class ParserCls<I,O> implements ParserApi<I,O> extends ArrowletCls<ParseInput<I>,ParseResult<I,O>,Noise>{
+abstract class ParserCls<I,O> implements ParserApi<I,O> implements FletcherApi<ParseInput<I>,ParseResult<I,O>,Noise> extends Clazz{
   public function new(?tag:Option<String>,?pos:Pos){
-    super(pos);
+    super();
+    this.pos    = pos;
     this.tag    = __.option(tag).flatten().def(name);
   }
+  public var pos                            : Pos;
   public var tag                            : Option<String>;
   
   public var uid(default,null)              : Int;
@@ -18,10 +20,12 @@ abstract class ParserCls<I,O> implements ParserApi<I,O> extends ArrowletCls<Pars
   public inline function asParser():Parser<I,O>{
     return new Parser(this);
   }
-  public inline function toInternal():Internal<ParseInput<I>,ParseResult<I,O>,Noise>{
-    return this;
-  }
-  override public function toString(){
+  public function toString(){
     return name();
   }
+  public function toFletcher(){
+    return Fletcher.lift(this.defer);
+  }
+  //abstract public function apply(p:ParseInput<I>):ParseResult<I,O>;
+  abstract public function defer(p:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work;
 }

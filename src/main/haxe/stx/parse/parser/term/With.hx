@@ -22,7 +22,7 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
     __.log()('\nlhs:${delegation.fst()}\nrhs:${delegation.snd()}\ninput:$input');
     var fst_res : Terminal<ParseResult<I,T>,Noise> = null;
     var snd_res : Terminal<ParseResult<I,U>,Noise> = null;
-    return delegation.fst().toInternal().defer(
+    return delegation.fst().toFletcher()(
       input,
       fst_res = cont.joint(
         (outcome:Outcome<ParseResult<I,T>,Defect<Noise>>) -> {
@@ -33,9 +33,7 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
                 //__.assert().exists(result);
                 __.log()('\n\tlhs: ${result.rest.index} ${result.value()} ${this.delegation.fst()}');
                 return result.fold(
-                  (ok) -> delegation.snd().toInternal().defer(
-                    __.log().through()(ok.rest),
-                    snd_res = cont.joint(
+                  (ok) -> delegation.snd().toFletcher().receive(ok.rest).apply(
                       (outcomeI:Outcome<ParseResult<I,U>,Defect<Noise>>) -> {
                         return outcomeI.fold(
                           (result) -> {
@@ -53,8 +51,7 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
                             error -> cont.error(error).serve()
                           );
                       }
-                    )  
-                  ),
+                  ),  
                   (no) -> cont.value(no.toParseResult()).serve()
                 );
               },
@@ -77,9 +74,6 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
     //   ),
     //   (no)  -> no.tack(input).toParseResult()
     // );
-  }
-  override public function get_convention(){
-    return delegation.fst().convention || delegation.snd().convention;
   }
   override public function toString(){
     return '${delegation.toString()}';

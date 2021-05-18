@@ -42,15 +42,15 @@ class ParserLift{
     return new Commit(pI).asParser();
   }
   static public inline function mod<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->ParseResult<I,TT>):Parser<I,TT>{
-    return Parser.Arrow(Arrowlet.Then(
+    return Parser.Arrow(Fletcher.Then(
       p,
-      Arrowlet.Sync(fn)
+      Fletcher.Sync(fn)
     ));
   }
-  static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Arrowlet<ParseInput<I>,TT,Noise>{
-    return Arrowlet.Then(
+  static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Fletcher<ParseInput<I>,TT,Noise>{
+    return Fletcher.Then(
       p,
-      Arrowlet.Sync(fn)
+      Fletcher.Sync(fn)
     );
   }
 
