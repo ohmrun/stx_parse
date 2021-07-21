@@ -1,5 +1,9 @@
 Left Recursive Parser Combinator Library.
 
+21/07/2021
+  A few bugs somewhere, but basically supports asyncronicity via the `Fletcher` library.
+  Asynchronous Left Recursive Pack Rat Parser
+   
 25/06/2020
   - Now supports incremental data, asyncronous Parsers
       `Process<ParseInput<I>,ParseInput<I>>` at the input stage or
