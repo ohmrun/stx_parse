@@ -4,15 +4,20 @@
   "license": "BSD",
   "tags": ["cross","utility"],
   "description": "LR Parser API based on Parsex",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "releasenote": "see CHANGELOG.md",
   "contributors": ["0b1kn00b"],
   "dependencies": {
-    "stx_pico"      : "1.0.0",
-    "stx_nano"      : "0.1.5",
-    "stx_assert"    : "0.1.1",
-    "hre"           : "0.2.1",
-    "stx_arw"       : "1.0.0" 
+    "stx_pico"      : "git:https://github.com/ohmrun/stx_pico.git",
+    "stx_nano"      : "git:https://github.com/ohmrun/stx_nano.git",
+    "stx_fn"        : "git:https://github.com/ohmrun/stx_fn.git",
+
+    "stx_log"       : "git:https://github.com/ohmrun/stx_log.git",
+    "stx_assert"    : "git:https://github.com/ohmrun/stx_assert.git",
+
+    
+    "hre"            : "git:https://gitlab.com/demurgos/hre.git",
+    "fletcher"       : "git:https://github.com/ohmrun/fletcher.git" 
   },
   "classPath": "src/main/haxe"
 }
