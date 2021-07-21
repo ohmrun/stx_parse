@@ -30,6 +30,13 @@ typedef ParseResultDef<P,R> = Outcome<ParseSuccess<P,R>,ParseFailure<P>>;
       (f)   -> f.rest
     );
   }
+  public var with(get,never) : Option<R>;
+  private inline function get_with(){
+    return this.fold(
+      (s)   -> s.with,
+      (f)   -> None
+    );
+  }
   public inline function fold<Ri>(succ:ParseSuccess<P,R> -> Ri,fail:ParseFailure<P> -> Ri):Ri{
     return switch(this){
       case Success(_succ)                 : succ(_succ);

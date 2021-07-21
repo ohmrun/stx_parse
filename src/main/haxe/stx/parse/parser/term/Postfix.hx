@@ -8,7 +8,7 @@ class Postfix<I,Oi,Oii> extends stx.arw.arrowlet.term.Then<ParseInput<I>,ParseRe
   }
   public var tag                            : Option<String>;
   
-  public var uid(default,null)              : Int;
+  //public var uid(default,null)              : Int;
   
   inline public function name(){
     return this.identifier();

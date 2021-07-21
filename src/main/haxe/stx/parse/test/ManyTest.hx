@@ -1,6 +1,6 @@
 package stx.parse.test;
 
-class ManyTest extends utest.Test{
+class ManyTest extends TestCase{
   // function cons(input:ParseInput<String>){
   //   return new stx.parse.parser.term.Many.ManyTask(
   //     Parser.Something(),

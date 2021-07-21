@@ -5,7 +5,7 @@ class Named<I,O> extends Base<I,O,Parser<I,O>>{
     super(delegation,delegation.pos);
     this.tag = __.option(name);
   }
-  override inline public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  inline public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return this.delegation.defer(ipt,cont);
   }
   override public function toString(){

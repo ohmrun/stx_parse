@@ -10,7 +10,7 @@ abstract class BoundFun<I,O,Oi> extends ParserCls<I,Oi>{
   abstract private function bound(input:ParseInput<I>,result:ParseResult<I,O>):ParseResult<I,Oi>;
 
   public function defer(i:ParseInput<I>,cont:Terminal<ParseResult<I,Oi>,Noise>):Work{
-    return cont.receive(parser.toFletcher().receive(i).map(
+    return cont.receive(parser.toFletcher().forward(i).map(
       result  -> bound(i,result)
     ));
   }

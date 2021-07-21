@@ -1,19 +1,12 @@
 package stx.parse.parser.term;
 
 class Commit<I,T> extends Base<I,T,Parser<I,T>>{
-  override inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
-    return delegation.defer(
-      ipt,
-      cont.joint(joint.bind(_,cont))
-    );
-  }
-  inline function apply(input:ParseInput<I>){
-    return mod(delegation.apply(input));
-  }
-  private function joint(outcome:Outcome<ParseResult<I,T>,Defect<Noise>>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
-    return outcome.fold(
-      (result) -> cont.value(mod(result)).serve(),
-      (error)  -> cont.error(error).serve()
+  inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
+    return cont.receive(
+      delegation.toFletcher().forward(ipt).flat_fold(
+        (result) -> cont.value(mod(result)),
+        (error)  -> cont.error(error) 
+      )
     );
   }
   private function mod(result:ParseResult<I,T>){

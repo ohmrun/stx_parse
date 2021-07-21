@@ -1,7 +1,7 @@
 package stx.parse.parser.term;
 
-abstract class Sync<P,R> extends Direct<P,R>{
-  public function new(?id:Pos){
-    super(id);
+abstract class Sync<P,R> extends SyncBase<P,R,Noise>{
+  public function new(?tag:Option<String>,?id:Pos){
+    super(Noise,tag,id);
   }
 }

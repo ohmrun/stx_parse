@@ -6,9 +6,9 @@ inline function id(str){
 	return __.parse().id(str);
 }
 
-class RepSepTest extends utest.Test{
+class RepSepTest extends TestCase{
 	@:timeout(100000)
-	public function test(async:utest.Async){
+	public function test(async:Async){
 		var reader = 'a.b'.reader();
 		var parser = Parser.Something().repsep('.'.id());
 		var result = parser.provide(reader);
@@ -32,13 +32,14 @@ class RepSepTest extends utest.Test{
 		var result = parser.provide(reader).fudge();
 		same(['a'],result.fudge());
 	}
-	public function _test_3(){
-		var reader = ''.reader();
-		var parser = Parser.Identifier('a').repsep('.'.id());
-		raises(
-			() -> parser.provide(reader).fudge()
-		);
-	}
+
+	// public function _test_3(){
+	// 	var reader = ''.reader();
+	// 	var parser = Parser.Identifier('a').repsep('.'.id());
+	// 	raises(
+	// 		() -> parser.provide(reader).fudge()
+	// 	);
+	// }
 	public function _test_4(){
 		var reader = 'a'.reader();
 		var parser = __.parse().id('a').repsep(__.parse().id("."));

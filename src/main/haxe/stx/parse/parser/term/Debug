@@ -2,13 +2,14 @@ package stx.parse.parser.term;
 
 //Messes with references. how to fix?
 class Debug<P,R> extends Delegate<P,R>{
-  override public function defer(ipt:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
+  public function defer(ipt:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
     var base  = ipt.index;
     var key   = this.delegation.identifier().name;
-        //__.log()('+ $key');
+        //__.log().debug('+ $key');
         ipt   = ipt.push(key);
         //__.log()('${ipt.prj().cursor}');
-        
+    
+    return cont.receive
     return this.delegation.defer(ipt,
       cont.joint(
         (outcome:Reaction<ParseResult<P,R>>) -> {

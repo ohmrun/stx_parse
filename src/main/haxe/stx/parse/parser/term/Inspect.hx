@@ -11,10 +11,10 @@ class Inspect<I,O> extends Delegate<I,O>{
   }
   public function new(delegation,?prefix:ParseInput<I> -> Void,?postfix:ParseResult<I,O> -> Void,?id:Pos){
     super(delegation,id);
-    if(__.that().exists().ok()(prefix)){
+    if(__.that().exists().apply(prefix).ok()){
       this.prefix   = prefix;
     }
-    if(__.that().exists().ok()(postfix)){
+    if(__.that().exists().apply(postfix).ok()){
       this.postfix   = postfix;
     }
   }
@@ -26,13 +26,7 @@ class Inspect<I,O> extends Delegate<I,O>{
         return res;
       }
     );
-    return out.prepare(cont);
-  }
-  override inline function apply(input:ParseInput<I>):ParseResult<I,O>{
-    this.prefix(input);
-    var result = this.delegation.apply(input);
-    this.postfix(result);
-    return result;
+    return cont.receive(out.forward(Noise));
   }
   override public function toString(){
     return '$delegation';

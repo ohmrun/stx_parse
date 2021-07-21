@@ -1,6 +1,7 @@
 package stx.parse.parser.term;
 
 class Memoise<I,O> extends Base<I,O,Parser<I,O>>{ 
+  public final uid                          : Int;
   public function new(delegation:Parser<I,O>,?pos:Pos){
     super(delegation,pos);
     this.uid = new UID();
@@ -8,7 +9,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
   function genKey(pos : Int) {  
     return this.uid+"@"+pos;
   }
-  @:privateAccess override inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  @:privateAccess inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     //__.log().debug('memoise');
     var res =  Fletcher.Then(
       delegation.recall(genKey, ipt),
@@ -33,7 +34,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
                       cont.value(res).serve();
                     case Some(_):
                       base.seed = res;
-                      cont.receive(delegation.lrAnswer(genKey, ipt, base).receive(Noise));
+                      cont.receive(delegation.lrAnswer(genKey, ipt, base).forward(Noise));
                   }
                 }
               )
@@ -50,6 +51,6 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
         }
       )
     );
-    return cont.receive(res.receive(Noise));
+    return cont.receive(res.forward(Noise));
   }
 }

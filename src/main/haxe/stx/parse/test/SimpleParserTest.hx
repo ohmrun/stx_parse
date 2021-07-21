@@ -10,7 +10,7 @@ inline function regex(str:String){
   return return __.parse().reg(str);
 }
 
-class SimpleParserTest extends utest.Test{
+class SimpleParserTest extends TestCase{
   public function testIdentifier(){
     var reader = "if".reader();
     var parser = new Identifier("if").asParser();

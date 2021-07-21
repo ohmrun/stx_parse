@@ -14,16 +14,13 @@ abstract class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
   override public function check(){
     __.that(pos).exists().errata(e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
   }
-  override inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,U>,Noise>){
-    return delegation.toFletcher().receive(input).map(
+  inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,U>,Noise>){
+    return cont.receive(delegation.toFletcher().forward(input).map(
       (res:ParseResult<I,T>) -> res.fold(
         (match)   -> ParseResult.success(match.map(transform)),
         (err)     -> ParseResult.failure(err)
       )
-    ).serve();
-  }
-  inline public function apply(input:ParseInput<I>):ParseResult<I,U>{
-    return this.delegation.apply(input).map(this.transform);
+    ));
   }
   override public function toString(){
     return '$delegation&';

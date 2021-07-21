@@ -11,7 +11,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       __.assert().exists(delegate);
     }
   }
-  override function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
+  public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
     var idx = 1;
     return Fletcher.Then(
       delegation[0],

@@ -11,16 +11,13 @@ abstract class ThroughBind<P,Ri,Rii> extends ParserCls<P,Rii>{
   abstract function through_bind(input:ParseInput<P>,result:ParseResult<P,Ri>):Parser<P,Rii>;
 
   @:privateAccess inline function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,Rii>,Noise>):Work{
-    return cont.receive(this.delegate.toFletcher().receive(input).flat_fold(
-      (outcome:Outcome<ParseResult<P,Ri>,Defect<Noise>>) -> 
-        outcome.fold(
-          ok -> {
-                    after = through_bind(input,ok);
-            return  after.toFletcher().receive(ok.rest);
-          },
-          no -> cont.error(no)
-      )
-    ).serve());
+    return cont.receive(this.delegate.toFletcher().forward(input).flat_fold(
+      ok -> {
+                after = through_bind(input,ok);
+        return  after.toFletcher().forward(ok.rest);
+      },
+      no -> cont.error(no)
+    ));
   }
   override public function toString(){
     var n = __.option(after).map(_ -> _.toString()).defv("?");

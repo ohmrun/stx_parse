@@ -1,6 +1,6 @@
 package stx.parse.test;
 
-class DebugTest extends utest.Test{
+class DebugTest extends TestCase{
 	public 
 	function test_something(){
 		var input 	= 'aa'.reader();

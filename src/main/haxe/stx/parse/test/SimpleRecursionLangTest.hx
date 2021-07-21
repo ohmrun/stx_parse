@@ -1,7 +1,7 @@
 package stx.parse.test;
 
-class SimpleRecursionLangTest extends utest.Test{
-  public function test_one(async:utest.Async){
+class SimpleRecursionLangTest extends TestCase{
+  public function test_one(async:Async){
     var reader = '1+2'.reader();
     Lang.p_expr.provide(reader).environment(
       (x) -> {

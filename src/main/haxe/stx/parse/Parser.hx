@@ -46,8 +46,8 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function TaggedAnon<P,R>(fn:ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag,?pos:Pos):Parser<P,R>{
     return new TaggedAnon(fn,tag,pos).asParser();
   }
-  @:noUsing static inline public function Failed<P,R>(msg,is_error = false,?id:Pos):Parser<P,R>{
-    return new Failed(msg,is_error,id).asParser();
+  @:noUsing static inline public function Failed<P,R>(msg,is_fatal = false,?id:Pos):Parser<P,R>{
+    return new Failed(msg,is_fatal,id).asParser();
   }
   @:noUsing static inline public function Succeed<P,R>(value:R,?pos:Pos):Parser<P,R>{
     return new Succeed(value,pos).asParser();
@@ -112,9 +112,9 @@ import stx.parse.parser.term.*;
   @:noUsing static inline public function TagError<I,O>(parser:Parser<I,O>,name:String,?pos:Pos):Parser<I,O>{
     return new stx.parse.parser.term.TagError(parser,name,pos).asParser();
   }
-  @:noUsing static inline public function Debug<P,R>(parser:Parser<P,R>):Parser<P,R>{
-    return new stx.parse.parser.term.Debug(parser).asParser();
-  }
+  // @:noUsing static inline public function Debug<P,R>(parser:Parser<P,R>):Parser<P,R>{
+  //   return new stx.parse.parser.term.Debug(parser).asParser();
+  // }
   @:noUsing static inline public function Something<P>():Parser<P,P>{
     return new stx.parse.parser.term.Something().asParser();
   }

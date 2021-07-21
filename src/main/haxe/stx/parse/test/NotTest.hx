@@ -1,6 +1,6 @@
 package stx.parse.test;
 
-class NotTest extends utest.Test{
+class NotTest extends TestCase{
   public function test(){
     
   }

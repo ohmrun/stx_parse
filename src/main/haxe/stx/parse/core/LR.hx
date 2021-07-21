@@ -89,7 +89,7 @@ class LRLift{
           case Success(_) :
             if (oldRes.pos().offset < res.pos().offset ) {
               rest.updateCacheAndGet(genKey, MemoParsed(res));
-              return cont.receive(grow(p, genKey, rest, head).receive(Noise));
+              return cont.receive(grow(p, genKey, rest, head).forward(Noise));
             } else {
               //we're done with growing, we can remove data from recursion head
               rest.removeRecursionHead();

@@ -6,17 +6,14 @@ abstract class ParserCls<I,O> implements ParserApi<I,O> implements FletcherApi<P
     this.pos    = pos;
     this.tag    = __.option(tag).flatten().def(name);
   }
-  public var pos                            : Pos;
-  public var tag                            : Option<String>;
+  public final pos                              : Pos;
+  //public final uid                              : Int;
   
-  public var uid(default,null)              : Int;
-  
+  public var tag                                : Option<String>;
+ 
   inline public function name(){
     return this.identifier().name;
   }
-  // public function asParser():Parser<I,O>{
-  //   return #if debug Parser.Debug(Parser.lift(this)) #else new Parser(this) #end;
-  // }
   public inline function asParser():Parser<I,O>{
     return new Parser(this);
   }

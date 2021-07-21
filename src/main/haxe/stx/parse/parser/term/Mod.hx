@@ -9,7 +9,7 @@ abstract class Mod<P,R> extends ParserCls<P,R>{
   abstract function bound(input:ParseInput<P>,result:ParseResult<P,R>): ParseResult<P,R>;
 
   public function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
-    return cont.receive(delegate.toFletcher().receive(input).map(
+    return cont.receive(delegate.toFletcher().forward(input).map(
       (result) -> bound(input,result)
     ));
   }

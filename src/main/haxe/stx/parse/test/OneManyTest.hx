@@ -1,6 +1,6 @@
 package stx.parse.test;
 
-class OneManyTest extends utest.Test{
+class OneManyTest extends TestCase{
 	public function test_greedy(){
 		var input 	= 'aa'.reader();
 		var parser 	= __.parse().id('a').one_many();

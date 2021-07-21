@@ -15,11 +15,8 @@ class Rep1Sep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
       )
     ).asParser();
   }
-  override inline public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>){
+  inline public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>){
     return actual().defer(ipt,cont);
-  }
-  inline public function apply(ipt:ParseInput<I>):ParseResult<I,Array<O>>{
-    return actual().apply(ipt);
   }
   override public function toString(){
     return 'Rep1Sep($delegation,$sep)';

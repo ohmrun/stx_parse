@@ -1,6 +1,6 @@
 package stx.parse.test;
 
-class OrTest extends utest.Test{ 
+class OrTest extends TestCase{ 
 	public function test(){
 		var input 		= 'a'.reader();
 		var a 				= __.parse().id('a');

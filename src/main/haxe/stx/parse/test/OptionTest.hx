@@ -1,6 +1,6 @@
 package stx.parse.test;
 
-class OptionTest extends utest.Test{
+class OptionTest extends TestCase{
 	public function test(){
 		var reader = 'a'.reader();
 		var parser = Parser.Something().option();

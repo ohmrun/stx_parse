@@ -141,37 +141,30 @@ class LiftParse{
 	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<ParseInput<Oi>,Parser<Oi,Oii>>){
 		return Parser.Anon(
 			(input:ParseInput<I>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> {
-				return Arrowlet.Then(
-					p,
-					Arrowlet.Anon(
-						(res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> __.noop()(res).fold(
-							(ok) -> {
-								var defer		= Future.trigger();
-								var inner 	= cont.inner(
-									(resI:Outcome<ParseResult<Oi,Oii>,Array<Noise>>) -> {
-										defer.trigger(
-											resI.fold(
-												(resII) -> resII.fold(
-													ok 		-> Success(ParseSuccess.make(res.rest,ok.with).toParseResult()),
-													no		-> Success(ParseFailure.make(input,no.with).toParseResult())
-												),
-												(no) -> Failure([Noise])
-											)
-										);
-									}
-								);
-								var out 		= p0(ok.with);
-								var reader 	= out.fst();
-								var parser 	= out.snd(); 
-								//trace(out.snd());
-								var result 	= parser.defer(out.fst(),inner);
+				return cont.receive(
+					Fletcher.Then(
+						p,
+						Fletcher.Anon(
+							(res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> res.fold(
+								(ok) -> {
+									var inner 	= (resII:ParseResult<Oi,Oii>) -> resII.fold(
+										ok 		-> ParseSuccess.make(res.rest,ok.with).toParseResult(),
+										no		-> ParseFailure.make(input,no.with).toParseResult()
+									);
+									final out 		= p0(ok.with);
+									final reader 	= out.fst();
+									final parser 	= out.snd(); 
+									// //trace(out.snd());
+									// var result 	= parser.defer(out.fst(),inner);
 
-								return cont.later(defer.asFuture()).after(result);
-							},
-							(no) -> cont.value(ParseResult.failure(no)).serve()
+									// return cont.later(defer.asFuture()).after(result);
+									return cont.receive(parser.toFletcher().then(Fletcher.Sync(inner)).forward(reader));
+								},
+								(no) -> cont.value(ParseResult.failure(no)).serve()
+							)
 						)
-					)
-				).toInternal().defer(input,cont);
+					).forward(input)
+				);
 			},
 			Some('sub')
 		);

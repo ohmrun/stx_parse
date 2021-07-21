@@ -13,7 +13,7 @@ class LAnon<I,O> extends Base<I,O,Parser<I,O>>{
   private function open(){
     this.delegation = closure();
   }
-  override public inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  public inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
     return if(delegation == null){
       open();
       __.assert().exists(delegation);

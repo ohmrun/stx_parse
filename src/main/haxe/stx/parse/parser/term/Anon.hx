@@ -12,19 +12,16 @@ package stx.parse.parser.term;
   var b = builder(...);
   Memo(a) == Memo(b)//true
 */
-class Anon<P,R> extends Direct<P,R>{
+class Anon<P,R> extends Base<P,R,ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work>{
 
-  var method : ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work;
-  
-  public function new(method: ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag:Option<String>,?pos:Pos){
-    super(tag,pos);
-    this.method = method;
+  public function new(delegation: ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag:Option<String>,?pos:Pos){
+    super(delegation,tag,pos);
   }
-  override inline public function defer(ipt:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>){
+  inline public function defer(ipt:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>){
     #if test
     __.assert().exists(id);
     #end
-    return this.method(ipt,cont);
+    return this.delegation(ipt,cont);
   }
   override public function toString(){
     return 'Anon($tag)';

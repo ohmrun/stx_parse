@@ -3,10 +3,11 @@ package stx.parse;
 using stx.Nano;
 using stx.Fn;
 using stx.Assert;
+using stx.Test;
 
 import stx.Parse;
 import stx.parse.test.*;
-import stx.unit.Test;
+import stx.Test;
 
 using stx.parse.Test;
 
@@ -16,18 +17,11 @@ class Test {
 		return __.here();
 	}
 	public static function main() {
-		var f = stx.log.Facade.ZERO;
-				f.includes.push('stx.parse');
-				f.includes.push('stx.parse.With');
-				f.includes.push('stx.parse.Many');
-				f.includes.push('stx.async.Terminal');
-				f.includes.push('stx.parse.test');
-				f.includes.push("stx.async");
-				//f.includes.push(__.tracer()(Terminal.identifier()));
-				f.includes.push("stx.async.work.Crunch");
-				//f.level = DEBUG;
+		var f = __.log().global;
+				f.includes.push('stx/parse');
+				
 
-		__.unit(
+		__.test(
 			[
 				new SimpleParserTest(),
 				new SimpleRecursionLangTest(),
@@ -39,7 +33,7 @@ class Test {
 				new OrTest(),
 				new RepSep0Test(),
 				new ManyTest(),
-				new DebugTest(),
+				//new DebugTest(),
 				new OptionTest(),
 				new RepSepTest(),
 				new Issue1(),
@@ -49,6 +43,7 @@ class Test {
 		);
 	} 
 }
+//TODO should this even work?
 class Issue1 extends TestCase{
 	@:timeout(1000000000)
 	public function test(async:Async){

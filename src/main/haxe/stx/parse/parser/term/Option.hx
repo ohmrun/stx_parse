@@ -1,21 +1,22 @@
 package stx.parse.parser.term;
 
+class Option<P,R> extends Base<P,StdOption<R>,Parser<P,R>>{
 
-class Option<I,T> extends Base<I,StdOption<T>,Parser<I,T>>{
-  public function new(delegation:Parser<I,T>,?pos:Pos){
+  public function new(delegation:Parser<P,R>,?pos:Pos){
     super(delegation,pos);
   }
-  override function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,StdOption<T>>,Noise>):Work{
-    return cont.receive(delegation.toFletcher().receive(input).fold_map(
-      (result:ParseResult<I,T>) -> __.success(result.fold(
-        ok -> ParseSuccess.make(
-          ok.rest,
-          __.option(ok.with)
-        ).toParseResult(),
-        no -> no.is_fatal() ? no : no.rest.ok(None)
-      )),          
-      e -> __.failure(e)
-    ));
+  function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,StdOption<R>>,Noise>):Work{
+    return cont.receive(
+      delegation.toFletcher().forward(input).map(
+        (result:ParseResult<P,R>) -> result.fold(
+          (ok) -> ok.map(Some).toParseResult(),
+          (no) -> no.is_fatal().if_else(
+            () -> ParseResult.failure(no),
+            () -> no.rest.ok(None)
+          )
+        )
+      )
+    );
   }
   override public function toString(){
     return '$delegation?';
