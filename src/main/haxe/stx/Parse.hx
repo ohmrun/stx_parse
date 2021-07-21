@@ -160,7 +160,7 @@ class LiftParse{
 									// return cont.later(defer.asFuture()).after(result);
 									return cont.receive(parser.toFletcher().then(Fletcher.Sync(inner)).forward(reader));
 								},
-								(no) -> cont.value(ParseResult.failure(no)).serve()
+								(no) -> cont.receive(cont.value(ParseResult.failure(no)))
 							)
 						)
 					).forward(input)

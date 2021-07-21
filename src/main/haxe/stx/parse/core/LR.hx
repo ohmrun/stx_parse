@@ -94,7 +94,7 @@ class LRLift{
               //we're done with growing, we can remove data from recursion head
               rest.removeRecursionHead();
               switch (rest.getFromCache(genKey).fudge()) {
-                case MemoParsed(ans)  : return cont.value(cast ans).serve();
+                case MemoParsed(ans)  : return cont.receive(cont.value(cast ans));
                 default               : throw "impossible match";
               }
             }
@@ -103,10 +103,10 @@ class LRLift{
     
               rest.updateCacheAndGet(genKey, MemoParsed(res));
               rest.removeRecursionHead();
-              cont.value(res).serve();
+              cont.receive(cont.value(res));
             } else {
               rest.removeRecursionHead();
-              return cont.value(cast(oldRes)).serve();
+              cont.receive(cont.value(cast(oldRes)));
             }
         }
       )

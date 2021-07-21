@@ -18,9 +18,9 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       Fletcher.Anon(
         function rec(res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
           return res.fold(
-            (ok) -> cont.value(ParseResult.success(ok)).serve(),
+            (ok) -> cont.receive(cont.value(ParseResult.success(ok))),
             (no) -> no.is_fatal().if_else(
-              () -> cont.value(ParseResult.failure(no)).serve(),
+              () -> cont.receive(cont.value(ParseResult.failure(no))),
               () -> 
                 if(idx < delegation.length){
                   var n = idx;
@@ -30,7 +30,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
                   Fletcher.Then(d,Fletcher.Anon(rec))(input,cont);//TODO can a failure consume?
                 }else{
                   var opts = delegation.map(_ -> _.tag);
-                  cont.value(no.rest.fail('Ors $opts',false,pos)).serve();
+                  cont.receive(cont.value(no.rest.fail('Ors $opts',false,pos)));
                 }
             )
           );

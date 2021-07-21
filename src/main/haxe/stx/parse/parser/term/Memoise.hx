@@ -31,7 +31,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
                   return switch (base.head) {
                     case None:
                       ipt.updateCacheAndGet(genKey, MemoParsed(res));
-                      cont.value(res).serve();
+                      cont.receive(cont.value(res));
                     case Some(_):
                       base.seed = res;
                       cont.receive(delegation.lrAnswer(genKey, ipt, base).forward(Noise));
@@ -44,9 +44,9 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
           switch(mEntry) {
             case  MemoLR(recDetect):
               LR._.setupLR(delegation, ipt, recDetect);
-              return cont.value(cast(recDetect.seed)).serve();
+              return cont.receive(cont.value(cast(recDetect.seed)));
             case  MemoParsed(ans):
-              return cont.value(cast(ans)).serve();
+              return cont.receive(cont.value(cast(ans)));
           }
         }
       )

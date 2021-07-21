@@ -7,7 +7,7 @@ class Stamp<P,R> extends ParserCls<P,R>{
     this.value = value;
   }
   inline public function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
-    return cont.value(value).serve();
+    return cont.receive(cont.value(value));
   }
   inline public function apply(input:ParseInput<P>):ParseResult<P,R>{
     return value;

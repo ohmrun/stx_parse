@@ -39,7 +39,7 @@ class Test {
 				new Issue1(),
 				new Issue2(),
 			],
-			[ManyTest]
+			[Issue1]
 		);
 	} 
 }
