@@ -12,7 +12,7 @@ class String extends EnumerableCls<StdString,StdString>{
 	}
 	public function match(e:StdString->Bool){
 		var to_match = this.take();
-		//trace('|||${to_match}|||');
+		__.log().trace('|||${to_match}|||');
 		return e(to_match);
 	}
 	public function prepend(v:StdString):Enumerable<StdString,StdString> {

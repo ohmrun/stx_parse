@@ -26,7 +26,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
                   var n = idx;
                   idx   = idx + 1;
                   var d = delegation[n];
-                  trace('${res.rest.index} $d');
+                  __.log().trace('${res.rest.index} $d');
                   Fletcher.Then(d,Fletcher.Anon(rec))(input,cont);//TODO can a failure consume?
                 }else{
                   var opts = delegation.map(_ -> _.tag);

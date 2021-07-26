@@ -125,7 +125,7 @@ class LiftParse{
     return ParseFailure.at_with(rest,message,fatal,pos);
   }
   static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
-    //trace(ipt.content.data);
+    __.log().trace(_ -> _.pure(ipt.content.data));
     var data : String = (cast ipt).content.data;
     if(data == null){
       data = "";

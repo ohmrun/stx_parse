@@ -17,8 +17,8 @@ typedef ParseFailureDef<P> = RestWith<P,ParseError>;
       ParseError.at_with(input,msg,fatal,pos)
     );
   }
-  public inline function next(err:ParseError):ParseFailure<P>{
-    return make(this.rest,this.with.next(err));
+  public inline function merge(err:ParseError):ParseFailure<P>{
+    return make(this.rest,this.with.merge(err));
   }
   public inline function is_fatal(){
     return this.with.is_fatal();

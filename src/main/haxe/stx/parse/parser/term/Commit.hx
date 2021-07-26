@@ -14,7 +14,7 @@ class Commit<I,T> extends Base<I,T,Parser<I,T>>{
       ParseResult.success,
       (err) -> ParseResult.failure((!err.is_fatal() || err.is_parse_fail()).if_else(
         () -> err,
-        () -> err.next(ParseError.at_with(err.rest,'Cannot Commit',true))
+        () -> err.merge(ParseError.at_with(err.rest,'Cannot Commit',true))
       ))
     );
   }

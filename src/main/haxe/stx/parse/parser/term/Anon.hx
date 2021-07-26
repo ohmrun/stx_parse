@@ -19,7 +19,7 @@ class Anon<P,R> extends Base<P,R,ParseInput<P> -> Terminal<ParseResult<P,R>,Nois
   }
   inline public function defer(ipt:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>){
     #if test
-    __.assert().exists(id);
+    __.assert().exists(pos);
     #end
     return this.delegation(ipt,cont);
   }

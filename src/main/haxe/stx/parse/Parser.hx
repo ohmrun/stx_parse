@@ -37,7 +37,6 @@ import stx.parse.parser.term.*;
     return new Arrow(fn,pos).asParser();
   }
   @:noUsing static inline public function Anon<P,R>(fn:ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag:Option<String>,?pos:Pos):Parser<P,R>{
-    //trace(fn);
     return new Anon(fn,tag,pos).asParser();
   }
   @:noUsing static inline public function SyncAnon<P,R>(fn:ParseInput<P> -> ParseResult<P,R>,tag:Option<String>,?pos:Pos):Parser<P,R>{
