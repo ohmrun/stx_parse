@@ -18,9 +18,13 @@ class Test {
 	}
 	public static function main() {
 		var f = __.log().global;
-				f.includes.push('stx/parse');
-				
-
+				f.level = TRACE;
+				f.includes.push("stx/parse/test");
+				//f.includes.push('stx/parse');
+				//f.includes.push('**/**/**');
+				//f.includes.push('**/*');
+				//f.includes.push('stx/stream');
+				//f.includes.push('stx/test');
 		__.test(
 			[
 				new SimpleParserTest(),
@@ -39,13 +43,13 @@ class Test {
 				new Issue1(),
 				new Issue2(),
 			],
-			[Issue1]
+			[SimpleRecursionLangTest]
 		);
 	} 
 }
 //TODO should this even work?
 class Issue1 extends TestCase{
-	@:timeout(1000000000)
+	//@timeout(10000)
 	public function test(async:Async){
 		var reader = 'abac'.reader();
 		var parser = Parser.Never().not()._and(Parser.Something()).many(); 

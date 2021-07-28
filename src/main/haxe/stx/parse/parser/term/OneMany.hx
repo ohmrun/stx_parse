@@ -2,9 +2,6 @@ package stx.parse.parser.term;
 
 using stx.parse.parser.term.OneMany;
 
-function log(wildcard:Wildcard){
-  return stx.parse.Log.log(wildcard).tag('stx.parse.OneMany');
-}
 class OneMany<P,R> extends With<P,R,Option<Array<R>>,Array<R>>{
   public function new(l:Parser<P,R>,?pos:Pos){
     super(l,Parser.Many(l).option(),pos);

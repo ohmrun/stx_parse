@@ -13,14 +13,20 @@ class SimpleRecursionLangTest extends TestCase{
       }
     ).crunch();
   }
-  public function test_recur(){
+  public function test_recur(async:Async){
     var t   = "1+2+3x4x9x10";
-    var t0  = haxe.Timer.stamp();
-    var o   = Lang.p_expr.provide(t.reader()).fudge();
+    //var t0  = haxe.Timer.stamp();
+    Lang.p_expr.provide(t.reader()).environment(
+      (x) -> {
+        __.log().debug(_ -> _.show(x.value()));
+        trace('done');
+        async.done();
+      }
+    ).submit();
     //__.log().info(haxe.Timer.stamp() - t0);
     //__.log().info(o);
     
-    same(Plus(Num(1),Plus(Num(2),Mult(Num(3),Mult(Num(4),Mult(Num(9),Num(10)))))),o.value().defv(null));
+    //same(Plus(Num(1),Plus(Num(2),Mult(Num(3),Mult(Num(4),Mult(Num(9),Num(10)))))),o.value().defv(null));
   }
 }
 
