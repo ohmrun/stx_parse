@@ -9,6 +9,8 @@ class Or<P,R> extends ParserCls<P,R>{
     this.rhs = rhs;
   }
   inline function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
+    __.log().trace('or');
+    __.log().trace(_ -> _.pure(lhs.toFletcher()));
     return cont.receive(
       lhs.toFletcher().forward(input).flat_fold(
         (result)  -> result.fold(

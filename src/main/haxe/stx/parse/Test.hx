@@ -20,34 +20,36 @@ class Test {
 		var f = __.log().global;
 				f.level = TRACE;
 				f.includes.push("stx/parse/test");
-				//f.includes.push('stx/parse');
-				//f.includes.push('**/**/**');
+				f.includes.push('stx/parse');
+				f.includes.push('eu/ohmrun/fletcher');
 				//f.includes.push('**/*');
-				//f.includes.push('stx/stream');
+				f.includes.push('stx/stream');
 				//f.includes.push('stx/test');
-		__.test(
-			[
-				new SimpleParserTest(),
-				new SimpleRecursionLangTest(),
-				new PrimitiveTest(),
-				//new MemoisationIdentityTest(),
-				new RegexTest(),
-				new EofTest(),
-				new NotTest(),
-				new OrTest(),
-				new RepSep0Test(),
-				new ManyTest(),
-				//new DebugTest(),
-				new OptionTest(),
-				new RepSepTest(),
-				new Issue1(),
-				new Issue2(),
-			],
-			[SimpleRecursionLangTest]
-		);
+		// __.test(
+		// 	[
+		// 		//new Issue3Test(),
+		// 		// new SimpleParserTest(),
+		// 		 new SimpleRecursionLangTest(),
+		// 		// new PrimitiveTest(),
+		// 		// //new MemoisationIdentityTest(),
+		// 		// new RegexTest(),
+		// 		// new EofTest(),
+		// 		// new NotTest(),
+		// 		// new OrTest(),
+		// 		// new RepSep0Test(),
+		// 		// new ManyTest(),
+		// 		// //new DebugTest(),
+		// 		// new OptionTest(),
+		// 		// new RepSepTest(),
+		// 		// new Issue1(),
+		// 		// new Issue2(),
+		// 	],
+		// 	[Issue3Test]
+		// );
+		new SimpleRecursionLangTest().test_one();
 	} 
 }
-//TODO should this even work?
+//TODO should this even work?W
 class Issue1 extends TestCase{
 	//@timeout(10000)
 	public function test(async:Async){

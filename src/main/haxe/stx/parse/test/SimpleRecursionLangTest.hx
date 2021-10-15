@@ -1,19 +1,21 @@
 package stx.parse.test;
 
 class SimpleRecursionLangTest extends TestCase{
-  public function test_one(async:Async){
+  public function test_one(){
     var reader = '1+2'.reader();
     Lang.p_expr.provide(reader).environment(
       (x) -> {
+        trace(x);
+        __.log().debug(_ -> _.pure(x));
         same(
           x.value().defv(null),
           Plus(Num(1),Num(2))
         );
-        async.done();
+        //async.done();
       }
     ).crunch();
   }
-  public function test_recur(async:Async){
+  public function _test_recur(async:Async){
     var t   = "1+2+3x4x9x10";
     //var t0  = haxe.Timer.stamp();
     Lang.p_expr.provide(t.reader()).environment(

@@ -17,10 +17,10 @@ class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
       )
     ).asParser();
   }
-  override public inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
+  public inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
     return actual().defer(ipt,cont);
   }
-  override public inline function apply(ipt:ParseInput<I>):ParseResult<I,Array<O>>{
+  public inline function apply(ipt:ParseInput<I>):ParseResult<I,Array<O>>{
     return actual().apply(ipt);
   }
 } 
