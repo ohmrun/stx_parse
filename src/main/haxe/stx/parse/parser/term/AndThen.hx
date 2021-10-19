@@ -7,10 +7,11 @@ class AndThen<P,Ri,Rii> extends ThroughBind<P,Ri,Rii>{
     super(delegation,pos);
     this.flat_map  = flat_map;
   }
+  //TODO what about the nil() case
   function through_bind(input:ParseInput<P>,result:ParseResult<P,Ri>):Parser<P,Rii>{
-    return result.fold(
-      (ok:ParseSuccess<P,Ri>) -> ok.with.map(flat_map).defv(Parser.Stamp(ok.rest.fail('FAIL'))),
-      (no)                    -> Parser.Stamp(__.failure(no))
+    return result.is_ok().if_else(
+      ()  -> result.value.map(flat_map).defv(Parser.Stamp(result.asset.fail('FAIL'))),
+      ()  -> Parser.Stamp(result.fails())
     );
   }
 }

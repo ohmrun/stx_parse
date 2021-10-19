@@ -18,7 +18,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
           __.log().debug('memoise:recalled ${memo.is_defined()}');
           return switch(memo){
             case None :
-              var base = ipt.fail(ParseError.FAIL,false,pos).mkLR(delegation, None);
+              var base = ipt.fail(ParseError.FAIL,false).mkLR(delegation, None);
 
               ipt.memo.lrStack  = ipt.memo.lrStack.cons(base);
               ipt.updateCacheAndGet(genKey, MemoLR(base));

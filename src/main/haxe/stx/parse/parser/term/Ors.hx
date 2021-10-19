@@ -17,20 +17,20 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       delegation[0],
       Fletcher.Anon(
         function rec(res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
-          return res.fold(
-            (ok) -> cont.receive(cont.value(ParseResult.success(ok))),
-            (no) -> no.is_fatal().if_else(
-              () -> cont.receive(cont.value(ParseResult.failure(no))),
+          return res.is_ok().if_else(
+            () -> cont.receive(cont.value(res)),
+            () -> res.error.is_fatal().if_else(
+              () -> cont.receive(cont.value(res)),
               () -> 
                 if(idx < delegation.length){
                   var n = idx;
                   idx   = idx + 1;
                   var d = delegation[n];
-                  __.log().trace('${res.rest.index} $d');
+                  __.log().trace('${res.asset.index} $d');
                   Fletcher.Then(d,Fletcher.Anon(rec))(input,cont);//TODO can a failure consume?
                 }else{
                   var opts = delegation.map(_ -> _.tag);
-                  cont.receive(cont.value(no.rest.fail('Ors $opts',false,pos)));
+                  cont.receive(cont.value(res.asset.fail('Ors $opts',false)));
                 }
             )
           );

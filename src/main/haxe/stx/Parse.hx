@@ -116,13 +116,13 @@ class LiftParse{
     return new stx.parse.Module();
   }
   static public inline function ok<P,R>(rest:ParseInput<P>,match:R):ParseResult<P,R>{
-    return ParseSuccess.make(rest,Some(match));
+    return ParseResult.make(rest,Some(match));
 	}
 	static public inline function nil<P,R>(rest:ParseInput<P>):ParseResult<P,R>{
-    return ParseSuccess.make(rest,None);
+    return ParseResult.make(rest,None);
   }
-  static public inline function fail<P,R>(rest:ParseInput<P>,message:String,fatal:Bool=false,?pos:Pos):ParseResult<P,R>{
-    return ParseFailure.at_with(rest,message,fatal,pos);
+  static public inline function fail<P,R>(rest:ParseInput<P>,message:String,fatal:Bool=false):ParseResult<P,R>{
+    return ParseResult.make(rest,None,ParseError.make(@:privateAccess rest.content.index,message,fatal));
   }
   static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
     __.log().trace(_ -> _.pure(@:privateAccess ipt.content.data));
@@ -145,13 +145,16 @@ class LiftParse{
 					Fletcher.Then(
 						p,
 						Fletcher.Anon(
-							(res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> res.fold(
-								(ok) -> {
-									var inner 	= (resII:ParseResult<Oi,Oii>) -> resII.fold(
-										ok 		-> ParseSuccess.make(res.rest,ok.with).toParseResult(),
-										no		-> ParseFailure.make(input,no.with).toParseResult()
+							(res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> res.is_ok().if_else(
+								() -> {
+									var inner 	= (resII:ParseResult<Oi,Oii>) -> resII.is_ok().if_else(
+										() 		-> resII.value.fold(
+											ok 	-> res.asset.ok(ok),
+											 () -> res.asset.nil() 
+										),
+										()		-> ParseResult.make(input,None,resII.error)
 									);
-									final out 		= p0(ok.with);
+									final out 		= p0(res.value);
 									final reader 	= out.fst();
 									final parser 	= out.snd(); 
 									// //trace(out.snd());
@@ -160,7 +163,7 @@ class LiftParse{
 									// return cont.later(defer.asFuture()).after(result);
 									return cont.receive(parser.toFletcher().then(Fletcher.Sync(inner)).forward(reader));
 								},
-								(no) -> cont.receive(cont.value(ParseResult.failure(no)))
+								() -> cont.receive(cont.value(res.fails()))
 							)
 						)
 					).forward(input)
@@ -179,3 +182,27 @@ class LiftParse{
 }
 typedef LiftParseInputForwardToParser 	= stx.parse.lift.LiftParseInputForwardToParser;
 typedef LiftArrayOfParser 							= stx.parse.lift.LiftArrayOfParser;
+
+class LiftParseError{
+	static public inline function is_parse_fail(self:Defect<ParseError>):Bool{
+    return self.lfold( 
+			(next:ParseError,memo:Bool) -> memo.if_else(
+				() -> true,
+				() -> next.msg != ParseError.FAIL
+			),
+			false
+		);
+  }
+  static public inline function is_fatal(self:Defect<ParseError>):Bool{
+    return self.lfold( 
+			(next:ParseError,memo:Bool) -> memo.if_else(
+				() -> true,
+				() -> next.fatal
+			),
+			false
+		);
+  }
+  static public function toString(self:Defect<ParseError>){
+    return self.map(Std.string).join(",");
+  }
+}

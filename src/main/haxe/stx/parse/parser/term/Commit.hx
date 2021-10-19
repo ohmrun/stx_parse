@@ -10,12 +10,13 @@ class Commit<I,T> extends Base<I,T,Parser<I,T>>{
     );
   }
   private function mod(result:ParseResult<I,T>){
-    return result.fold(
-      ParseResult.success,
-      (err) -> ParseResult.failure((!err.is_fatal() || err.is_parse_fail()).if_else(
-        () -> err,
-        () -> err.merge(ParseError.at_with(err.rest,'Cannot Commit',true))
-      ))
+    return result.is_ok().if_else(
+      () -> result,
+      //|| result.is_parse_fail()?
+      () -> (!result.error.is_fatal()).if_else(
+        () -> result,
+        () -> ParseResult.lift(result.errata(err -> err.snoc(ParseError.make(@:privateAccess result.asset.content.index,'Cannot Commit',true))))
+      )
     );
   }
 }

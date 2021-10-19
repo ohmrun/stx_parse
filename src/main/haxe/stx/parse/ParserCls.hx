@@ -25,4 +25,5 @@ abstract class ParserCls<I,O> implements ParserApi<I,O> implements FletcherApi<P
   }
   //abstract public function apply(p:ParseInput<I>):ParseResult<I,O>;
   abstract public function defer(p:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work;
+  
 }

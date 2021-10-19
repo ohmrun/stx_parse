@@ -8,15 +8,8 @@ typedef Enumerable<C,T>       = stx.parse.core.Enumerable<C,T>;
 
 typedef ParseSystemFailure    = stx.parse.core.ParseSystemFailure;
 
-typedef ParseSuccess<P,T>     = stx.parse.core.ParseSuccess<P,T>;
-
-typedef ParseErrorInfo        = stx.parse.core.ParseError.ParseErrorInfo;
+typedef ParseErrorDef         = stx.parse.core.ParseError.ParseErrorDef;
 typedef ParseError            = stx.parse.core.ParseError;
-typedef ParseFailure<P>       = stx.parse.core.ParseFailure<P>;
-
-
-typedef RestWithDef<P,T>      = stx.parse.core.RestWith.RestWithDef<P,T>;
-typedef RestWith<P,T>         = stx.parse.core.RestWith<P,T>;
 
 typedef Head                  = stx.parse.core.Head;
 typedef LR                    = stx.parse.core.LR;

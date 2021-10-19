@@ -21,15 +21,18 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,V>,Noise>){  
     var a = delegation.fst().toFletcher().forward(input);
     var b = a.flat_fold(
-      res -> res.ok().if_else(
-        () -> delegation.snd().toFletcher().forward(res.rest).map(
-          resI -> resI.ok().if_else(
-            () -> resI.fold(
-              success -> {
-                final result = transform(res.with.defv(null),success.with.defv(null));
-                return ParseResult.success(ParseSuccess.make(success.rest,result));
-              },
-              failure -> ParseResult.failure(failure)
+      res -> res.is_ok().if_else(
+        () -> delegation.snd().toFletcher().forward(res.asset).map(
+          resI -> resI.is_ok().if_else(
+            () -> resI.error.is_fatal().if_else(
+              () -> resI.fails(),
+              () -> {
+                final result = transform(res.value.defv(null),resI.value.defv(null));
+                return result.fold(
+                  ok -> resI.asset.ok(ok),
+                  () -> resI.asset.nil()
+                );
+              }
             ),
             () -> input.fail('with ${delegation.fst()} failed')
           )

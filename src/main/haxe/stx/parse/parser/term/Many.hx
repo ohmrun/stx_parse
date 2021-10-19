@@ -15,18 +15,18 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
     function rec(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>,arr:Array<O>){
       return cont.receive(delegation.toFletcher().forward(input).flat_fold(
-        res  -> res.fold(
-          ok -> {
-            ok.with.fold(
+        res  -> res.is_ok().if_else(
+          () -> {
+            res.value.fold(
               v   -> { arr.push(v); null; },
               ()  -> {}
             );
-            return Fletcher.lift(rec.bind(_,_,arr)).forward(ok.rest);
+            return Fletcher.lift(rec.bind(_,_,arr)).forward(res.asset);
           },
-          no -> cont.value(if(no.is_fatal()){
+          () -> cont.value(if(res.error.is_fatal()){
             input.fail('failed many ${delegation}',true);
           }else{
-            input.ok(arr);        
+            input.ok(arr); 
           })
         ),
         no   -> cont.error(no)

@@ -1,7 +1,7 @@
 package stx.parse.parser.term;
 
 class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
-  var transformer : ParseError -> ParseError;
+  var transformer : Defect<ParseError> -> Defect<ParseError>;
   public function new(delegation,transformer,?pos:Pos){
     super(delegation,pos);
     this.transformer = transformer;
@@ -12,10 +12,7 @@ class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
     ).forward(input));
   }
   private function mod(result:ParseResult<I,O>):ParseResult<I,O>{
-    return result.fold(
-      ParseResult.success,
-      (e) -> e.errata(transformer)
-    );
+    return ParseResult.lift(result.errata(transformer));
   }
   override public function toString(){
     return this.delegation.toString();

@@ -13,9 +13,9 @@ class Or<P,R> extends ParserCls<P,R>{
     __.log().trace(_ -> _.pure(lhs.toFletcher()));
     return cont.receive(
       lhs.toFletcher().forward(input).flat_fold(
-        (result)  -> result.fold(
-          ok -> cont.value(ok.toParseResult()),
-          no -> rhs.toFletcher().forward(input)
+        (result)  -> result.is_ok().if_else(
+          () -> cont.value(result),
+          () -> rhs.toFletcher().forward(input)
         ),
         (error)   -> cont.error(error)
       )

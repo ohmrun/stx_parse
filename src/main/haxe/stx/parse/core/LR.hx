@@ -14,15 +14,15 @@ typedef LRDef = {
 class LRLift{
   static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: ParseInput<I>, growable: LR): Provide<ParseResult<I,T>> {
     return switch (growable.head) {
-      case None: Provide.pure(ParseError.at_with(input,"E_NoRecursionHead",true,"LR").toParseResultWithParseInput(input));
+      case None: Provide.pure(input.fail("E_NoRecursionHead",true));
       case Some(head):
         if (head.getHead() != p) /*not head rule, so not growing*/{
           Provide.pure(cast growable.seed);
         } else {
           input.updateCacheAndGet(genKey, MemoParsed(growable.seed));
-          growable.seed.fold(
-            (_) -> grow(p, genKey, input, head), /*growing*/
-            (_) -> Provide.pure((cast growable.seed))
+          growable.seed.is_ok().if_else(
+            () -> grow(p, genKey, input, head), /*growing*/
+            () -> Provide.pure((cast growable.seed))
           );
         }
     }
@@ -35,7 +35,7 @@ class LRLift{
         if (cached == None && !(head.involvedSet.cons(head.headParser).has(p.elide()))) {
           Provide.pure(Some(
             MemoParsed(
-              ParseFailure.at_with(input,'dummy')
+              input.fail('dummy')
             )
           ));
         }else if (head.evalSet.has(p)) {
@@ -85,8 +85,8 @@ class LRLift{
     }
     return Provide.fromFunTerminalWork(p.defer.bind(rest)).convert(
       Fletcher.Anon(
-        (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>) -> switch (res.prj()) {
-          case Success(_) :
+        (res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>) -> switch (res.is_ok()) {
+          case true:
             if (oldRes.pos().offset < res.pos().offset ) {
               rest.updateCacheAndGet(genKey, MemoParsed(res));
               return cont.receive(grow(p, genKey, rest, head).forward(Noise));
@@ -98,8 +98,8 @@ class LRLift{
                 default               : throw "impossible match";
               }
             }
-          case Failure(_.is_fatal() => isError):
-            if (isError) { // the error must be propagated  and not discarded by the grower!
+          case false:
+            if (res.error.is_fatal()) { // the error must be propagated  and not discarded by the grower!
     
               rest.updateCacheAndGet(genKey, MemoParsed(res));
               rest.removeRecursionHead();

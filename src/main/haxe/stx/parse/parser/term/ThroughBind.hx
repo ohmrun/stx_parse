@@ -14,7 +14,7 @@ abstract class ThroughBind<P,Ri,Rii> extends ParserCls<P,Rii>{
     return cont.receive(this.delegate.toFletcher().forward(input).flat_fold(
       ok -> {
                 after = through_bind(input,ok);
-        return  after.toFletcher().forward(ok.rest);
+        return  after.toFletcher().forward(ok.asset);
       },
       no -> cont.error(no)
     ));

@@ -8,7 +8,7 @@ class SimpleRecursionLangTest extends TestCase{
         trace(x);
         __.log().debug(_ -> _.pure(x));
         same(
-          x.value().defv(null),
+          x.value.defv(null),
           Plus(Num(1),Num(2))
         );
         //async.done();
@@ -20,7 +20,7 @@ class SimpleRecursionLangTest extends TestCase{
     //var t0  = haxe.Timer.stamp();
     Lang.p_expr.provide(t.reader()).environment(
       (x) -> {
-        __.log().debug(_ -> _.show(x.value()));
+        __.log().debug(_ -> _.show(x.value));
         trace('done');
         async.done();
       }
