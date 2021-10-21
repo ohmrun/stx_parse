@@ -2,16 +2,18 @@ package stx.parse.test;
 
 class EofTest extends TestCase{
   
-  public function testSucceed(){
+  public function _testSucceed(){
     var ipt = "";
     var prs = Parser.Eof();
-    prs.toFletcher().environment(
+    __.ctx(
       ipt.reader(),
-      (res) -> {
-        final out = res.fudge();
-        equals(res.rest.index,0);    
+      (res:ParseResult<String,String>) -> {
+        final out = res;
+        equals(None,out.value);
+        equals(res.asset.index,0);  
       }
-    ).crunch();
+    ).load(prs)
+     .crunch();
   }
   
   // public function testFail(){
@@ -26,9 +28,10 @@ class EofTest extends TestCase{
     var prs = Parser.Whatever()._and(Parser.Eof());
     prs.toFletcher().environment(
       ipt.reader(),
-      (res) -> {
-        var out = res.fudge();
-        equals(res.rest.index,1);
+      (res:ParseResult<String,String>) -> {
+        equals(None,res.value);
+        // var out = res.fudge();
+        // equals(res.asset.index,1);
       }
     ).crunch();
   }

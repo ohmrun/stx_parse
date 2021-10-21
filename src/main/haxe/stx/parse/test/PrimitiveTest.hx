@@ -5,13 +5,19 @@ class PrimitiveTest extends TestCase{
 		var parser = Parser.Whatever();
 		var reader = "a".reader();
 		
-		parser.toFletcher().environment(
+		__.ctx(
 			reader,
-			(result) -> {
-				isTrue(result.ok());
+			(x:ParseResult<String,String>) -> {
+				is_true(x.is_ok());
 				async.done();
-			},
-			__.crack
-		).submit();
+			}
+		).load(parser.toFletcher())
+		 .submit();
+	}
+	public function test_something_many(){
+		var input 	= 'aa'.reader();
+		var parser 	= Parser.Something().many();
+		var result  = parser.provide(input).fudge();
+		same(result.value,Some(["a","a"]));
 	}
 }

@@ -34,4 +34,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
     }
     return cont.receive(Fletcher.lift(rec.bind(_,_,[])).forward(input));
   }
+  override public function toString(){
+    return 'Many($delegation)';
+  }
 }

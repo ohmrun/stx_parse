@@ -13,6 +13,6 @@ class OptionTest extends TestCase{
 		var reader = 'a'.reader();
 		var parser = Parser.Identifier('b').option();
 	 	var result = parser.provide(reader).fudge();
-		same(None,result.fudge());
+		same(None,result.value);
 	}
 }

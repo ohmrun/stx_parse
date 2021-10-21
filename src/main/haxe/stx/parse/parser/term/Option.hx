@@ -11,7 +11,7 @@ class Option<P,R> extends Base<P,StdOption<R>,Parser<P,R>>{
         (result:ParseResult<P,R>) -> result.has_error().if_else(
           () -> result.error.is_fatal().if_else(
             () -> result.map(Some),
-            () -> result.map(_ -> None)
+            () -> input.ok(None)
           ),
           () -> result.map(Some)
         )

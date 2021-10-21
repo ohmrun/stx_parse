@@ -41,6 +41,6 @@ class ManyTest extends TestCase{
 		var parser 	= __.parse().id('a').many().and_(Parser.Eof());
 		var result  = parser.provide(input).fudge();
 		trace(result);
-		isTrue(result.ok());
+		is_true(result.is_ok());
   }
 }

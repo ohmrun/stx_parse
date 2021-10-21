@@ -25,28 +25,34 @@ class Test {
 				//f.includes.push('**/*');
 				f.includes.push('stx/stream');
 				//f.includes.push('stx/test');
-		// __.test(
-		// 	[
-		// 		//new Issue3Test(),
-		// 		// new SimpleParserTest(),
-		// 		 new SimpleRecursionLangTest(),
-		// 		// new PrimitiveTest(),
-		// 		// //new MemoisationIdentityTest(),
-		// 		// new RegexTest(),
-		// 		// new EofTest(),
-		// 		// new NotTest(),
-		// 		// new OrTest(),
-		// 		// new RepSep0Test(),
-		// 		// new ManyTest(),
-		// 		// //new DebugTest(),
-		// 		// new OptionTest(),
-		// 		// new RepSepTest(),
-		// 		// new Issue1(),
-		// 		// new Issue2(),
-		// 	],
-		// 	[Issue3Test]
-		// );
-		new SimpleRecursionLangTest().test_one();
+		__.test(
+			[
+				//new PrimitiveTest(),
+				//new WithTest(),
+				//new EofTest(),
+				//new ManyTest(),
+				//new OptionTest(),
+				//new LookaheadTest(),
+				new ThenTest(),
+				//new Issue3Test(),
+				// new SimpleParserTest(),
+				//new SimpleRecursionLangTest(),
+				// new PrimitiveTest(),
+				// //new MemoisationIdentityTest(),
+				// new RegexTest(),
+				// ,
+				// new NotTest(),
+				// new OrTest(),
+				// new RepSep0Test(),
+				
+				// //new DebugTest(),
+				// new RepSepTest(),
+				// new Issue1(),
+				// new Issue2(),
+			],
+			[Issue3Test]
+		);
+		//new SimpleRecursionLangTest().test_one();
 	} 
 }
 //TODO should this even work?W
