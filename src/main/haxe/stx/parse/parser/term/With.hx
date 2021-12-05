@@ -30,7 +30,7 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
               __.log().trace(_ -> _.pure(delegation.snd()));
               __.log().trace(_ -> _.pure(resI.is_ok()));
               return resI.is_ok().if_else(
-                () -> resI.error.is_fatal().if_else(
+                () -> resI.is_fatal().if_else(
                   () -> resI.fails(),
                   () -> {
                     final result = transform(res.value.defv(null),resI.value.defv(null));

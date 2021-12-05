@@ -1,6 +1,9 @@
 package stx.parse;
 
 @:using(stx.parse.ParseResult.ParseResultLift)
+class ParseResultCls<P,R> extends EquityCls<ParseInput<P>,Option<R>,ParseError>{
+
+}
 typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseError>;
 
 @:using(stx.nano.Equity.EquityLift)
@@ -8,8 +11,8 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseError>;
 @:forward abstract ParseResult<P,R>(ParseResultDef<P,R>) from ParseResultDef<P,R> to ParseResultDef<P,R>{
   public function new(self) this = self;
   static public function lift<P,R>(self:ParseResultDef<P,R>):ParseResult<P,R> return new ParseResult(self);
-  @:noUsing static public function make<I,O,E>(asset:ParseInput<I>,value:Null<Option<O>>,?error:Defect<ParseError>){
-    return lift({ asset : asset, value : value, error : Defect.make(error)});
+  @:noUsing static public function make<I,O,E>(asset:ParseInput<I>,value:Null<Option<O>>,?error:Iter<ParseError>){
+    return lift(new ParseResultCls(error,value,asset).toEquity());
   }
   public inline function map<Ri>(fn:R->Ri):ParseResult<P,Ri>{
     return lift(Equity._.map(this,opt -> opt.map(fn)));
@@ -70,7 +73,7 @@ class ParseResultLift{
   static public inline function toRes<P,R>(self:ParseResult<P,R>):Res<Option<R>,ParseError>{
     return self.is_ok().if_else(
       ()  -> __.accept(self.value),
-      ()  -> __.reject(self.error.toErr())
+      ()  -> __.reject(self.toDefect().toError().except())
     );
   }
 }

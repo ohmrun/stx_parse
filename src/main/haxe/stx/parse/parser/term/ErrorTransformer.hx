@@ -1,7 +1,7 @@
 package stx.parse.parser.term;
 
 class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
-  var transformer : Defect<ParseError> -> Defect<ParseError>;
+  var transformer : Error<ParseError> -> Error<ParseError>;
   public function new(delegation,transformer,?pos:Pos){
     super(delegation,pos);
     this.transformer = transformer;

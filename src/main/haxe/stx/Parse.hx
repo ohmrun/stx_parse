@@ -122,7 +122,7 @@ class LiftParse{
     return ParseResult.make(rest,None);
   }
   static public inline function fail<P,R>(rest:ParseInput<P>,message:String,fatal:Bool=false):ParseResult<P,R>{
-    return ParseResult.make(rest,None,ParseError.make(@:privateAccess rest.content.index,message,fatal));
+    return ParseResult.make(rest,None,[ParseError.make(@:privateAccess rest.content.index,message,fatal)]);
   }
   static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
     __.log().trace(_ -> _.pure(@:privateAccess ipt.content.data));
@@ -185,16 +185,17 @@ typedef LiftArrayOfParser 							= stx.parse.lift.LiftArrayOfParser;
 
 class LiftParseError{
 	static public inline function is_parse_fail(self:Defect<ParseError>):Bool{
-    return self.lfold( 
+    return self.error.lfold( 
 			(next:ParseError,memo:Bool) -> memo.if_else(
 				() -> true,
 				() -> next.msg != ParseError.FAIL
 			),
 			false
 		);
-  }
+
+	}
   static public inline function is_fatal(self:Defect<ParseError>):Bool{
-    return self.lfold( 
+    return self.error.lfold( 
 			(next:ParseError,memo:Bool) -> memo.if_else(
 				() -> true,
 				() -> next.fatal
@@ -203,6 +204,6 @@ class LiftParseError{
 		);
   }
   static public function toString(self:Defect<ParseError>){
-    return self.map(Std.string).join(",");
+    return self.error.map(Std.string).map(x -> Std.string(x)).lfold1((n,m) -> '$m,$n');
   }
 }

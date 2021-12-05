@@ -13,9 +13,13 @@ class Commit<I,T> extends Base<I,T,Parser<I,T>>{
     return result.is_ok().if_else(
       () -> result,
       //|| result.is_parse_fail()?
-      () -> (!result.error.is_fatal()).if_else(
+      () -> (!result.is_fatal()).if_else(
         () -> result,
-        () -> ParseResult.lift(result.errata(err -> err.snoc(ParseError.make(@:privateAccess result.asset.content.index,'Cannot Commit',true))))
+        () -> ParseResult.lift(
+          result.errata(
+            err -> err.concat(ParseError.make(@:privateAccess result.asset.content.index,'Cannot Commit',true).toError())
+          )
+        )
       )
     );
   }

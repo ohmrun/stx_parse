@@ -99,7 +99,7 @@ class LRLift{
               }
             }
           case false:
-            if (res.error.is_fatal()) { // the error must be propagated  and not discarded by the grower!
+            if (res.is_fatal()) { // the error must be propagated  and not discarded by the grower!
     
               rest.updateCacheAndGet(genKey, MemoParsed(res));
               rest.removeRecursionHead();

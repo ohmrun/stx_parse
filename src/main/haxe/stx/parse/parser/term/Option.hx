@@ -9,7 +9,7 @@ class Option<P,R> extends Base<P,StdOption<R>,Parser<P,R>>{
     return cont.receive(
       delegation.toFletcher().forward(input).map(
         (result:ParseResult<P,R>) -> result.has_error().if_else(
-          () -> result.error.is_fatal().if_else(
+          () -> result.is_fatal().if_else(
             () -> result.map(Some),
             () -> input.ok(None)
           ),

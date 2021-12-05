@@ -21,10 +21,11 @@ class Test {
 				f.level = TRACE;
 				f.includes.push("stx/parse/test");
 				f.includes.push('stx/parse');
-				f.includes.push('eu/ohmrun/fletcher');
+				//f.includes.push('eu/ohmrun/fletcher');
 				//f.includes.push('**/*');
-				f.includes.push('stx/stream');
+				//f.includes.push('stx/stream');
 				//f.includes.push('stx/test');
+				//f.includes.push('stx/stream/DEBUG');
 		__.test(
 			[
 				//new PrimitiveTest(),

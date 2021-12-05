@@ -19,7 +19,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
         function rec(res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
           return res.is_ok().if_else(
             () -> cont.receive(cont.value(res)),
-            () -> res.error.is_fatal().if_else(
+            () -> res.is_fatal().if_else(
               () -> cont.receive(cont.value(res)),
               () -> 
                 if(idx < delegation.length){

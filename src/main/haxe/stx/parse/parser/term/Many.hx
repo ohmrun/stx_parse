@@ -23,7 +23,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
             );
             return Fletcher.lift(rec.bind(_,_,arr)).forward(res.asset);
           },
-          () -> cont.value(if(res.error.is_fatal()){
+          () -> cont.value(if(res.is_fatal()){
             input.fail('failed many ${delegation}',true);
           }else{
             input.ok(arr); 
