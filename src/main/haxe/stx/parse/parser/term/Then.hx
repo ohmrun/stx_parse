@@ -16,7 +16,7 @@ abstract class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
   }
   inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,U>,Noise>){
     return cont.receive(delegation.toFletcher().forward(input).map(
-      (res:ParseResult<I,T>) -> __.tracer()(res).is_ok().if_else(
+      (res:ParseResult<I,T>) -> res.is_ok().if_else(
         ()          -> res.map(transform),
         ()          -> res.fails()
       )

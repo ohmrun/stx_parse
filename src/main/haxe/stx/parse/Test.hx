@@ -19,8 +19,8 @@ class Test {
 	public static function main() {
 		var f = __.log().global;
 				f.level = TRACE;
-				f.includes.push("stx/parse/test");
-				f.includes.push('stx/parse');
+				//f.includes.push("stx/parse/test");
+				//f.includes.push('stx/parse');
 				//f.includes.push('eu/ohmrun/fletcher');
 				//f.includes.push('**/*');
 				//f.includes.push('stx/stream');
@@ -34,10 +34,10 @@ class Test {
 				//new ManyTest(),
 				//new OptionTest(),
 				//new LookaheadTest(),
-				new ThenTest(),
+				//new ThenTest(),
 				//new Issue3Test(),
 				// new SimpleParserTest(),
-				//new SimpleRecursionLangTest(),
+				new SimpleRecursionLangTest(),
 				// new PrimitiveTest(),
 				// //new MemoisationIdentityTest(),
 				// new RegexTest(),

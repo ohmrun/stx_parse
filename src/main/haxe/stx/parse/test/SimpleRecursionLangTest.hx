@@ -15,7 +15,7 @@ class SimpleRecursionLangTest extends TestCase{
       }
     ).crunch();
   }
-  public function _test_recur(async:Async){
+  public function test_recur(async:Async){
     var t   = "1+2+3x4x9x10";
     //var t0  = haxe.Timer.stamp();
     Lang.p_expr.provide(t.reader()).environment(
