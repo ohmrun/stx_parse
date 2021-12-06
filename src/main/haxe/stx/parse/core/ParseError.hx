@@ -29,6 +29,6 @@ typedef ParseErrorDef = {
     return Defect.pure(this);
   }
   @:to public function toError(){
-    return new stx.pico.error.term.ErrorBase(Some(this),None,None).toError();
+    return Error.make(Some(this),None,null);
   }
 }
