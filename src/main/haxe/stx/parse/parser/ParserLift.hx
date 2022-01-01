@@ -47,6 +47,7 @@ class ParserLift{
       Fletcher.Sync(fn)
     ));
   }
+  //TODO: pretty sure this is map now
   static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Fletcher<ParseInput<I>,TT,Noise>{
     return Fletcher.Then(
       p,

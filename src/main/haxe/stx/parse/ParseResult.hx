@@ -2,18 +2,28 @@ package stx.parse;
 
 @:using(stx.parse.ParseResult.ParseResultLift)
 class ParseResultCls<P,R> extends EquityCls<ParseInput<P>,Option<R>,ParseError>{
-
+  public function toString():String{
+    return ParseResult._.toString(this);
+  }
+  public function errate(fn:ParseError->ParseError):ParseResult<P,R>{
+    return errata(x -> x.errate(fn));
+  }
+  public function errata(fn:Error<ParseError>->Error<ParseError>):ParseResult<P,R>{
+    return ParseResult._.errata(this,fn);
+  }
 }
 typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseError>;
 
 @:using(stx.nano.Equity.EquityLift)
 @:using(stx.parse.ParseResult.ParseResultLift)
 @:forward abstract ParseResult<P,R>(ParseResultDef<P,R>) from ParseResultDef<P,R> to ParseResultDef<P,R>{
+  static public var _(default,never) = ParseResultLift;
   public function new(self) this = self;
   static public function lift<P,R>(self:ParseResultDef<P,R>):ParseResult<P,R> return new ParseResult(self);
   @:noUsing static public function make<I,O,E>(asset:ParseInput<I>,value:Null<Option<O>>,?error:Iter<ParseError>){
     return lift(new ParseResultCls(error,value,asset).toEquity());
   }
+  
   public inline function map<Ri>(fn:R->Ri):ParseResult<P,Ri>{
     return lift(Equity._.map(this,opt -> opt.map(fn)));
   }
@@ -23,15 +33,6 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseError>;
   public inline function fails<Ri>():ParseResult<P,Ri>{
     return make(this.asset,None,this.error);
   }
-  // /**
-  //   If you run a parser with a subset of the input, remember to hook up the rest of the original input using this.
-  // **/
-  // public function tack<Q>(success:ParseInput<Q>,failure:ParseInput<Q>):ParseResult<Q,R>{
-  //   return lift(fold(
-  //     (ok) -> Success(ParseSuccess.make(success,ok.with)),
-  //     (no) -> Failure(ParseFailure.make(failure,no.with))
-  //   ));
-  // }
   public function elide():ParseResult<P,Dynamic>{
     return this;
   }
@@ -41,6 +42,9 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseError>;
 
   public inline function pos(){
     return this.asset;
+  }
+  public function errata(fn:Error<ParseError>->Error<ParseError>):ParseResult<P,R>{
+    return _.errata(this,fn);
   }
 }
 class ParseResultLift{
@@ -75,5 +79,8 @@ class ParseResultLift{
       ()  -> __.accept(self.value),
       ()  -> __.reject(self.toDefect().toError().except())
     );
+  }
+  static public function errata<I,O>(self:ParseResultDef<I,O>,fn:Error<ParseError>->Error<ParseError>):ParseResult<I,O>{
+    return ParseResult.make(self.asset,self.value,self.error.errata(fn));
   }
 }

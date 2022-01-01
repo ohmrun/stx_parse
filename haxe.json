@@ -5,8 +5,23 @@
       "stx_pico","stx_nano", "stx_ds", "stx_assert", "stx_fn", "stx_test", "fletcher", "hre"
     ],
     "-D" : [],
-    "main" : {
-      "-main" : "Main",
+    "unit"  : {
+      "--macro" : [
+        "include('stx.Parse',true)",      
+        "include('stx.parse',true)"
+      ],
+      "interp" : {
+        "--interp"  : true
+      }
+    },
+    "test" : {
+      "-main" : "stx.parse.Test",
+      "interp" : {
+        "--interp" : true
+      }
+    },
+    "yaml" : {
+      "-main" : "stx.yaml.Test",
       "interp" : {
         "--interp" : true
       }

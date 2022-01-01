@@ -93,9 +93,11 @@ class Parse{
 	static public var x 					= not_escaped.not()._and(escape);
 	static public var x_quote 		= x._and(quote);
 
-	
 	static public var literal 		= new stx.parse.term.Literal().asParser();
-	
+
+	static public	final brkt_l_square = '['.id();
+	static public	final brkt_r_square = ']'.id();
+
 	static public function spaced( p : Parser<String,String> ) {
 		return p.and_(gap.many());
 	}
@@ -185,7 +187,7 @@ typedef LiftArrayOfParser 							= stx.parse.lift.LiftArrayOfParser;
 
 class LiftParseError{
 	static public inline function is_parse_fail(self:Defect<ParseError>):Bool{
-    return self.error.lfold( 
+    return self.error.prj().lfold( 
 			(next:ParseError,memo:Bool) -> memo.if_else(
 				() -> true,
 				() -> next.msg != ParseError.FAIL
@@ -195,7 +197,7 @@ class LiftParseError{
 
 	}
   static public inline function is_fatal(self:Defect<ParseError>):Bool{
-    return self.error.lfold( 
+    return self.error.prj().lfold( 
 			(next:ParseError,memo:Bool) -> memo.if_else(
 				() -> true,
 				() -> next.fatal
@@ -204,6 +206,6 @@ class LiftParseError{
 		);
   }
   static public function toString(self:Defect<ParseError>){
-    return self.error.map(Std.string).map(x -> Std.string(x)).lfold1((n,m) -> '$m,$n');
+    return self.error.prj().map(Std.string).map(x -> Std.string(x)).lfold1((n,m) -> '$m,$n');
   }
 }

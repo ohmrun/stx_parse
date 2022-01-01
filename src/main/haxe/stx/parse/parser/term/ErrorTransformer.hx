@@ -12,7 +12,11 @@ class ErrorTransformer<I,O> extends Base<I,O,Parser<I,O>>{
     ).forward(input));
   }
   private function mod(result:ParseResult<I,O>):ParseResult<I,O>{
-    return ParseResult.lift(result.errata(transformer));
+    __.log().trace(_ -> _.pure(delegation));
+    __.log().trace(result.is_ok());
+    final out = result.errata(transformer);
+    __.log().trace(out.is_ok());
+    return ParseResult.lift(out);
   }
   override public function toString(){
     return this.delegation.toString();

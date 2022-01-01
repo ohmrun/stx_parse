@@ -22,8 +22,8 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
     var a = delegation.fst().toFletcher().forward(input);
     var b = a.flat_fold(
       res -> {
-        __.log().trace(_ -> _.pure(delegation.fst()));
-        __.log().trace(_ -> _.pure(res));
+        __.log().trace(_ -> _.pure(delegation.fst().toString()));
+        __.log().trace(_ -> _.pure(res.toString()));
         return res.is_ok().if_else(
           () -> delegation.snd().toFletcher().forward(res.asset).map(
             resI -> {

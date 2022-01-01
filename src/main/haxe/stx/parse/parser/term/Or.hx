@@ -17,7 +17,8 @@ class Or<P,R> extends ParserCls<P,R>{
           () -> rhs.toFletcher().forward(input)
         ),
         (error)   -> cont.error(error)
-      )
+
+        )
     );
   }
   override public function toString(){
