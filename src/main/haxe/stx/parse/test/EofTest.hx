@@ -4,7 +4,7 @@ class EofTest extends TestCase{
   
   public function _testSucceed(){
     var ipt = "";
-    var prs = Parser.Eof();
+    var prs = Parsers.Eof();
     __.ctx(
       ipt.reader(),
       (res:ParseResult<String,String>) -> {
@@ -25,7 +25,7 @@ class EofTest extends TestCase{
   // }
   public function testConsumeThen(){
     var ipt = "x";
-    var prs = Parser.Whatever()._and(Parser.Eof());
+    var prs = Parsers.Whatever()._and(Parsers.Eof());
     prs.toFletcher().environment(
       ipt.reader(),
       (res:ParseResult<String,String>) -> {

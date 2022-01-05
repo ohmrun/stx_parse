@@ -13,15 +13,15 @@ inline function regex(str:String){
 class SimpleParserTest extends TestCase{
   public function testIdentifier(){
     var reader = "if".reader();
-    var parser = new Identifier("if").asParser();
-    var result = parser.provide(reader).fudge();
-    equals("if",result.value().defv(""));
+    var parser = Parsers.Identifier("if").asParser();
+    var result = parser.match(reader);
+    equals("if",result);
   }
   public function testOr(){
     var reader = "if".reader();
     var parser = "id".id().or("if".id()).asParser();
-    var result = parser.provide(reader).fudge();
-    equals("if",result.value().defv(""));
+    var result = parser.match(reader);
+    equals("if",result);
   }
   // public function testOrs(){
   //   var reader = "if".reader();

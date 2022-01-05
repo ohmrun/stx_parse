@@ -1,5 +1,7 @@
 package stx.parse.term;
 
+import stx.parse.Parsers.*;
+
 enum SimpleTokenSum{
   Token(arr:Array<String>);
   NotToken(str:String);
@@ -8,9 +10,9 @@ enum SimpleTokenSum{
   public function new(){
     this = p_parse; 
   }
-  static public var p_path  = Parsers.rep1sep(Base.valid.oneMany().token(),'.'.id());
-  static public var p_token = '$'.id()._and('{'.id())._and(p_path).and_('}'.id());
+  static public var p_path  = Rep1Sep(Parse.valid.one_many().tokenize(),Identifier('.'));
+  static public var p_token = Identifier('$')._and(Identifier('{'))._and(p_path).and_(Identifier('}'));
 
   static public var p_parse = 
-    '$'.id().lookahead().not()._and(Parse.anything()).oneMany().token().then(NotToken).or(p_token.then(Token)).many().and_(Parser.eof());
+    Identifier('$').lookahead().not()._and(Whatever()).one_many().tokenize().then(NotToken).or(p_token.then(Token)).many().and_(Eof());
 }

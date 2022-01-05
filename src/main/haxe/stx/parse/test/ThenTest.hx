@@ -6,7 +6,7 @@ class ThenTest extends TestCase{
       same(Some(1),res.value);
     }
     final input = ".".reader();
-    final parse = Parser.Something().then(x -> 1);
+    final parse = Parsers.Something().then(x -> 1);
     __.ctx(input,handler).load(parse.toFletcher()).crunch();    
   }
 }

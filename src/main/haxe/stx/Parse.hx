@@ -1,11 +1,6 @@
 package stx;
 
-import stx.parse.parser.term.Not;
-import stx.parse.parser.term.Head;
-import stx.parse.parser.term.LAnon;
-import stx.parse.parser.term.Regex;
-import stx.parse.parser.term.Or;
-import stx.parse.parser.term.Identifier;
+import stx.parse.Parsers.*;
 
 #if(test==stx_parse)
 typedef Test                  = stx.parse.test.Test;
@@ -15,25 +10,18 @@ typedef LiftStringReader      = stx.parse.lift.LiftStringReader;
 typedef LiftLinkedListReader  = stx.parse.lift.LiftLinkedListReader;
 
 
-typedef ParseInput<P>              = stx.parse.ParseInput<P>;
+typedef ParseInput<P>         = stx.parse.ParseInput<P>;
 typedef ParseResult<P,T>      = stx.parse.ParseResult<P,T>;
 typedef ParseResultLift       = stx.parse.ParseResult.ParseResultLift;
 
 typedef ParserApi<P,R>        = stx.parse.ParserApi<P,R>;
 typedef ParserCls<P,R>       	= stx.parse.ParserCls<P,R>;
 typedef Parser<P,R>           = stx.parse.Parser<P,R>;
+typedef Parsers            		= stx.parse.Parsers;
 typedef ParserLift            = stx.parse.parser.ParserLift;
 
 
-
 class Parse{
-	static public function head<I,O>(fn:I->Option<Couple<O,Option<I>>>):Parser<I,O>{
-		return new stx.parse.parser.term.Head(fn).asParser();
-	}
-	@:note("0b1kn00b","Lua fix")
-	@:noUsing static public inline function range(min:Int, max:Int):Parser<String,String>{
-		return Parser.Range(min,max);
-	}
 	@:noUsing static public function mergeString(a:String,b:String){
 		return a + b;
 	}
@@ -52,24 +40,24 @@ class Parse{
 			() 	-> b
 		);
 	}
-	static public var truth 			= __.parse().id('true').or(__.parse().id('false'));
+	static public var boolean 		= __.parse().id('true').or(__.parse().id('false'));
 	static public var integer     = __.parse().reg("^[\\+\\-]?\\d+");
   static public var float 			= __.parse().reg("^[\\+\\-]?\\d+(\\.\\d+)?");
   
 	static public function primitive():Parser<String,Primitive>{
-		return truth.then((x) -> PBool(x == 'true' ? true : false))
+		return boolean.then((x) -> PBool(x == 'true' ? true : false))
 		.or(float.then(Std.parseFloat.fn().then(PFloat)))
 		.or(integer.then((str) -> PInt(__.option(Std.parseInt(str)).defv(0))))
 		.or(literal.then(PString));
 	}
 		
 
-	static public var lower				= range(97, 122);
-	static public var upper				= range(65, 90);
-	static public var alpha				= Parser._.or(upper,lower);
-	static public var digit				= range(48, 57);
+	static public var lower				= Range(97, 122);
+	static public var upper				= Range(65, 90);
+	static public var alpha				= Or(upper,lower);
+	static public var digit				= Range(48, 57);
 	static public var alphanum		= alpha.or(digit);
-	static public var ascii				= range(0, 255);
+	static public var ascii				= Range(0, 255);
 	
 	static public var valid				= alpha.or(digit).or(__.parse().id('_'));
 	
@@ -81,7 +69,7 @@ class Parse{
 	static public var cr_or_nl		= nl.or(cr);
 
 	static public var gap					= tab.or(space);
-	static public var whitespace	= range(0, 33);
+	static public var whitespace	= Range(0, 33);
 	
 
 	//static public var camel 			= lower.and_with(word, mergeString);
@@ -95,8 +83,8 @@ class Parse{
 
 	static public var literal 		= new stx.parse.term.Literal().asParser();
 
-	static public	final brkt_l_square = '['.id();
-	static public	final brkt_r_square = ']'.id();
+	static public	final brkt_l_square = __.parse().id('[');
+	static public	final brkt_r_square = __.parse().id(']');
 
 	static public function spaced( p : Parser<String,String> ) {
 		return p.and_(gap.many());
@@ -105,7 +93,7 @@ class Parse{
 		return p.and_(whitespace.many());
 	}
 	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
-		return Parser.SyncAnon(
+		return SyncAnon(
 			(input:ParseInput<I>) -> input.head().fold(
 				(vI) -> v == vI ? input.tail().ok(vI) : input.fail('eq'),
 				() -> input.fail('eq')
@@ -137,11 +125,11 @@ class LiftParse{
   }
   
   static public inline function defer<I,O>(f:Void->Parser<I,O>):Parser<I,O>{
-    return new LAnon(f).asParser();
+    return LAnon(f).asParser();
   }
   
 	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<ParseInput<Oi>,Parser<Oi,Oii>>){
-		return Parser.Anon(
+		return Anon(
 			(input:ParseInput<I>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> {
 				return cont.receive(
 					Fletcher.Then(
@@ -176,7 +164,7 @@ class LiftParse{
 	}
 	static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
     p.tag = Some(tag);
-    return Parser.TagError(p, tag);
+    return TagError(p, tag);
 	}
 	@:noUsing static public inline function succeed<I,O>(v:O):Parser<I,O>{
     return new stx.parse.parser.term.Succeed(v).asParser();

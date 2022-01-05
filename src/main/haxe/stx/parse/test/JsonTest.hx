@@ -20,15 +20,15 @@ import stx.parse.term.Json;
     this.assertTrue(target.value().is_defined());
   }
   public function Xtest_simple(){
-    var target = new Json().parse(simple.reader());
-    trace(target);
+    //var target = new Json().parse(simple.reader());
+    //trace(target);
   }
   public function XtestOneMany(){
     //var target = Base.anything().one_many().parse("abs".reader());
     //trace(target);
   }
   public function test(){
-      var parser  = new Json();
+      var parser  = new Json().parser();
       var target  = parser.parse(github.reader());
       //trace(haxe.Json.parse(github));
       //var texpr   = TExpr.fromJsValue(target.value().core().release());

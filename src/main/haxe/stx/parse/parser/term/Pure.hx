@@ -1,13 +1,12 @@
 package stx.parse.parser.term;
 
-class Pure<I,O> extends Sync<I,O>{
+class Pure<I,O> extends SyncBase<I,O,Noise>{
   var value : ParseResult<I,O>;
   public function new(value,?pos){
     this.value = value;
     super(pos);
   }
-  override inline public function do_parse(ipt:ParseInput<I>):ParseResult<I,O>{
+  inline public function apply(ipt:ParseInput<I>):ParseResult<I,O>{
     return value;
   }
-  
 }

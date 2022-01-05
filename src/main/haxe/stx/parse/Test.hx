@@ -5,7 +5,9 @@ using stx.Fn;
 using stx.Assert;
 using stx.Test;
 
-import stx.Parse;
+using stx.Parse;
+import stx.parse.Parsers.*;
+
 import stx.parse.test.*;
 import stx.Test;
 
@@ -61,8 +63,8 @@ class Issue1 extends TestCase{
 	//@timeout(10000)
 	public function test(async:Async){
 		var reader = 'abac'.reader();
-		var parser = Parser.Never().not()._and(Parser.Something()).many(); 
-    //var parser = __.parse().id('x').not()._and(Parser.Something()).many(); 
+		var parser = Never().not()._and(Something()).many(); 
+    //var parser = __.parse().id('x').not()._and(Something()).many(); 
     parser.provide(reader).environment(
 			(x) -> {
 				trace(x);
@@ -75,7 +77,7 @@ class Issue2 extends TestCase{
 	@:timeout(-1)
 	public function test(async:Async){
 		var reader = 'abac'.reader();
-		var parser = Parser.Regex('abac').and_(Parser.Eof());
+		var parser = Regex('abac').and_(Eof());
 		parser.provide(
 			reader
 		).environment(

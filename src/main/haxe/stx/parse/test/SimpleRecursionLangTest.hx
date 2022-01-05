@@ -33,7 +33,7 @@ class SimpleRecursionLangTest extends TestCase{
 }
 
 private class Lang{
-  static public var p_int     = Parser.Regex("[0-9]+").then((x) -> Num(Std.parseInt(x)));
+  static public var p_int       = Parsers.Regex("[0-9]+").then((x) -> Num(Std.parseInt(x)));
   //static public var p_int     = Parser.Range(48,57).then((x) -> Num(Std.parseInt(x)));
   static public var p_star_id = __.parse().id("x");
   static public var p_plus_id = __.parse().id("+");

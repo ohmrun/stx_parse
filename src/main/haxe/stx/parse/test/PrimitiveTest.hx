@@ -2,7 +2,7 @@ package stx.parse.test;
 
 class PrimitiveTest extends TestCase{
 	public function test_anything(async:Async){
-		var parser = Parser.Whatever();
+		var parser = Parsers.Whatever();
 		var reader = "a".reader();
 		
 		__.ctx(
@@ -16,7 +16,7 @@ class PrimitiveTest extends TestCase{
 	}
 	public function test_something_many(){
 		var input 	= 'aa'.reader();
-		var parser 	= Parser.Something().many();
+		var parser 	= Parsers.Something().many();
 		var result  = parser.provide(input).fudge();
 		same(result.value,Some(["a","a"]));
 	}

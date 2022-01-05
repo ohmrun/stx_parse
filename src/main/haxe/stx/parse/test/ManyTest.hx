@@ -38,7 +38,7 @@ class ManyTest extends TestCase{
   // }
 	public function test_eof_ok(){
 		var input 	= 'aa'.reader();
-		var parser 	= __.parse().id('a').many().and_(Parser.Eof());
+		var parser 	= __.parse().id('a').many().and_(Parsers.Eof());
 		var result  = parser.provide(input).fudge();
 		trace(result);
 		is_true(result.is_ok());

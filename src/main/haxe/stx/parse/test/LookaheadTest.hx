@@ -6,7 +6,7 @@ class LookaheadTest extends TestCase{
       same(Some("."),res.value);
     }
     final input = ".".reader();
-    final parse = Parser.Something().and_(Parser.Eof().lookahead());
+    final parse = Parsers.Something().and_(Parsers.Eof().lookahead());
     __.ctx(input,handler).load(parse.toFletcher()).crunch();    
   }
 }

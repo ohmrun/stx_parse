@@ -4,7 +4,7 @@ class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
   var sep : Parser<I,S>;
   public function new(delegate,sep:Parser<I,S>,?pos){
     super(delegate,pos);
-    this.sep = Parser.Materialize(sep);
+    this.sep = Parsers.Materialize(sep);
   }
   private inline function actual(){
     return delegation.and(
@@ -19,8 +19,5 @@ class RepSep<I,O,S> extends Base<I,Array<O>,Parser<I,O>>{
   }
   public inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
     return actual().defer(ipt,cont);
-  }
-  public inline function apply(ipt:ParseInput<I>):ParseResult<I,Array<O>>{
-    return actual().apply(ipt);
   }
 } 

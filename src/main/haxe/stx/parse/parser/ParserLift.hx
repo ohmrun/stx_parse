@@ -1,48 +1,48 @@
 package stx.parse.parser;
 
-import stx.parse.parser.term.*;
+import stx.parse.Parsers.*;
 
 class ParserLift{
   static public inline function or<I,T>(pI : Parser<I,T>, p2 : Parser<I,T>):Parser <I,T>{
-    return Parser.Or(pI,p2).asParser();
+    return Or(pI,p2).asParser();
   }
   static public inline function ors<I,T>(self:Parser<I,T>,rest:Array<Parser<I,T>>):Parser<I,T>{
-    //return Parser.Ors([self].concat(rest)).asParser();
+    //return Ors([self].concat(rest)).asParser();
     return [self].concat(rest).lfold1((memo,next) -> memo.or(next)).defv(self);
   }
   static public inline function then<I,T,U>(p:Parser<I,T>,f : T -> U):Parser<I,U>{
-    return Parser.AnonThen(p,f).asParser();
+    return AnonThen(p,f).asParser();
   }
   static public inline function and_then<I,T,U>(p:Parser<I,T>,fn:T->Parser<I,U>):Parser<I,U>{
-    return Parser.AndThen(p,fn).asParser();
+    return AndThen(p,fn).asParser();
   }
   static public inline function many<I,T>(pI:Parser<I,T>):Parser<I,Array<T>>{
-    return Parser.Many(pI).asParser();
+    return Many(pI).asParser();
   }
   static public inline function one_many<I,T>(pI:Parser<I,T>):Parser<I,Array<T>>{
-    return new OneMany(pI).asParser();
+    return OneMany(pI).asParser();
   }
   static public inline function and_<I,T,U>(pI:Parser<I,T>,p2 : Parser<I, U>):Parser <I,T> {
-    return new AndL(pI,p2).asParser();
+    return AndL(pI,p2).asParser();
   }
   static public inline function and<I,T,U>(pI:Parser<I,T>,p2 : Parser<I,U>):Parser<I,Couple<T,U>>{
-    return new stx.parse.parser.term.CoupleWith(pI,p2).asParser();
+    return CoupleWith(pI,p2).asParser();
   }
   static public inline function and_seq<I,T>(pI:Parser<I,T>,p2 : Parser<I,T>):Parser<I,Array<T>>{
-    return new stx.parse.parser.term.AnonWith(pI,p2,(l:T,r:T) -> [l,r]).asParser();
+    return AnonWith(pI,p2,(l:T,r:T) -> [l,r]).asParser();
   }
   //@:native("__and") // Prevent a bug with hxcpp
   static public inline function _and<I,T,U>(pI:Parser<I,T>, p2 : Parser<I,U>):Parser<I,U> {
-    return new AndR(pI,p2).asParser();
+    return AndR(pI,p2).asParser();
   }
   static public inline function and_with<I,T,U,V>(pI:Parser<I,T>,p2:Parser<I,U>,f:Null<T>->Null<U>->Option<V>):Parser<I,V>{
-    return new AnonWith(pI,p2,f).asParser();
+    return AnonWith(pI,p2,f).asParser();
   }
   static public inline function commit<I,T> (pI : Parser<I,T>):Parser <I,T>{
-    return new Commit(pI).asParser();
+    return Commit(pI).asParser();
   }
   static public inline function mod<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->ParseResult<I,TT>):Parser<I,TT>{
-    return Parser.Arrow(Fletcher.Then(
+    return Arrow(Fletcher.Then(
       p,
       Fletcher.Sync(fn)
     ));
@@ -69,7 +69,7 @@ class ParserLift{
   //   }));
   // }  
   static public inline function rep1sep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser <I, Array<T>> {
-    return new Rep1Sep(pI,sep).asParser(); /* Optimize that! */
+    return Rep1Sep(pI,sep).asParser(); /* Optimize that! */
   }
   static public inline function rep1sep0<I,T,U>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Array<T>>{
     var next : Parser<I,Array<Couple<T,T>>> = many(and(sep,pI)).asParser();
@@ -85,34 +85,34 @@ class ParserLift{
     ).asParser(); /* Optimize that! */
   }
   static public inline function repsep0<I,T>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser < I, Array<T> > {
-    return or(rep1sep0(pI,sep),Succeed.pure([])).asParser();
+    return or(rep1sep0(pI,sep),Succeed([])).asParser();
   }
   static public inline function repsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
-    return new Rep1Sep(pI,sep).asParser(); /* Optimize that! */ 
+    return Rep1Sep(pI,sep).asParser(); /* Optimize that! */ 
   }
   static public inline function option<I,T>(p:Parser<I,T>):Parser<I,StdOption<T>>{
     return new Parser(new stx.parse.parser.term.Option(p));
   }
   static public function inspect<I,O>(parser:Parser<I,O>,pre:ParseInput<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
-    return new Inspect(parser,pre,post).asParser();
+    return Inspect(parser,pre,post).asParser();
   }
   static public function provide<I,O>(parser:Parser<I,O>,input:ParseInput<I>):Provide<ParseResult<I,O>>{
     return Provide.fromFunTerminalWork(parser.defer.bind(input));
   }
   static public function lookahead<I,O>(p:Parser<I,O>):Parser<I,O>{
-    return Parser.Lookahead(p);
+    return Lookahead(p);
   }
   /**
 	 * Returns true if the parser fails and vice versa.
 	 */
 	static public inline function not<I,O>(p:Parser<I,O>,?pos:Pos):Parser<I,O>{
-		return new Not(p,pos).asParser();
+		return Not(p,pos).asParser();
 	}
   static public inline function filter<I,T>(p:Parser<I,T>,fn:T->Bool):Parser<I,T>{
-    return new stx.parse.parser.term.AndThen(
+    return AndThen(
       p,
       function(o:T){
-        return fn(o) ? Parser.lift(Parser.Succeed(o)) : Parser.lift(Parser.Failed('filter failed',false)); 
+        return fn(o) ? Succeed(o) : Failed('filter failed',false); 
       }
     ).asParser();
   }
@@ -122,15 +122,32 @@ class ParserLift{
 		);
   }
   static public inline function tag_error<I,T>(p:Parser<I,T>, name : String, ?pos: Pos ):Parser<I,T>
-    return Parser.TagError(p,name,pos);
+    return TagError(p,name,pos);
 
   static public inline function with_tag<P,R>(p:Parser<P,R>,tag:String){
-    return Parser.Named(p,tag);
+    return Named(p,tag);
   }
   /**
    * Lift a parser to a packrat parser (memo is derived from scala's library)
    */
-	 public static function memo<I,T>(p : Parser<I,T>) : Parser<I,T>{
+  static public function memo<I,T>(p : Parser<I,T>) : Parser<I,T>{
     return new stx.parse.parser.term.Memoise(p).asParser();
-  };
+  }
+  static public function parse<P,R>(self:Parser<P,R>,input:ParseInput<P>){
+    return (
+      self.toFletcher()
+          .produce(input)
+          .map(x -> x.toRes())
+          .errata(_ -> __.fault().external("parse failure"))
+          .adjust(x -> x)
+          .force()
+    );
+  }
+  static public function match<P,R>(self:Parser<P,R>,input:ParseInput<P>):Null<R>{
+    return parse(self,input).fold(
+      opt -> opt.fudge(),
+      e   -> throw e 
+    );
+  }
+
 }

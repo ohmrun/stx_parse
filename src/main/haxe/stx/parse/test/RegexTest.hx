@@ -2,12 +2,12 @@ package stx.parse.test;
 
 class RegexTest extends TestCase{
 	public function test_any_regex(){
-		var parser = Parser.Regex(".");
+		var parser = Parsers.Regex(".");
 		var reader = "ok".reader();
 		parser.toFletcher().environment(
 			reader,
 			result -> {
-				isTrue(result.ok());
+				is_true(result.is_ok());
 			}
 		);
 	}
@@ -16,7 +16,7 @@ class RegexTest extends TestCase{
 		var reader = "+1".reader();
 		parser.toFletcher().environment(reader,
 			result -> {
-				isTrue(result.ok());
+				is_true(result.is_ok());
 			}	
 		).crunch();
 	}
@@ -26,7 +26,7 @@ class RegexTest extends TestCase{
 		parser.toFletcher().environment(
 			reader,
 			result -> {
-				isTrue(result.ok());
+				is_true(result.is_ok());
 			}
 		).crunch();
 	}

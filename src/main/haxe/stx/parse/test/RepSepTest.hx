@@ -10,7 +10,7 @@ class RepSepTest extends TestCase{
 	@:timeout(100000)
 	public function test(async:Async){
 		var reader = 'a.b'.reader();
-		var parser = Parser.Something().repsep('.'.id());
+		var parser = Parsers.Something().repsep('.'.id());
 		var result = parser.provide(reader);
 				result.environment(
 					result -> {
@@ -22,20 +22,20 @@ class RepSepTest extends TestCase{
 	}
 	public function _test_1(){
 		var reader = 'a'.reader();
-		var parser = Parser.Identifier('a').repsep('.'.id());
+		var parser = Parsers.Identifier('a').repsep('.'.id());
 		var result = parser.provide(reader).fudge();
 		same(['a'],result.fudge());
 	}
 	public function _test_2(){
 		var reader = 'a.'.reader();
-		var parser = Parser.Identifier('a').repsep('.'.id());
+		var parser = Parsers.Identifier('a').repsep('.'.id());
 		var result = parser.provide(reader).fudge();
 		same(['a'],result.fudge());
 	}
 
 	// public function _test_3(){
 	// 	var reader = ''.reader();
-	// 	var parser = Parser.Identifier('a').repsep('.'.id());
+	// 	var parser = Parsers.Identifier('a').repsep('.'.id());
 	// 	raises(
 	// 		() -> parser.provide(reader).fudge()
 	// 	);
