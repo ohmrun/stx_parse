@@ -20,3 +20,4 @@ typedef MemoEntry             = stx.parse.core.Memo.MemoEntry;
 typedef MemoKey               = stx.parse.core.Memo.MemoKey;
 typedef UID                   = stx.parse.core.UID;
 typedef Lung                  = stx.parse.core.Lung;
+typedef Errors                = stx.parse.core.Errors;
