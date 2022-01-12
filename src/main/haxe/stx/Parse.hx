@@ -46,9 +46,9 @@ class Parse{
   
 	static public function primitive():Parser<String,Primitive>{
 		return boolean.then((x) -> PBool(x == 'true' ? true : false))
-		.or(float.then(Std.parseFloat.fn().then(PFloat)))
-		.or(integer.then((str) -> PInt(__.option(Std.parseInt(str)).defv(0))))
-		.or(literal.then(PString));
+		.or(float.then(Std.parseFloat.fn().then(x -> PSprig(Byteal(NFloat(x))))))
+		.or(integer.then((str) -> PSprig(Byteal(NFloat((__.option(Std.parseInt(str)).defv(0)))))))
+		.or(literal.then(x -> PSprig(Textal(x))));
 	}
 		
 
