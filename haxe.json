@@ -4,7 +4,9 @@
     "-lib" : [
       "stx_pico","stx_nano", "stx_ds", "stx_assert", "stx_fn", "stx_test", "fletcher", "hre"
     ],
-    "-D" : [],
+    "-D" : [
+      
+    ],
     "unit"  : {
       "--macro" : [
         "include('stx.Parse',true)",      
@@ -12,12 +14,25 @@
       ],
       "interp" : {
         "--interp"  : true
+      },
+      "cpp"  : {
+        "--cpp" : "build/unit/cpp"
       }
     },
     "test" : {
       "-main" : "stx.parse.Test",
       "interp" : {
         "--interp" : true
+      },
+      "js" : {
+        "-lib" : "hxnodejs",
+        "--js" : "build/test/js/main.js"
+      },
+      "hl" : {
+        "--hl" : "build/test/hl/main.hl"
+      },
+      "cpp" : {
+        "--cpp" : "build/test/cpp"
       }
     },
     "yaml" : {
@@ -25,6 +40,27 @@
       "interp" : {
         "--interp" : true
       }
+    },
+    "json" : {
+      "test" : {
+        "-main"   : "stx.parse.test.JsonTest",
+        "interp" : {
+          "--interp" : true
+        }
+      }
     }
+  },
+  "run" : {
+    "test.js" : [
+      ["hx","build","test/js"],
+      ["node","build/test/js/main.js"]
+    ],
+    "test.hl" : [
+      ["hx","build","test/hl"],
+      ["hl","build/test/hl/main.hl"]
+    ],
+    "test.cpp" : [
+      ["hx","build","test/cpp"]
+    ]
   }
 }

@@ -2,22 +2,30 @@ package stx.parse.test;
 
 import stx.parse.term.Json;
 
-@:access(stx) class JsonTest extends haxe.unit.TestCase{
+using stx.Test;
+
+@:access(stx) class JsonTest extends TestCase{
+  static public function main(){
+    __.test(
+      [new JsonTest()],
+      []
+    );
+  }
   public var github_author = __.resource("github_author").string();
   public var github = __.resource("github").string();
   public var simple = __.resource("simple").string();
 
   public function Xtest_literal(){
     var target = Parse.literal.parse('"helsldf\\"o"'.reader());
-    this.assertTrue(target.value().is_defined());
+    this.is_true(target.value().is_defined());
   }
   public function Xtest_identifier(){
     var target = Json.ident_p.parse('"TEst"'.reader());
-    this.assertTrue(target.value().is_defined());
+    this.is_true(target.value().is_defined());
   }
   public function Xtest_zero_length_literal(){
     var target = Parse.literal.parse('""'.reader());
-    this.assertTrue(target.value().is_defined());
+    this.is_true(target.value().is_defined());
   }
   public function Xtest_simple(){
     //var target = new Json().parse(simple.reader());

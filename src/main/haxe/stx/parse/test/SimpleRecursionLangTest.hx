@@ -5,23 +5,23 @@ class SimpleRecursionLangTest extends TestCase{
     var reader = '1+2'.reader();
     Lang.p_expr.provide(reader).environment(
       (x) -> {
-        trace(x);
+        //trace(x);
         __.log().debug(_ -> _.pure(x));
         same(
           x.value.defv(null),
           Plus(Num(1),Num(2))
         );
-        //async.done();
       }
     ).crunch();
   }
+  @timeout(600000)
   public function test_recur(async:Async){
     var t   = "1+2+3x4x9x10";
     //var t0  = haxe.Timer.stamp();
     Lang.p_expr.provide(t.reader()).environment(
       (x) -> {
-        __.log().debug(_ -> _.show(x.value));
         trace('done');
+        __.log().debug(_ -> _.show(x.value));
         async.done();
       }
     ).submit();
@@ -54,6 +54,7 @@ private class Lang{
   }
   static function p_plus(){
     return 
+
       p_expr
       .and_(p_plus_id)
       .and(p_expr)

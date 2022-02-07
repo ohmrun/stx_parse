@@ -20,14 +20,14 @@ class Test {
 	}
 	public static function main() {
 		var f = __.log().global;
-				f.level = TRACE;
-				//f.includes.push("stx/parse/test");
-				//f.includes.push('stx/parse');
-				//f.includes.push('eu/ohmrun/fletcher');
-				//f.includes.push('**/*');
-				//f.includes.push('stx/stream');
-				//f.includes.push('stx/test');
-				//f.includes.push('stx/stream/DEBUG');
+				f.level = BLANK;
+				f.includes.push("stx/parse/test");
+				f.includes.push('stx/parse');
+				f.includes.push('eu/ohmrun/fletcher');
+				f.includes.push('**');
+				f.includes.push('stx/stream');
+				f.includes.push('stx/test');
+				f.includes.push('stx/stream/DEBUG');
 		__.test(
 			[
 				//new PrimitiveTest(),
@@ -53,7 +53,7 @@ class Test {
 				// new Issue1(),
 				// new Issue2(),
 			],
-			[Issue3Test]
+			[]
 		);
 		//new SimpleRecursionLangTest().test_one();
 	} 

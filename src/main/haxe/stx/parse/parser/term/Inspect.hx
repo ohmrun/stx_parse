@@ -11,10 +11,10 @@ class Inspect<I,O> extends Delegate<I,O>{
   }
   public function new(delegation,?prefix:ParseInput<I> -> Void,?postfix:ParseResult<I,O> -> Void,?id:Pos){
     super(delegation,id);
-    if(__.that().exists().apply(prefix).ok()){
+    if(__.that().exists().apply(prefix).is_ok()){
       this.prefix   = prefix;
     }
-    if(__.that().exists().apply(postfix).ok()){
+    if(__.that().exists().apply(postfix).is_ok()){
       this.postfix   = postfix;
     }
   }
