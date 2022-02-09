@@ -117,7 +117,7 @@ class Parsers{
   static public inline function CoupleWith<P,Ri,Rii>(pI:Parser<P,Ri>,pII : Parser<P,Rii>):Parser<P,Couple<Ri,Rii>>{
     return new stx.parse.parser.term.CoupleWith(pI,pII).asParser();
   }
-  static public inline function Rep1Sep<P,Ri,Rii>(pI:Parser<P,Ri>,sep : Parser<P,Rii> ):Parser <P, Array<Ri>> {
+  static public inline function Rep1Sep<P,Ri,Rii>(pI:Parser<P,Ri>,sep : Parser<P,Rii> ):Parser <P, Cluster<Ri>> {
     return new stx.parse.parser.term.Rep1Sep(pI,sep).asParser(); /* Optimize that! */
   }
   static public inline function Commit<I,T> (pI : Parser<I,T>):Parser <I,T>{

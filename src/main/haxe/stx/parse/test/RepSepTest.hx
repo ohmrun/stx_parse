@@ -15,7 +15,7 @@ class RepSepTest extends TestCase{
 				result.environment(
 					result -> {
 						trace(result);
-						same(['a','b'],result.fudge());
+						same(Cluster.lift(['a','b']),result.fudge());
 						async.done();
 					}
 				).submit();
@@ -24,13 +24,13 @@ class RepSepTest extends TestCase{
 		var reader = 'a'.reader();
 		var parser = Parsers.Identifier('a').repsep('.'.id());
 		var result = parser.provide(reader).fudge();
-		same(['a'],result.fudge());
+		same(Cluster.lift(['a']),result.fudge());
 	}
 	public function _test_2(){
 		var reader = 'a.'.reader();
 		var parser = Parsers.Identifier('a').repsep('.'.id());
 		var result = parser.provide(reader).fudge();
-		same(['a'],result.fudge());
+		same(Cluster.lift(['a']),result.fudge());
 	}
 
 	// public function _test_3(){

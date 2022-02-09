@@ -6,9 +6,9 @@ class ParserLift{
   static public inline function or<I,T>(pI : Parser<I,T>, p2 : Parser<I,T>):Parser <I,T>{
     return Or(pI,p2).asParser();
   }
-  static public inline function ors<I,T>(self:Parser<I,T>,rest:Array<Parser<I,T>>):Parser<I,T>{
+  static public inline function ors<I,T>(self:Parser<I,T>,rest:Cluster<Parser<I,T>>):Parser<I,T>{
     //return Ors([self].concat(rest)).asParser();
-    return [self].concat(rest).lfold1((memo,next) -> memo.or(next)).defv(self);
+    return Cluster.lift([self]).concat(rest).lfold1((memo,next) -> memo.or(next)).defv(self);
   }
   static public inline function then<I,T,U>(p:Parser<I,T>,f : T -> U):Parser<I,U>{
     return AnonThen(p,f).asParser();
@@ -16,10 +16,10 @@ class ParserLift{
   static public inline function and_then<I,T,U>(p:Parser<I,T>,fn:T->Parser<I,U>):Parser<I,U>{
     return AndThen(p,fn).asParser();
   }
-  static public inline function many<I,T>(pI:Parser<I,T>):Parser<I,Array<T>>{
+  static public inline function many<I,T>(pI:Parser<I,T>):Parser<I,Cluster<T>>{
     return Many(pI).asParser();
   }
-  static public inline function one_many<I,T>(pI:Parser<I,T>):Parser<I,Array<T>>{
+  static public inline function one_many<I,T>(pI:Parser<I,T>):Parser<I,Cluster<T>>{
     return OneMany(pI).asParser();
   }
   static public inline function and_<I,T,U>(pI:Parser<I,T>,p2 : Parser<I, U>):Parser <I,T> {
@@ -28,7 +28,7 @@ class ParserLift{
   static public inline function and<I,T,U>(pI:Parser<I,T>,p2 : Parser<I,U>):Parser<I,Couple<T,U>>{
     return CoupleWith(pI,p2).asParser();
   }
-  static public inline function and_seq<I,T>(pI:Parser<I,T>,p2 : Parser<I,T>):Parser<I,Array<T>>{
+  static public inline function and_seq<I,T>(pI:Parser<I,T>,p2 : Parser<I,T>):Parser<I,Cluster<T>>{
     return AnonWith(pI,p2,(l:T,r:T) -> [l,r]).asParser();
   }
   //@:native("__and") // Prevent a bug with hxcpp
@@ -55,7 +55,7 @@ class ParserLift{
     );
   }
 
-  static public inline function notEmpty<T>(arr:Array<T>):Bool return arr.length>0;
+  static public inline function notEmpty<T>(arr:Cluster<T>):Bool return arr.length>0;
 
 
   static public inline function trace<I,T>(p : Parser<I,T>, f : T -> String):Parser<I,T> return
@@ -68,11 +68,11 @@ class ParserLift{
   //     return out;
   //   }));
   // }  
-  static public inline function rep1sep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser <I, Array<T>> {
+  static public inline function rep1sep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser <I, Cluster<T>> {
     return Rep1Sep(pI,sep).asParser(); /* Optimize that! */
   }
-  static public inline function rep1sep0<I,T,U>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Array<T>>{
-    var next : Parser<I,Array<Couple<T,T>>> = many(and(sep,pI)).asParser();
+  static public inline function rep1sep0<I,T,U>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser<I,Cluster<T>>{
+    var next : Parser<I,Cluster<Couple<T,T>>> = many(and(sep,pI)).asParser();
     return then(and(pI,next).asParser(),
       function (t){ 
         var fst = t.fst();
@@ -84,10 +84,10 @@ class ParserLift{
       }
     ).asParser(); /* Optimize that! */
   }
-  static public inline function repsep0<I,T>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser < I, Array<T> > {
+  static public inline function repsep0<I,T>(pI:Parser<I,T>,sep : Parser<I,T> ):Parser < I, Cluster<T> > {
     return or(rep1sep0(pI,sep),Succeed([])).asParser();
   }
-  static public inline function repsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Array<T> > {
+  static public inline function repsep<I,T,U>(pI:Parser<I,T>,sep : Parser<I,U> ):Parser < I, Cluster<T> > {
     return Rep1Sep(pI,sep).asParser(); /* Optimize that! */ 
   }
   static public inline function option<I,T>(p:Parser<I,T>):Parser<I,StdOption<T>>{
@@ -116,7 +116,7 @@ class ParserLift{
       }
     ).asParser();
   }
-  static public function tokenize(p:Parser<String,Array<String>>):Parser<String,String>{
+  static public function tokenize(p:Parser<String,Cluster<String>>):Parser<String,String>{
 		return p.then(
 			(arr) -> __.option(arr).defv([]).join("")
 		);

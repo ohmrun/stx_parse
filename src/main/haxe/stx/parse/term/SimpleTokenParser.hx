@@ -3,10 +3,10 @@ package stx.parse.term;
 import stx.parse.Parsers.*;
 
 enum SimpleTokenSum{
-  Token(arr:Array<String>);
+  Token(arr:Cluster<String>);
   NotToken(str:String);
 }
-@:forward abstract SimpleTokenParser(Parser<String,Array<SimpleTokenSum>>){
+@:forward abstract SimpleTokenParser(Parser<String,Cluster<SimpleTokenSum>>){
   public function new(){
     this = p_parse; 
   }

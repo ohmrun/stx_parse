@@ -3,8 +3,8 @@ package stx.parse.term;
 import stx.parse.Parsers.*;
 
 enum JsonSum<T>{
-  JsObject(record : Array<Couple<String,JsonSum<T>>>);
-  JsArray(array : Array<JsonSum<T>>);
+  JsObject(record : Cluster<Couple<String,JsonSum<T>>>);
+  JsArray(array : Cluster<JsonSum<T>>);
   JsData(x : T);
 }
 
