@@ -12,7 +12,7 @@ class EofTest extends TestCase{
         equals(None,out.value);
         equals(res.asset.index,0);  
       }
-    ).load(prs)
+    ).load(prs.toFletcher())
      .crunch();
   }
   

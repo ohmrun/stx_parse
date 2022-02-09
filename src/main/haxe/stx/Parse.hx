@@ -6,6 +6,7 @@ import stx.parse.Parsers.*;
 typedef Test                  = stx.parse.test.Test;
 #end
 typedef LiftArrayReader       = stx.parse.lift.LiftArrayReader;
+typedef LiftClusterReader     = stx.parse.lift.LiftClusterReader;
 typedef LiftStringReader      = stx.parse.lift.LiftStringReader;
 typedef LiftLinkedListReader  = stx.parse.lift.LiftLinkedListReader;
 
