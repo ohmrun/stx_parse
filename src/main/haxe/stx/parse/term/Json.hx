@@ -45,7 +45,7 @@ class Json{
   function entries_p() 
     return entry_p().repsep(comma_p).commit();
 
-  function parser():Parser<String,JsonSum<String>>{
+  public function parser():Parser<String,JsonSum<String>>{
     return LAnon(
       () -> 
         l_acc_p

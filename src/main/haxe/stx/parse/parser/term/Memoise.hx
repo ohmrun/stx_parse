@@ -15,7 +15,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
       delegation.recall(genKey, ipt),
       Fletcher.Anon(
         (memo:Option<MemoEntry>,cont:Terminal<ParseResult<I,O>,Noise>) -> {
-          __.log().debug('memoise:recalled ${memo.is_defined()}');
+          __.log().debug(_ -> _.thunk(() -> 'memoise:recalled ${memo.is_defined()}'));
           return switch(memo){
             case None :
               var base = ipt.fail(ParseError.FAIL,false).mkLR(delegation, None);
@@ -23,7 +23,9 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
               ipt.memo.lrStack  = ipt.memo.lrStack.cons(base);
               ipt.updateCacheAndGet(genKey, MemoLR(base));
 
+              #if debug
               __.assert().exists(delegation);
+              #end
 
               return Fletcher.Then(
                 delegation,
