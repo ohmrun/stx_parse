@@ -54,9 +54,9 @@ class Json{
     return LAnon(
       () -> 
         l_acc_p
-        ._and(entries_p())
+        ._and(entries_p().option())
         .and_(r_acc_p)
-        .then(arr -> JsObject(arr))
+        .then(arr -> JsObject(arr.defv([].imm())))
         .asParser()
     ).asParser().tagged('json').memo();
   }
