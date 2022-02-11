@@ -9,10 +9,12 @@ using stx.Test;
     final log = __.log().global;
           log.includes.push("**/*");
           log.level = TRACE;
+    final timer = Timer.unit();
     __.test(
       [new JsonTest()],
       []
     );
+    __.log().info(timer.since());
   }
   //public var github_author = __.resource("github_author").string();
   //public var github = __.resource("github").string();

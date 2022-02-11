@@ -53,6 +53,16 @@
         "-main"   : "stx.parse.test.JsonTest",
         "interp" : {
           "--interp" : true
+        },
+        "cpp" : {
+          "--cpp" : "build/json/test/cpp/"
+        },
+        "node" : {
+          "-lib" : ["hxnodejs"],
+          "--js" : "build/json/test/node/main.js"
+        },
+        "hl"  : {
+          "--hl" : "build/unit/hl/main.hl"
         }
       }
     }
@@ -68,6 +78,17 @@
     ],
     "test.cpp" : [
       ["hx","build","test/cpp"]
+    ],
+    "json.test.cpp" : [
+      ["hx","build","json/test/cpp"]
+    ],
+    "json.test.node" : [
+      ["hx","build","json/test/node"],
+      ["node","build/json/test/node/main.js"]
+    ],
+    "json.test.hl" : [
+      ["hx","build","json/test/hl"],
+      ["node","build/json/test/hl/main.js"]
     ]
   }
 }

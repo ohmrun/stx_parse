@@ -2,11 +2,12 @@ package stx.parse.parser.term;
 
 using stx.parse.parser.term.With;
 
-
 abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   public function new(l:Parser<I,T>,r:Parser<I,U>,?pos:Pos){
+    #if debug
     __.assert().exists(l);
     __.assert().exists(r);
+    #end
     //__.log().debug(_ -> _.thunk(() -> '${l} ${r}'));
     //__.log().debug(_ -> _.thunk(() -> '${l.tag} ${r.tag}'));
     super(__.couple(l,r),pos);
