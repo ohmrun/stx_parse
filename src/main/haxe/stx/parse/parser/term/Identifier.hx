@@ -7,7 +7,6 @@ class Identifier extends Sync<String,String>{
     this.stamp = stamp;
   }
   inline function apply(ipt:ParseInput<String>){
-    //__.log().info(ipt);
     var len     = stamp.length;
     var head    = ipt.head();
     var offset  = ipt.offset;

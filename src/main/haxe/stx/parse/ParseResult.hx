@@ -46,6 +46,9 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseError>;
   public function errata(fn:Error<ParseError>->Error<ParseError>):ParseResult<P,R>{
     return _.errata(this,fn);
   }
+  public function toRes(){
+    return _.toRes(this);
+  }
 }
 class ParseResultLift{
   static public function toString<I,O>(self:ParseResult<I,O>):String{

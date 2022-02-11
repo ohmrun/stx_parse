@@ -37,7 +37,12 @@ class Json{
     return [parser(), data_p, array_p()].ors(); 
 
   function array_p():Parser<String,JsonSum<String>> 
-    return l_brkt_p._and(value_p.defer().repsep(comma_p)).and_(r_brkt_p).then(JsArray);
+    return l_brkt_p._and(value_p.defer().repsep(comma_p).option()).and_(r_brkt_p).then(
+      (opt) -> opt.fold(
+        ok -> JsArray(ok),
+        () -> JsArray([].imm())
+      )
+    );
 
   function entry_p() 
     return ident_p.and_(spaced(Identifier(':'))).and(value_p());
@@ -51,7 +56,7 @@ class Json{
         l_acc_p
         ._and(entries_p())
         .and_(r_acc_p)
-        .then(JsObject)
+        .then(arr -> JsObject(arr))
         .asParser()
     ).asParser().tagged('json').memo();
   }

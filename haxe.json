@@ -42,6 +42,13 @@
       }
     },
     "json" : {
+      "-D" : [
+        "stx.parse.switches.debug=false"
+      ],
+      "-resource" : [
+        "src/main/haxe/stx/parse/term/simple.json@simple",
+        "haxe.json@haxe"
+      ],
       "test" : {
         "-main"   : "stx.parse.test.JsonTest",
         "interp" : {

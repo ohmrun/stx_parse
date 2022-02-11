@@ -6,14 +6,18 @@ using stx.Test;
 
 @:access(stx) class JsonTest extends TestCase{
   static public function main(){
+    final log = __.log().global;
+          log.includes.push("**/*");
+          log.level = TRACE;
     __.test(
       [new JsonTest()],
       []
     );
   }
-  public var github_author = __.resource("github_author").string();
-  public var github = __.resource("github").string();
+  //public var github_author = __.resource("github_author").string();
+  //public var github = __.resource("github").string();
   public var simple = __.resource("simple").string();
+  public var haxe   = __.resource("haxe").string();
 
   public function Xtest_literal(){
     var target = Parse.literal.parse('"helsldf\\"o"'.reader());
@@ -37,11 +41,11 @@ using stx.Test;
   }
   public function test(){
       var parser  = new Json().parser();
-      var target  = parser.parse(github.reader());
+      var target  = parser.parse(haxe.reader());
       //trace(haxe.Json.parse(github));
       //var texpr   = TExpr.fromJsValue(target.value().core().release());
-      
-      //trace(target.toString());
+      $type(target);
+      __.log().debug(_ -> _.show(target));
       //trace(target.isSuccess());
       //trace(texpr);
   }

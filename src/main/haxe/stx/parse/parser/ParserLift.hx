@@ -137,7 +137,7 @@ class ParserLift{
     return (
       self.toFletcher()
           .produce(input)
-          .map(x -> x.toRes())
+          .map((x:ParseResult<P,R>) -> x.toRes())
           .errata(_ -> __.fault().explain(_ -> _.e_parse_failure()))
           .adjust(x -> x)
           .force()

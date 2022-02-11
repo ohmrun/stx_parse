@@ -15,7 +15,7 @@ class Regex extends Sync<String,String>{
     var reg         = new EReg(stamp,"g");
     //var ereg        = new RegExp(stamp,"g");
     var is_matched  = ipt.matchedBy(reg.match);
-    //__.log().debug('stamp="$stamp" is_matched="$is_matched" ');
+    __.log().debug('stamp="$stamp" is_matched="$is_matched" ');
     return if (is_matched) {
       var match         = reg.matched(0);
       //new RegExp(stamp,"g").parsify(ipt);//TODO
