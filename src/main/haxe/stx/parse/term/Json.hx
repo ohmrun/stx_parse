@@ -3,11 +3,30 @@ package stx.parse.term;
 import stx.parse.Parsers.*;
 
 enum JsonSum<T>{
-  JsObject(record : Cluster<Couple<String,JsonSum<T>>>);
-  JsArray(array : Cluster<JsonSum<T>>);
+  JsObject(record : Ensemble<JsonSum<T>>);
+  JsArray(array   : Cluster<JsonSum<T>>);
   JsData(x : T);
 }
+class JsonSumLift{
+  // static public function toStringWith(self:JsonSum<T>,with:{ show : T -> String, indent : String = '\t', level : Int = 0 } ){
+  //   var indent_string = '';
+  //   for( i in with.level ){
+  //     indent_string = indent_string + with.indent;
+  //   }
+  //   final is =  indent_string;
 
+  //   return switch(self){
+  //     case JsObject(record):
+  //       final arr = [];
+  //       for(k => v in record){
+  //         var isi = '${is}${level.indeng}';  
+  //         arr.push('${isi}')
+  //       }
+  //     case JsArray(array):
+  //     case JsData(x):
+  //   }
+  // }
+}
 class Json{
   public function new(){}
   
@@ -56,7 +75,9 @@ class Json{
         l_acc_p
         ._and(entries_p().option())
         .and_(r_acc_p)
-        .then(arr -> JsObject(arr.defv([].imm())))
+        .then(
+          opt -> JsObject(opt.map((arr:Cluster<Couple<String,JsonSum<String>>>
+        ) -> Ensemble.fromClusterCouple(arr)).defv(Ensemble.unit())))
         .asParser()
     ).asParser().tagged('json').memo();
   }

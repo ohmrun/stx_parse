@@ -6,7 +6,7 @@ typedef ParseErrorDef = {
   public var fatal(default,null)            : Bool;
   @:optional public var label(default,null) : String;
 }
-@:forward abstract ParseError(ParseErrorDef) from ParseErrorDef{
+@:transitive @:forward abstract ParseError(ParseErrorDef) from ParseErrorDef{
   static public var FAIL(default,never) = 'FAIL';
   
   public function new(self) this = self;
