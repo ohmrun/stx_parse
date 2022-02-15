@@ -83,6 +83,7 @@ class Parse{
 	static public var x_quote 		= x._and(quote);
 
 	static public var literal 		= new stx.parse.term.Literal().asParser();
+	static public var symbol 			= Parsers.Something().and_(whitespace.not()).one_many().tokenize();
 
 	static public	final brkt_l_square = __.parse().id('[');
 	static public	final brkt_r_square = __.parse().id(']');
