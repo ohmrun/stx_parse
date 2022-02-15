@@ -11,19 +11,23 @@ import stx.parse.Parsers.*;
     var code = StringTools.fastCodeAt;
     var has  = Range;
     var q    = 34;
-    var ok   = code(data,0) == 34;
+    var fst  = code(data,0);
+    if(fst == 39){
+      q = 39;
+    }
+    var ok   = code(data,0) == fst;
     var idx  = 1;
 
     if(ok){
       while(true){
         switch(code(data,idx)){
           case 92 :  
-            if(code(data,idx+1) == 34){
+            if(code(data,idx+1) == q){
               idx+=2;
             }else{
               idx+=1;
             }
-          case 34 : 
+          case x if (x == q) : 
             idx+=1;
             break;
           default : 
