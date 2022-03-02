@@ -16,8 +16,9 @@ import stx.parse.Parsers.*;
   @:noUsing static inline public function fromFunction<I,O>(f:ParseInput<I>->ParseResult<I,O>,tag):Parser<I,O>{
     return SyncAnon(f,tag).asParser();
   }
+  //TODO is this right?
   @:noUsing static inline public function fromParseInputProvide<I,O>(self:ParseInput<I>->Provide<ParseResult<I,O>>,tag):Parser<I,O>{
-    return lift(Anon(Convert.fromConvertProvide(self).toFletcher(),tag));
+    return lift(Anon(Convert.fromConvertProvide(self).toFletcher().defer,tag));
   }
   @:noUsing static inline public function lift<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);

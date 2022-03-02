@@ -21,7 +21,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
               v   -> { arr.push(v); null; },
               ()  -> {}
             );
-            return Fletcher.lift(rec.bind(_,_,arr)).forward(res.asset);
+            return Fletcher.lift(Fletcher.Anon(rec.bind(_,_,arr))).forward(res.asset);
           },
           () -> cont.value(if(res.is_fatal()){
             input.fail('failed many ${delegation}',true);
@@ -32,7 +32,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
         no   -> cont.error(no)
       ));
     }
-    return cont.receive(Fletcher.lift(rec.bind(_,_,[])).forward(input));
+    return cont.receive(Fletcher.lift(Fletcher.Anon(rec.bind(_,_,[]))).forward(input));
   }
   override public function toString(){
     return 'Many($delegation)';

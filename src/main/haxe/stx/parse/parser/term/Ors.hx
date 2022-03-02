@@ -27,7 +27,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
                   idx   = idx + 1;
                   var d = delegation[n];
                   __.log().trace(_ -> _.thunk(() -> '${res.asset.index} $d'));
-                  Fletcher.Then(d,Fletcher.Anon(rec))(input,cont);//TODO can a failure consume?
+                  Fletcher.Then(d,Fletcher.Anon(rec)).defer(input,cont);//TODO can a failure consume?
                 }else{
                   var opts = delegation.map(_ -> _.tag);
                   cont.receive(cont.value(res.asset.fail('Ors $opts',false)));
@@ -36,6 +36,6 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
           );
         }
       )
-    )(input,cont);
+    ).defer(input,cont);
   }
 }

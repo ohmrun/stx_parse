@@ -43,7 +43,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
                     }
                   }
                 )
-              )(ipt,cont);
+              ).defer(ipt,cont);
 
           case Some(mEntry):
             switch(mEntry) {

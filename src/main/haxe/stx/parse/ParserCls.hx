@@ -21,7 +21,7 @@ abstract class ParserCls<I,O> implements ParserApi<I,O> implements FletcherApi<P
     return name();
   }
   public function toFletcher(){
-    return Fletcher.lift(this.defer);
+    return Fletcher.lift(this);
   }
   //abstract public function apply(p:ParseInput<I>):ParseResult<I,O>;
   abstract public function defer(p:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work;
