@@ -15,11 +15,12 @@ import stx.parse.Parsers.*;
     if(fst == 39){
       q = 39;
     }
-    var ok   = code(data,0) == fst;
+    var ok   = q == fst;
     var idx  = 1;
-
+     
     if(ok){
       while(true){
+        __.log().trace(data);
         switch(code(data,idx)){
           case 92 :  
             if(code(data,idx+1) == q){

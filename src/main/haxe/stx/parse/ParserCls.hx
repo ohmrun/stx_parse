@@ -1,6 +1,9 @@
 package stx.parse;
 
-abstract class ParserCls<I,O> implements ParserApi<I,O> implements FletcherApi<ParseInput<I>,ParseResult<I,O>,Noise> extends Clazz{
+abstract class ParserCls<I,O> implements ParserApi<I,O> extends FletcherCls<ParseInput<I>,ParseResult<I,O>,Noise>{
+  override public function get_stx_tag(){
+    return 2;
+  }
   public function new(?tag:Option<String>,?pos:Pos){
     super();
     this.pos    = pos;
