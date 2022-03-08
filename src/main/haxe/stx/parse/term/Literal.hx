@@ -15,9 +15,10 @@ import stx.parse.Parsers.*;
     if(fst == 39){
       q = 39;
     }
-    var ok   = q == fst;
-    var idx  = 1;
-     
+    var ok     = q == fst;
+    var idx    = 1;
+    var failed = false;
+
     if(ok){
       while(true){
         __.log().trace(data);
@@ -31,13 +32,20 @@ import stx.parse.Parsers.*;
           case x if (x == q) : 
             idx+=1;
             break;
+          case null : 
+            failed = true;
+            break;
           default : 
             idx++;
         }
       }
     }
-    var out : String = input.take(idx);
+    return if(failed){
+      input.fail("Literal encountered null");
+    }else{
+      var out : String = input.take(idx);
         out = out.substr(1,out.length-2);
-    return idx > 1 ? input.drop(idx).ok(out) : input.fail('Literal');
+      idx > 1 ? input.drop(idx).ok(out) : input.fail('Literal'); 
+    }
   }
 }
