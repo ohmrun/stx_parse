@@ -3,3 +3,4 @@ dump/
 test.js
 .vscode
 /build
+/isolate-*
