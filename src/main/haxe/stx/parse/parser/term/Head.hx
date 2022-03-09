@@ -17,7 +17,7 @@ inline public function apply(ipt:ParseInput<I>){
           ()  -> ipt
         ).ok(o)
       ),
-      () -> ipt.fail('no match')
+      () -> ipt.erration('no match').failure(ipt)
     );
   }
 }

@@ -22,7 +22,7 @@ class Regex extends Sync<String,String>{
       var length        = match.length;
       ipt.drop(length).ok(ipt.take(length));
     }else{
-      ipt.fail('$stamp not matched to |||${ipt.take()}|||',false);
+      ipt.erration('$stamp not matched to |||${ipt.take()}|||',false).failure(ipt);
     }
   }
   override public function toString(){

@@ -97,8 +97,8 @@ class Parse{
 	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
 		return SyncAnon(
 			(input:ParseInput<I>) -> input.head().fold(
-				(vI) -> v == vI ? input.tail().ok(vI) : input.fail('eq'),
-				() -> input.fail('eq')
+				(vI) -> v == vI ? input.tail().ok(vI) : input.erration('eq').failure(input),
+				() -> input.erration('eq').failure(input)
 			)
 		,'eq').asParser();
 	}
@@ -113,8 +113,11 @@ class LiftParse{
 	static public inline function nil<P,R>(rest:ParseInput<P>):ParseResult<P,R>{
     return ParseResult.make(rest,None);
   }
-  static public inline function fail<P,R>(rest:ParseInput<P>,message:String,fatal:Bool=false):ParseResult<P,R>{
-    return ParseResult.make(rest,None,[ParseError.make(@:privateAccess rest.content.index,message,fatal)]);
+	static public inline function failure<P,R>(self:Errata<ParseError>,rest:ParseInput<P>):ParseResult<P,R>{
+		return ParseResult.make(rest,None,self);
+	}
+  static public inline function erration<P>(rest:ParseInput<P>,message:String,fatal=false):Errata<ParseError>{
+    return [ParseError.make(@:privateAccess rest.content.index,message,fatal)];
   }
   static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
     __.log().trace(_ -> _.pure(@:privateAccess ipt.content.data));

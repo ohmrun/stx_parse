@@ -5,8 +5,8 @@ class When<I> extends SyncBase<I,I,I->Bool>{
     return input.head().map(
      (x) -> delegation(x).if_else(
        () -> input.tail().ok(x),
-       () -> input.fail('When')
+       () -> input.erration('When').failure(input)
      )
-    ).def(input.fail.bind('When'));
+    ).defv(input.erration('When').failure(input));
   }
 }

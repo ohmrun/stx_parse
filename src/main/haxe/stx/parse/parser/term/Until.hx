@@ -17,7 +17,7 @@ class Until<P,R> extends Base<P,Cluster<R>,Parser<P,R>>{
                 return Receiver._.defer(rec.bind(res.asset));
               },
               () -> (result.length == 0).if_else(
-                () -> Receiver.issue(Success(res.asset.fail("Until coming up empty"))),
+                () -> Receiver.issue(Success(res.asset.erration("Until coming up empty").failure(res.asset))),
                 () -> Receiver.issue(Success(res.asset.ok(Cluster.lift(result))))
               )
             );

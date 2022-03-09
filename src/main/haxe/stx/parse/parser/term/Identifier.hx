@@ -18,7 +18,7 @@ class Identifier extends Sync<String,String>{
       //trace(next);
       next.ok(stamp);
     }else{
-      ipt.fail('"Identifier expected *** $stamp *** instead found: *** $string ***',false);
+      ipt.erration('"Identifier expected *** $stamp *** instead found: *** $string ***',false).failure(ipt);
     }
   }
   override public function toString(){

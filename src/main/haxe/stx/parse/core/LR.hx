@@ -14,7 +14,7 @@ typedef LRDef = {
 class LRLift{
   static public function lrAnswer<I,T>(p: Parser<I,T>, genKey : Int -> String, input: ParseInput<I>, growable: LR): Provide<ParseResult<I,T>> {
     return switch (growable.head) {
-      case None: Provide.pure(input.fail("E_NoRecursionHead",true));
+      case None: Provide.pure(input.erration("E_NoRecursionHead",true).failure(input));
       case Some(head):
         if (head.getHead() != p) /*not head rule, so not growing*/{
           Provide.pure(cast growable.seed);
@@ -35,7 +35,7 @@ class LRLift{
         if (cached == None && !(head.involvedSet.cons(head.headParser).has(p.elide()))) {
           Provide.pure(Some(
             MemoParsed(
-              input.fail('dummy')
+              input.erration('dummy').failure(input)
             )
           ));
         }else if (head.evalSet.has(p)) {

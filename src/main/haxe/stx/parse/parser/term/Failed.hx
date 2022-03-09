@@ -10,6 +10,6 @@ class Failed<P,R> extends Sync<P,R>{
     this.is_fatal   = is_fatal;
   }
   inline function apply(ipt:ParseInput<P>):ParseResult<P,R>{
-    return ipt.fail(msg,is_fatal);
+    return ipt.erration(msg,is_fatal).failure(ipt);
   }
 }

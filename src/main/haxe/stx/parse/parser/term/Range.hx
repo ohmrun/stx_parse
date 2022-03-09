@@ -17,9 +17,9 @@ class Range extends Sync<String,String>{
         var v = __.option(x);
         var l = v.map( x -> x >= min).defv(false);
         var r = v.map( x -> x <= max).defv(false);
-        l && r ? ipt.tail().ok(s) : ipt.fail('range: $min -> $max');
+        l && r ? ipt.tail().ok(s) : ipt.erration('range: $min -> $max').failure(ipt);
       default : 
-        ipt.fail('null head');
+        ipt.erration('null head').failure(ipt);
     }
   }
   override public function toString(){

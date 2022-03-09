@@ -20,6 +20,7 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
     var a = delegation.fst().toFletcher().forward(input);
     var b = a.flat_fold(
       res -> {
+        #if debug
         __.log().trace(_ -> _.thunk(
           () -> {
             final parser = delegation.fst().toString();
@@ -27,9 +28,11 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
             return 'lh parser: $parser result: $result';
           }
         ));
+        #end
         return res.is_ok().if_else(
           () -> delegation.snd().toFletcher().forward(res.asset).map(
             resI -> {
+              #if debug
               __.log().trace(_ -> _.thunk(
                 () -> {
                   final parser = delegation.snd().toString();
@@ -37,6 +40,7 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
                   return 'rh parser: $parser result: $result';
                 }
               ));
+              #end
               return resI.is_ok().if_else(
                 () -> resI.is_fatal().if_else(
                   () -> resI.fails(),
@@ -52,11 +56,13 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
                     );
                   }
                 ),
-                () -> input.fail('with ${delegation.fst()} failed')
+                () -> resI.error.concat(input.erration('With lhs')).failure(input)
               );
             }
           ),
-          () -> cont.value(input.fail('with ${delegation.snd()} failed'))
+          () -> cont.value(
+            input.erration('With').concat(res.error).failure(input)
+          )
         );
       },
       err -> cont.error(err)

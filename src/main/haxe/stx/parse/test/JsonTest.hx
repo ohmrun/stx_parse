@@ -46,7 +46,7 @@ using stx.Test;
       var target  = parser.parse(haxe.reader());
       //trace(haxe.Json.parse(github));
       //var texpr   = TExpr.fromJsValue(target.value().core().release());
-      $type(target);
+      //$type(target);
       __.log().debug(_ -> _.show(target));
       //trace(target.isSuccess());
       //trace(texpr);

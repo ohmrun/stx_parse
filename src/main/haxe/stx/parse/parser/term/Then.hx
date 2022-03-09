@@ -4,9 +4,6 @@ abstract class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
   
   public function new(delegation:Parser<I,T>,?pos:Pos){
     super(delegation,pos);
-    #if debug
-      __.assert().exists(pos);
-    #end
     this.tag        = delegation.tag;
   }
   abstract function transform(t:T):U;

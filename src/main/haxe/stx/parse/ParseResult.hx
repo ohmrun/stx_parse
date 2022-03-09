@@ -86,4 +86,7 @@ class ParseResultLift{
   static public function errata<I,O>(self:ParseResultDef<I,O>,fn:Error<ParseError>->Error<ParseError>):ParseResult<I,O>{
     return ParseResult.make(self.asset,self.value,self.error.errata(fn));
   }
+  static public function with_errata<P,R>(self:ParseResultDef<P,R>,error:Errata<ParseError>):ParseResult<P,R>{
+    return ParseResult.make(self.asset,self.value,self.error.concat(error));
+  }
 }

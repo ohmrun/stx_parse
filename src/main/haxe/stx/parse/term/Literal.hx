@@ -32,20 +32,22 @@ import stx.parse.Parsers.*;
           case x if (x == q) : 
             idx+=1;
             break;
+          #if !static
           case null : 
             failed = true;
             break;
+          #end
           default : 
             idx++;
         }
       }
     }
     return if(failed){
-      input.fail("Literal encountered null");
+      input.erration("Literal encountered null").failure(input);
     }else{
       var out : String = input.take(idx);
         out = out.substr(1,out.length-2);
-      idx > 1 ? input.drop(idx).ok(out) : input.fail('Literal'); 
+      idx > 1 ? input.drop(idx).ok(out) : input.erration('Literal').failure(input); 
     }
   }
 }

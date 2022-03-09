@@ -38,10 +38,10 @@ class Test {
 				//new LookaheadTest(),
 				//new ThenTest(),
 				//new Issue3Test(),
-				// new SimpleParserTest(),
-				new SimpleRecursionLangTest(),
-				// new PrimitiveTest(),
-				// //new MemoisationIdentityTest(),
+				//new SimpleParserTest(),
+				//new SimpleRecursionLangTest(),
+				//new PrimitiveTest(),
+				//new MemoisationIdentityTest(),
 				// new RegexTest(),
 				// ,
 				// new NotTest(),
@@ -58,33 +58,6 @@ class Test {
 		//new SimpleRecursionLangTest().test_one();
 	} 
 }
-//TODO should this even work?W
-class Issue1 extends TestCase{
-	//@timeout(10000)
-	public function test(async:Async){
-		var reader = 'abac'.reader();
-		var parser = Never().not()._and(Something()).many(); 
-    //var parser = __.parse().id('x').not()._and(Something()).many(); 
-    parser.provide(reader).environment(
-			(x) -> {
-				trace(x);
-				async.done();
-			}
-		).submit();
-	}
-}
-class Issue2 extends TestCase{
-	@:timeout(-1)
-	public function test(async:Async){
-		var reader = 'abac'.reader();
-		var parser = Regex('abac').and_(Eof());
-		parser.provide(
-			reader
-		).environment(
-			(x) -> {
-				same('abac',x.fudge());
-				async.done();
-			}
-		).submit();
-	}
+class ErrorTest extends TestCase{
+	
 }
