@@ -77,10 +77,10 @@ class ParseResultLift{
   static public inline function fudge<P,R>(self:ParseResult<P,R>):R{
     return self.value.fudge();
   }
-  static public inline function toRes<P,R>(self:ParseResult<P,R>):Res<Option<R>,Decline<ParseRefuse>>{
+  static public inline function toRes<P,R>(self:ParseResult<P,R>):Res<Option<R>,ParseRefuse>{
     return self.is_ok().if_else(
       ()  -> __.accept(self.value),
-      ()  -> __.reject(self.toDefect().toRefuse().except())
+      ()  -> __.reject(self.toDefect().toRefuse())
     );
   }
   static public function errata<I,O>(self:ParseResultDef<I,O>,fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<I,O>{
