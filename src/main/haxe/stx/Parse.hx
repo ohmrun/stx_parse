@@ -113,11 +113,11 @@ class LiftParse{
 	static public inline function nil<P,R>(rest:ParseInput<P>):ParseResult<P,R>{
     return ParseResult.make(rest,None);
   }
-	static public inline function failure<P,R>(self:Errata<ParseError>,rest:ParseInput<P>):ParseResult<P,R>{
+	static public inline function failure<P,R>(self:Refuse<ParseRefuse>,rest:ParseInput<P>):ParseResult<P,R>{
 		return ParseResult.make(rest,None,self);
 	}
-  static public inline function erration<P>(rest:ParseInput<P>,message:String,fatal=false):Errata<ParseError>{
-    return [ParseError.make(@:privateAccess rest.content.index,message,fatal)];
+  static public inline function erration<P>(rest:ParseInput<P>,message:String,fatal=false):Refuse<ParseRefuse>{
+    return Refuse.pure(ParseRefuse.make(@:privateAccess rest.content.index,message,fatal));
   }
   static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
     __.log().trace(_ -> _.pure(@:privateAccess ipt.content.data));
@@ -169,7 +169,7 @@ class LiftParse{
 	}
 	static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
     p.tag = Some(tag);
-    return TagError(p, tag);
+    return TagRefuse(p, tag);
 	}
 	@:noUsing static public inline function succeed<I,O>(v:O):Parser<I,O>{
     return new stx.parse.parser.term.Succeed(v).asParser();
@@ -178,27 +178,47 @@ class LiftParse{
 typedef LiftParseInputForwardToParser 	= stx.parse.lift.LiftParseInputForwardToParser;
 typedef LiftArrayOfParser 							= stx.parse.lift.LiftArrayOfParser;
 
-class LiftParseError{
-	static public inline function is_parse_fail(self:Defect<ParseError>):Bool{
-    return self.error.prj().lfold( 
-			(next:ParseError,memo:Bool) -> memo.if_else(
+class LiftParseRefuse{
+	static public inline function is_parse_fail(self:Defect<ParseRefuse>):Bool{
+    return (self.error.toIterable().toIter()).lfold( 
+			(next:Error<Decline<ParseRefuse>>,memo:Bool) -> memo.if_else(
 				() -> true,
-				() -> next.msg != ParseError.FAIL
+				() -> next.data.fold(
+					ok -> switch(ok){
+						case EXTERIOR(x) : x.msg != ParseRefuse.FAIL;
+						default : false;
+					},
+					() -> false
+				)
 			),
 			false
 		);
 
 	}
-  static public inline function is_fatal(self:Defect<ParseError>):Bool{
-    return self.error.prj().lfold( 
-			(next:ParseError,memo:Bool) -> memo.if_else(
+  static public inline function is_fatal(self:Defect<ParseRefuse>):Bool{
+    return self.error.toIterable().toIter().lfold( 
+			(next:Refuse<ParseRefuse>,memo:Bool) -> memo.if_else(
 				() -> true,
-				() -> next.fatal
+				() -> next.data.fold(
+					(ok) -> ok.fold(
+						x -> x.fatal,
+						_ -> false
+					),
+					() -> false
+				)
 			),
 			false
 		);
   }
-  static public function toString(self:Defect<ParseError>){
-    return self.error.prj().map(Std.string).map(x -> Std.string(x)).lfold1((n,m) -> '$m,$n');
+  static public function toString(self:Defect<ParseRefuse>){
+    return self.toRefuse().toIterable().toIter().map(
+			 x -> x.data.fold(
+				 ok -> ok.fold(
+					 okI 	-> Std.string(okI),
+					 _ 	  -> ''
+				 ),
+				 () -> ''
+			 )
+		).lfold1((n,m) -> '$m,$n');
   }
 }

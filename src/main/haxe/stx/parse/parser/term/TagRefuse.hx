@@ -1,10 +1,10 @@
 package stx.parse.parser.term;
 
-class TagError<P,R> extends ErrorTransformer<P,R>{
+class TagRefuse<P,R> extends RefuseTransformer<P,R>{
   public function new(delegate:Parser<P,R>,name:String,?pos:Pos){
     super(
       delegate
-      ,(err:Error<ParseError>) -> err.errate(info -> info.tag(name))
+      ,(err:Refuse<ParseRefuse>) -> err.errate(info -> info.tag(name))
       ,pos
     );
   }

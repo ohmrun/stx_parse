@@ -23,15 +23,15 @@ using stx.Test;
 
   public function Xtest_literal(){
     var target = Parse.literal.parse('"helsldf\\"o"'.reader());
-    this.is_true(target.value().is_defined());
+    this.is_true(target.option().is_defined());
   }
   public function Xtest_identifier(){
     var target = Json.ident_p.parse('"TEst"'.reader());
-    this.is_true(target.value().is_defined());
+    this.is_true(target.option().is_defined());
   }
   public function Xtest_zero_length_literal(){
     var target = Parse.literal.parse('""'.reader());
-    this.is_true(target.value().is_defined());
+    this.is_true(target.option().is_defined());
   }
   public function Xtest_simple(){
     //var target = new Json().parse(simple.reader());

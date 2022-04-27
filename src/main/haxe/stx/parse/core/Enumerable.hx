@@ -29,7 +29,7 @@ interface EnumerableApi<C,T>{
 
 @:forward abstract Enumerable<C,T>(EnumerableApi<C,T>) from EnumerableApi<C,T> to EnumerableApi<C,T>{
   public function new(self) this = self;
-  static public function lift<C,T>(self:EnumerableApi<C,T>):Enumerable<C,T> return new Enumerable(self);
+  @:noUsing static public function lift<C,T>(self:EnumerableApi<C,T>):Enumerable<C,T> return new Enumerable(self);
   
 	@:noUsing static public function array<T>(array:std.Array<T>):Enumerable<std.Array<T>,T>{
 		return new Array(array);

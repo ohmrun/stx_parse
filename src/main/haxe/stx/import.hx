@@ -7,6 +7,7 @@ import haxe.PosInfos;
 
 using stx.Fn;
 using stx.Pico;
+using stx.Fail;
 using stx.Nano;
 using stx.Log;
 using stx.Assert;

@@ -81,8 +81,8 @@ class Parsers{
   @:noUsing static inline public function Inspect<I,O>(parser:Parser<I,O>,?prefix:ParseInput<I>->Void,?postfix:ParseResult<I,O>->Void,?pos:Pos):Parser<I,O>{
     return new stx.parse.parser.term.Inspect(parser,prefix,postfix,pos).asParser();
   }
-  @:noUsing static inline public function TagError<I,O>(parser:Parser<I,O>,name:String,?pos:Pos):Parser<I,O>{
-    return new stx.parse.parser.term.TagError(parser,name,pos).asParser();
+  @:noUsing static inline public function TagRefuse<I,O>(parser:Parser<I,O>,name:String,?pos:Pos):Parser<I,O>{
+    return new stx.parse.parser.term.TagRefuse(parser,name,pos).asParser();
   }
   // @:noUsing static inline public function Debug<P,R>(parser:Parser<P,R>):Parser<P,R>{
   //   return new stx.parse.parser.term.Debug(parser).asParser();

@@ -8,8 +8,8 @@ typedef Enumerable<C,T>       = stx.parse.core.Enumerable<C,T>;
 
 typedef ParseSystemFailure    = stx.parse.core.ParseSystemFailure;
 
-typedef ParseErrorDef         = stx.parse.core.ParseError.ParseErrorDef;
-typedef ParseError            = stx.parse.core.ParseError;
+typedef ParseRefuseDef         = stx.parse.core.ParseRefuse.ParseRefuseDef;
+typedef ParseRefuse            = stx.parse.core.ParseRefuse;
 
 typedef Head                  = stx.parse.core.Head;
 typedef LR                    = stx.parse.core.LR;
@@ -20,4 +20,4 @@ typedef MemoEntry             = stx.parse.core.Memo.MemoEntry;
 typedef MemoKey               = stx.parse.core.Memo.MemoKey;
 typedef UID                   = stx.parse.core.UID;
 typedef Lung                  = stx.parse.core.Lung;
-typedef Errors                = stx.parse.core.Errors;
+typedef Refuses                = stx.parse.core.Refuses;

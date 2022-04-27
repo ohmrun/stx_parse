@@ -6,7 +6,7 @@ using stx.Parse;
 // import stx.parse.parser.term.Commit;
 // import stx.parse.parser.term.Delegate;
 // import stx.parse.parser.term.Direct;
-// import stx.parse.parser.term.ErrorTransformer;
+// import stx.parse.parser.term.RefuseTransformer;
 // import stx.parse.parser.term.Failed;
 // import stx.parse.parser.term.Head;
 // import stx.parse.parser.term.Identifier;

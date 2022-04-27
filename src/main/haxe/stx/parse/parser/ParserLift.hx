@@ -122,7 +122,7 @@ class ParserLift{
 		);
   }
   static public inline function tag_error<I,T>(p:Parser<I,T>, name : String, ?pos: Pos ):Parser<I,T>
-    return TagError(p,name,pos);
+    return TagRefuse(p,name,pos);
 
   static public inline function with_tag<P,R>(p:Parser<P,R>,tag:String){
     return Named(p,tag);

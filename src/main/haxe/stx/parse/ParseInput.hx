@@ -54,7 +54,7 @@ class ParseInputCls<I>{
   @:noUsing static public function make<I>(content:Enumerable<Dynamic,I>,memo:Memo,?tag:String,?cursor,?tree):ParseInput<I>{
     return ParseInputCls.make(content,memo,tag,cursor,tree);
   }
-  static public function pure<T>(en:Enumerable<Dynamic,T>):ParseInput<T>{
+  @:noUsing static public function pure<T>(en:Enumerable<Dynamic,T>):ParseInput<T>{
     return make(en,Memo.unit());
   }
   inline public function drop(len : Int) : ParseInput<I> {

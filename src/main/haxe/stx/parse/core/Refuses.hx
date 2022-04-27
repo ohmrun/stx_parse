@@ -1,6 +1,6 @@
 package stx.parse.core;
 
-class Errors{
+class Refuses{
   static public function e_parse_failure(digests:Digests):Digest{
     return new EParseFailure();
   }

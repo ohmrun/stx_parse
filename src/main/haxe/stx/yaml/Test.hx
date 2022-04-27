@@ -10,9 +10,6 @@ class Test{
     ],[]);
   }
 }
-class YamlParser{
-
-}
 class YamlParserTest{
 
 }
@@ -71,10 +68,10 @@ class YamlParser{
     return ":".id().and_(allowable_gap);
   }
   function head_end(){
-    return '---'.id().then(_ -> Yaml_HeadEnd);
+    return '---'.id().then(_ -> HeadEnd);
   }
   function tail_end(){
-    return '---'.id().then(_ -> Yaml_TailEnd);
+    return '---'.id().then(_ -> TailEnd);
   }
   function anchor_label(){
     return null;
@@ -140,7 +137,7 @@ class YamlParser{
 
   }
   function scalar_spec_type(){
-    return "!!".id().
+    // /return "!!".id().
   }
   // [name        , hr, avg  ]
   // function p_flowstyle(){

@@ -1,26 +1,26 @@
 package stx.parse;
 
 @:using(stx.parse.ParseResult.ParseResultLift)
-class ParseResultCls<P,R> extends EquityCls<ParseInput<P>,Option<R>,ParseError>{
+class ParseResultCls<P,R> extends EquityCls<ParseInput<P>,Option<R>,ParseRefuse>{
   public function toString():String{
     return ParseResult._.toString(this);
   }
-  public function errate(fn:ParseError->ParseError):ParseResult<P,R>{
+  public function errate(fn:ParseRefuse->ParseRefuse):ParseResult<P,R>{
     return errata(x -> x.errate(fn));
   }
-  public function errata(fn:Error<ParseError>->Error<ParseError>):ParseResult<P,R>{
+  public function errata(fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<P,R>{
     return ParseResult._.errata(this,fn);
   }
 }
-typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseError>;
+typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseRefuse>;
 
 @:using(stx.nano.Equity.EquityLift)
 @:using(stx.parse.ParseResult.ParseResultLift)
 @:forward abstract ParseResult<P,R>(ParseResultDef<P,R>) from ParseResultDef<P,R> to ParseResultDef<P,R>{
   static public var _(default,never) = ParseResultLift;
   public function new(self) this = self;
-  static public function lift<P,R>(self:ParseResultDef<P,R>):ParseResult<P,R> return new ParseResult(self);
-  @:noUsing static public function make<I,O,E>(asset:ParseInput<I>,value:Null<Option<O>>,?error:Iter<ParseError>){
+  @:noUsing static public function lift<P,R>(self:ParseResultDef<P,R>):ParseResult<P,R> return new ParseResult(self);
+  @:noUsing static public function make<I,O,E>(asset:ParseInput<I>,value:Null<Option<O>>,?error:Refuse<ParseRefuse>){
     return lift(new ParseResultCls(error,value,asset).toEquity());
   }
   
@@ -43,7 +43,7 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseError>;
   public inline function pos(){
     return this.asset;
   }
-  public function errata(fn:Error<ParseError>->Error<ParseError>):ParseResult<P,R>{
+  public function errata(fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<P,R>{
     return _.errata(this,fn);
   }
   public function toRes(){
@@ -77,16 +77,16 @@ class ParseResultLift{
   static public inline function fudge<P,R>(self:ParseResult<P,R>):R{
     return self.value.fudge();
   }
-  static public inline function toRes<P,R>(self:ParseResult<P,R>):Res<Option<R>,ParseError>{
+  static public inline function toRes<P,R>(self:ParseResult<P,R>):Res<Option<R>,Decline<ParseRefuse>>{
     return self.is_ok().if_else(
       ()  -> __.accept(self.value),
-      ()  -> __.reject(self.toDefect().toError().except())
+      ()  -> __.reject(self.toDefect().toRefuse().except())
     );
   }
-  static public function errata<I,O>(self:ParseResultDef<I,O>,fn:Error<ParseError>->Error<ParseError>):ParseResult<I,O>{
+  static public function errata<I,O>(self:ParseResultDef<I,O>,fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<I,O>{
     return ParseResult.make(self.asset,self.value,self.error.errata(fn));
   }
-  static public function with_errata<P,R>(self:ParseResultDef<P,R>,error:Errata<ParseError>):ParseResult<P,R>{
+  static public function with_errata<P,R>(self:ParseResultDef<P,R>,error:Refuse<ParseRefuse>):ParseResult<P,R>{
     return ParseResult.make(self.asset,self.value,self.error.concat(error));
   }
 }

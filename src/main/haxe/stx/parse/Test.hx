@@ -58,6 +58,6 @@ class Test {
 		//new SimpleRecursionLangTest().test_one();
 	} 
 }
-class ErrorTest extends TestCase{
+class RefuseTest extends TestCase{
 	
 }

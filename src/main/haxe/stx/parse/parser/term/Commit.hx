@@ -17,7 +17,7 @@ class Commit<I,T> extends Base<I,T,Parser<I,T>>{
         () -> result,
         () -> ParseResult.lift(
           result.errata(
-            err -> err.concat(ParseError.make(@:privateAccess result.asset.content.index,'Cannot Commit',true).toError())
+            err -> err.concat(ParseRefuse.make(@:privateAccess result.asset.content.index,'Cannot Commit',true).toRefuse())
           )
         )
       )
