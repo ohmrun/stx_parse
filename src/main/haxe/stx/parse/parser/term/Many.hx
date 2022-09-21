@@ -14,21 +14,31 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   }
   public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
     function rec(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>,arr:Array<O>){
+      __.log().trace(_ -> _.thunk(() -> arr));
       return cont.receive(delegation.toFletcher().forward(input).flat_fold(
-        res  -> res.is_ok().if_else(
-          () -> {
-            res.value.fold(
-              v   -> { arr.push(v); null; },
-              ()  -> {}
-            );
-            return Fletcher.lift(Fletcher.Anon(rec.bind(_,_,arr))).forward(res.asset);
-          },
-          () -> cont.value(if(res.is_fatal()){
-            input.erration('failed many ${delegation}',true).concat(res.error).failure(input);
-          }else{
-            input.ok(arr); 
-          })
-        ),
+        res  -> {
+          __.log().trace('$delegation');
+          __.log().trace('${res.error}');
+          __.log().trace('$arr');
+            return res.is_ok().if_else(
+            () -> {
+              __.log().trace('${res.value}');
+              res.value.fold(
+                v   -> { arr.push(v); null; },
+                ()  -> {}
+              );
+              return Fletcher.lift(Fletcher.Anon(rec.bind(_,_,arr))).forward(res.asset);
+            },
+            () -> cont.value(
+              if(res.is_fatal()){
+                input.erration('failed many ${delegation}',true).concat(res.error).failure(input);
+              }else{
+                __.log().trace(_ -> _.thunk( () -> arr));
+                input.ok(arr); 
+              }
+            )
+          );
+        },
         no   -> cont.error(no)
       ));
     }

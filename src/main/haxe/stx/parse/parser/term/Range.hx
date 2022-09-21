@@ -25,6 +25,6 @@ class Range extends Sync<String,String>{
   override public function toString(){
     var l = String.fromCharCode(min);
     var r = String.fromCharCode(max);
-    return '[$l...$r]';
+    return 'Range[$l...$r]';
   }
 }

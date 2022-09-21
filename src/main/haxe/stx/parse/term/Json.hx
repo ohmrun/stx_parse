@@ -41,10 +41,10 @@ class Json{
   static function spaced<I,T>(p : Parser<String,T>) 
       return Parse.whitespace.many()._and(p).tagged('spaced: (${p.tag.defv('')})');
 
-  //static var ident_p          = spaced(Parse.literal);
+  static var ident_p          = spaced(Parse.literal);
   //Parse.valid.or('-'.id().one_many().token())
-  static var lit_content_p    = Identifier('"').not()._and(Something()).many().tokenize().tagged("lit_content");
-  static var ident_p          = spaced(Identifier('"'))._and(lit_content_p).and_(Identifier('"'));
+  //static var lit_content_p    = Identifier('"').not()._and(Something()).many().tokenize().tagged("lit_content");
+  //.static var ident_p          = spaced(Identifier('"'))._and(lit_content_p).and_(Identifier('"'));
 
   static var integer                               
     = spaced(Range(48, 57).one_many().tokenize());

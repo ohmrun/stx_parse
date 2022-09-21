@@ -83,7 +83,7 @@ class ParseInputCls<I>{
     return this.content.match(e);
   }
 
-  inline public function position<I>(r : ParseInput<I>) : Int return this.content.index;
+  inline public function position<I>() : Int return this.content.index;
   
   public function prepend(i:I):ParseInput<I>{
     return make(this.content.prepend(i),this.memo,this.tag);

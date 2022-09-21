@@ -32,6 +32,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
                 Fletcher.Anon(
                   (res:ParseResult<I,O>,cont:Terminal<ParseResult<I,O>,Noise>) -> {
                     __.log().debug("memoise:delegate");
+                    __.log().trace('$res');
                     ipt.memo.lrStack = ipt.memo.lrStack.tail();
                     return switch (base.head) {
                       case None:

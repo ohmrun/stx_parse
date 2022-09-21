@@ -20,6 +20,7 @@
       }
     },
     "test" : {
+      "-D" : ["debug"],
       "-main" : "stx.parse.Test",
       "interp" : {
         "--interp" : true
@@ -50,7 +51,9 @@
         "haxe.json@haxe"
       ],
       "test" : {
-        "-main"   : "stx.parse.test.JsonTest",
+        "-resource": "tests.pml@tests",
+        "-dce"    : "no",
+        "-main"   : "stx.parse.term.json.Test",
         "interp" : {
           "--interp" : true
         },

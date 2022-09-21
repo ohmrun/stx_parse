@@ -8,13 +8,16 @@ class Option<P,R> extends Base<P,StdOption<R>,Parser<P,R>>{
   function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,StdOption<R>>,Noise>):Work{
     return cont.receive(
       delegation.toFletcher().forward(input).map(
-        (result:ParseResult<P,R>) -> result.has_error().if_else(
-          () -> result.is_fatal().if_else(
-            () -> result.map(Some),
-            () -> input.ok(None)
-          ),
-          () -> result.map(Some)
-        )
+        (result:ParseResult<P,R>) -> {
+          __.log().trace('$result');
+          return result.has_error().if_else(
+            () -> result.is_fatal().if_else(
+              () -> result.map(Some),
+              () -> input.ok(None)
+            ),
+            () -> result.map(Some)
+          );
+        }
       )
     );
   }

@@ -2,9 +2,6 @@ package stx;
 
 import stx.parse.Parsers.*;
 
-#if(test==stx_parse)
-typedef Test                  = stx.parse.test.Test;
-#end
 typedef LiftArrayReader       = stx.parse.lift.LiftArrayReader;
 typedef LiftClusterReader     = stx.parse.lift.LiftClusterReader;
 typedef LiftStringReader      = stx.parse.lift.LiftStringReader;
@@ -70,7 +67,7 @@ class Parse{
 	static public var cr_or_nl		= nl.or(cr);
 
 	static public var gap					= tab.or(space);
-	static public var whitespace	= Range(0, 33);
+	static public var whitespace	= Range(0, 32).tagged('whitespace');
 	
 
 	//static public var camel 			= lower.and_with(word, mergeString);
@@ -83,7 +80,7 @@ class Parse{
 	static public var x_quote 		= x._and(quote);
 
 	static public var literal 		= new stx.parse.term.Literal().asParser();
-	static public var symbol 			= Parsers.Something().and_(whitespace.not()).one_many().tokenize();
+	static public var symbol 			= Parsers.When(x -> StringTools.fastCodeAt(x,0) >= 33).one_many().tokenize().tagged('symbol');
 
 	static public	final brkt_l_square = __.parse().id('[');
 	static public	final brkt_r_square = __.parse().id(']');
@@ -115,6 +112,9 @@ class LiftParse{
   }
 	static public inline function failure<P,R>(self:Refuse<ParseRefuse>,rest:ParseInput<P>):ParseResult<P,R>{
 		return ParseResult.make(rest,None,self);
+	}
+	static public inline function no<P,R>(rest:ParseInput<P>,message:String,fatal=false):ParseResult<P,R>{
+		return ParseResult.make(rest,None,erration(rest,message,fatal));
 	}
   static public inline function erration<P>(rest:ParseInput<P>,message:String,fatal=false):Refuse<ParseRefuse>{
     return Refuse.pure(ParseRefuse.make(@:privateAccess rest.content.index,message,fatal));

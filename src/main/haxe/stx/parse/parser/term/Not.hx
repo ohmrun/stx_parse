@@ -8,6 +8,6 @@ class Not<I,O> extends BoundFun<I,O,O>{
     );
   }
   override public function toString(){
-    return '!$parser';
+    return 'NOT $parser';
   }
 }

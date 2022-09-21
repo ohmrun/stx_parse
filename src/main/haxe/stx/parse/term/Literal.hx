@@ -19,12 +19,17 @@ import stx.parse.Parsers.*;
     var idx    = 1;
     var failed = false;
 
+    __.log().trace(ok);
+    //trace(ok);
     if(ok){
       while(true){
         __.log().trace(data);
-        switch(code(data,idx)){
+        final val = code(data,idx);
+        __.log().trace('$val ${data.substr(idx,1)}');
+        switch(val){
           case 92 :  
             if(code(data,idx+1) == q){
+              trace('step over');
               idx+=2;
             }else{
               idx+=1;
@@ -41,6 +46,8 @@ import stx.parse.Parsers.*;
             idx++;
         }
       }
+    }else{
+      failed = true;
     }
     return if(failed){
       input.erration("Literal encountered null").failure(input);

@@ -5,7 +5,7 @@ using stx.Parse;
 
 class Test{
   static public function main(){
-    __.test([
+    __.test().run([
 
     ],[]);
   }

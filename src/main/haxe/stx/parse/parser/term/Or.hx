@@ -13,7 +13,9 @@ class Or<P,R> extends ParserCls<P,R>{
     return cont.receive(
       lhs.toFletcher().forward(input).flat_fold(
         (result)  -> {
-          __.log().trace(_ -> _.pure('result $lhs = ${result.is_ok()}'));
+          // __.log().trace('$input');
+          // __.log().trace('$result');
+          __.log().trace(_ -> _.pure('result $result at ${result.asset.position()} $lhs = ${result.is_ok()}'));
           return result.is_ok().if_else(
             () -> cont.value(result),
             () -> {

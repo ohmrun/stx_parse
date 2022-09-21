@@ -1,7 +1,7 @@
-package stx.parse.parser.term;
+package stx.parse.term.site;
 
-class Something<I> extends Sync<I,I>{
-  inline public function apply(input:ParseInput<I>):ParseResult<I,I>{
+class Something<I:{ site : Site }> extends Sync<String,String>{
+  inline public function apply(input:ParseInput<String>):ParseResult<String,String>{
     return if(input.is_end()){
       input.erration('EOF').failure(input);
     }else{

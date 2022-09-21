@@ -28,7 +28,7 @@ class Test {
 				f.includes.push('stx/stream');
 				f.includes.push('stx/test');
 				f.includes.push('stx/stream/DEBUG');
-		__.test(
+		__.test().run(
 			[
 				//new PrimitiveTest(),
 				//new WithTest(),
