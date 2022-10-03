@@ -2,7 +2,9 @@ package stx.parse.parser.term;
 
 class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   public function new(delegation:Parser<I,O>,?id:Pos){
+    #if test
     __.assert(id).exists(delegation);
+    #end
     super(delegation,id);
     this.tag = switch (delegation.tag){
       case Some(v)  : Some('($v)*');
