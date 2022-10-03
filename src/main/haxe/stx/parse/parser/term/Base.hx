@@ -9,10 +9,9 @@ abstract class Base<I,O,T> extends ParserCls<I,O>{
     this.delegation = delegation;
   }
   function check(){}
-  abstract public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work;
   
   override public function toString(){
     //var id_s = Position.fromPos(pos).toStringClassMethodLine();
-    return '${name()}';
+    return '${this.identifier().name}';
   }
 }

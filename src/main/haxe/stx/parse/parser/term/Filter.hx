@@ -12,7 +12,7 @@ class Filter<I,O> extends Base<I,O,Parser<I,O>>{
       ,id
     );
   }
-  public function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
-    return this.delegation.defer(ipt,cont);
+  public function apply(ipt:ParseInput<I>):ParseResult<I,O>{
+    return this.apply(ipt);
   }
 }

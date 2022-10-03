@@ -9,10 +9,17 @@ class ParseResultCls<P,R> extends EquityCls<ParseInput<P>,Option<R>,ParseRefuse>
     return errata(x -> x.errate(fn));
   }
   public function errata(fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<P,R>{
-    return ParseResult._.errata(this,fn);
+    return ParseResult.make(this.asset,this.value,this.error.errata(fn));
+  }
+  public function with_errata(error:Refuse<ParseRefuse>):ParseResult<P,R>{
+    return this.errata(e -> e.concat(error));
   }
 }
-typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseRefuse>;
+typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseRefuse> & {
+  public function errate(fn:ParseRefuse->ParseRefuse):ParseResult<P,R>;
+  public function errata(fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<P,R>;
+  public function with_errata(error:Refuse<ParseRefuse>):ParseResult<P,R>;
+}
 
 @:using(stx.nano.Equity.EquityLift)
 @:using(stx.parse.ParseResult.ParseResultLift)
@@ -20,12 +27,14 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseRefuse>;
   static public var _(default,never) = ParseResultLift;
   public function new(self) this = self;
   @:noUsing static public function lift<P,R>(self:ParseResultDef<P,R>):ParseResult<P,R> return new ParseResult(self);
-  @:noUsing static public function make<I,O,E>(asset:ParseInput<I>,value:Null<Option<O>>,?error:Refuse<ParseRefuse>){
-    return lift(new ParseResultCls(error,value,asset).toEquity());
+  @:noUsing static public function make<I,O>(asset:ParseInput<I>,value:Option<O>,error:Refuse<ParseRefuse>):ParseResult<I,O>{
+    return lift(new ParseResultCls(error,value,asset));
   }
-  
+  @:from static public function fromEquity<P,R>(self:Equity<ParseInput<P>,Option<R>,ParseRefuse>):ParseResult<P,R>{
+    return make(self.asset,self.value,self.error);
+  }
   public inline function map<Ri>(fn:R->Ri):ParseResult<P,Ri>{
-    return lift(Equity._.map(this,opt -> opt.map(fn)));
+    return fromEquity(Equity._.map(this.toEquity(),opt -> opt.map(fn)));
   }
   public inline function is_ok(){
     return !this.error.is_defined();
@@ -43,9 +52,9 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseRefuse>;
   public inline function pos(){
     return this.asset;
   }
-  public function errata(fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<P,R>{
-    return _.errata(this,fn);
-  }
+  // public function errata(fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<P,R>{
+  //   return _.errata(this,fn);
+  // }
   public function toRes(){
     return _.toRes(this);
   }
@@ -63,7 +72,7 @@ class ParseResultLift{
     head: head
   }
   static public function mod<P,R>(self:ParseResult<P,R>,fn:ParseInput<P> -> ParseInput<P>):ParseResult<P,R>{
-    return ParseResult.lift(self.copy(fn(self.asset)));
+    return ParseResult.fromEquity(self.copy(fn(self.asset)));
   }
   static public function flat_map<P,Ri,Rii>(self:ParseResult<P,Ri>,fn:Ri->ParseResult<P,Rii>):ParseResult<P,Rii>{
     return self.is_ok().if_else(
@@ -83,10 +92,7 @@ class ParseResultLift{
       ()  -> __.reject(self.toDefect().toRefuse())
     );
   }
-  static public function errata<I,O>(self:ParseResultDef<I,O>,fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<I,O>{
-    return ParseResult.make(self.asset,self.value,self.error.errata(fn));
-  }
-  static public function with_errata<P,R>(self:ParseResultDef<P,R>,error:Refuse<ParseRefuse>):ParseResult<P,R>{
-    return ParseResult.make(self.asset,self.value,self.error.concat(error));
-  }
+  // static public function errata<I,O>(self:ParseResultDef<I,O>,fn:Refuse<ParseRefuse>->Refuse<ParseRefuse>):ParseResult<I,O>{
+  //   return ParseResult.make(self.asset,self.value,self.error.errata(fn));
+  // }
 }

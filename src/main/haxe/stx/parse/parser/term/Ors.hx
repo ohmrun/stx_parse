@@ -1,7 +1,5 @@
 package stx.parse.parser.term;
 
-
-//TODO Broken
 class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
   public function new(delegation,?id:Pos){
     super(delegation,id);
@@ -11,42 +9,39 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
       __.assert().exists(delegate);
     }
   }
-  public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
-    var idx = 1;
-    return Fletcher.Then(
-      delegation[0],
-      Fletcher.Anon(
-        function rec(res:ParseResult<I,T>,cont:Terminal<ParseResult<I,T>,Noise>):Work{
-          return res.is_ok().if_else(
-            () -> cont.receive(cont.value(res)),
-            () -> res.is_fatal().if_else(
-              () -> cont.receive(cont.value(res)),
-              () -> 
-                if(idx < delegation.length){
-                  var n = idx;
-                  idx   = idx + 1;
-                  var d = delegation[n];
-                  __.log().trace(_ -> _.thunk(() -> '${res.asset.index} $d'));
-                  Fletcher.Then(d,Fletcher.Anon(rec))
-                    .map(
-                      resI -> if(!resI.is_ok()){
-                        resI.with_errata(res.error);
-                      }else{
-                        res;
-                      }
-                    ).defer(input,cont);//TODO can a failure consume?
+  public function apply(input:ParseInput<I>):ParseResult<I,T>{
+    var idx   = 1;
+    final res = delegation[0].apply(input);
+
+    function rec(res:ParseResult<I,T>):ParseResult<I,T>{
+      return switch(res.is_ok()){
+        case true  : res;
+        case false :
+          switch(res.is_fatal()){
+            case true  : res;
+            case false :
+              if(idx < delegation.length){
+                var n = idx;
+                idx   = idx + 1;
+                var d = delegation[n];
+
+                #if debug __.log().trace(_ -> _.thunk(() -> '${res.asset.index} $d')); #end
+                
+                final resI = d.apply(res.asset);
+
+                if(!resI.is_ok()){
+                  ParseResult.make(resI.asset,None,resI.error);
                 }else{
-                  var opts = delegation.map(_ -> _.tag);
-                  cont.receive(
-                    cont.value(
-                      res.with_errata(res.asset.erration('Ors $opts',false))
-                    )
-                  );
+                  resI;
                 }
-            )
-          );
-        }
-      )
-    ).defer(input,cont);
+              }else{
+                var opts = delegation.map(_ -> _.tag);
+                ParseResult.make(res.asset,None,res.error);
+                //res.with_errata(res.asset.erration('Ors $opts',false));
+              }
+            }
+      }
+    }
+    return rec(res);
   }
 }

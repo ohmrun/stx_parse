@@ -13,13 +13,13 @@ class LAnon<I,O> extends Base<I,O,Parser<I,O>>{
   private function open(){
     this.delegation = closure();
   }
-  public inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  public inline function apply(ipt:ParseInput<I>):ParseResult<I,O>{
     return if(delegation == null){
       open();
       __.assert().exists(delegation);
-      this.delegation.defer(ipt,cont);
+      this.delegation.apply(ipt);
     }else{
-      this.delegation.defer(ipt,cont);
+      this.delegation.apply(ipt);
     }
   } 
 }

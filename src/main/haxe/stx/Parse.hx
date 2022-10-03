@@ -104,19 +104,19 @@ class LiftParse{
   static public function parse(wildcard:Wildcard){
     return new stx.parse.Module();
   }
-  static public inline function ok<P,R>(rest:ParseInput<P>,match:R):ParseResult<P,R>{
-    return ParseResult.make(rest,Some(match));
+  static public function ok<P,R>(rest:ParseInput<P>,match:R):ParseResult<P,R>{
+    return ParseResult.make(rest,Some(match),null);
 	}
-	static public inline function nil<P,R>(rest:ParseInput<P>):ParseResult<P,R>{
-    return ParseResult.make(rest,None);
+	static public function nil<P,R>(rest:ParseInput<P>):ParseResult<P,R>{
+    return ParseResult.make(rest,None,null);
   }
-	static public inline function failure<P,R>(self:Refuse<ParseRefuse>,rest:ParseInput<P>):ParseResult<P,R>{
+	static public function failure<P,R>(self:Refuse<ParseRefuse>,rest:ParseInput<P>):ParseResult<P,R>{
 		return ParseResult.make(rest,None,self);
 	}
-	static public inline function no<P,R>(rest:ParseInput<P>,message:String,fatal=false):ParseResult<P,R>{
+	static public function no<P,R>(rest:ParseInput<P>,message:String,fatal=false):ParseResult<P,R>{
 		return ParseResult.make(rest,None,erration(rest,message,fatal));
 	}
-  static public inline function erration<P>(rest:ParseInput<P>,message:String,fatal=false):Refuse<ParseRefuse>{
+  static public function erration<P>(rest:ParseInput<P>,message:String,fatal=false):Refuse<ParseRefuse>{
     return Refuse.pure(ParseRefuse.make(@:privateAccess rest.content.index,message,fatal));
   }
   static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
@@ -128,41 +128,28 @@ class LiftParse{
     data = data.substr(ipt.offset);
     return regex.exec(data);
   }
-  
-  static public inline function defer<I,O>(f:Void->Parser<I,O>):Parser<I,O>{
-    return LAnon(f).asParser();
-  }
-  
 	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<ParseInput<Oi>,Parser<Oi,Oii>>){
 		return Anon(
-			(input:ParseInput<I>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> {
-				return cont.receive(
-					Fletcher.Then(
-						p,
-						Fletcher.Anon(
-							(res:ParseResult<I,O>,cont:Terminal<ParseResult<I,Oii>,Noise>) -> res.is_ok().if_else(
-								() -> {
-									var inner 	= (resII:ParseResult<Oi,Oii>) -> resII.is_ok().if_else(
-										() 		-> resII.value.fold(
-											ok 	-> res.asset.ok(ok),
-											 () -> res.asset.nil() 
-										),
-										()		-> ParseResult.make(input,None,resII.error)
-									);
-									final out 		= p0(res.value);
-									final reader 	= out.fst();
-									final parser 	= out.snd(); 
-									// //trace(out.snd());
-									// var result 	= parser.defer(out.fst(),inner);
-
-									// return cont.later(defer.asFuture()).after(result);
-									return cont.receive(parser.toFletcher().then(Fletcher.Sync(inner)).forward(reader));
-								},
-								() -> cont.receive(cont.value(res.fails()))
-							)
-						)
-					).forward(input)
-				);
+			function(input:ParseInput<I>):ParseResult<I,Oii>{
+				final res 		= p.apply(input);
+				return switch(res.is_ok()){
+					case true : 
+						final out 		= p0(res.value);
+						final reader 	= out.fst();
+						final parser 	= out.snd(); 
+						final resII 	= parser.apply(reader);
+						final inner 	= switch(resII.is_ok()){
+							case true : 
+								switch(resII.value){
+									case Some(ok) : res.asset.ok(ok);
+									case None  		: res.asset.nil();
+								}
+							case false : 
+								ParseResult.make(input,None,resII.error);
+						}
+						inner;
+					case false : res.fails();
+				}
 			},
 			Some('sub')
 		);
@@ -175,7 +162,7 @@ class LiftParse{
     return new stx.parse.parser.term.Succeed(v).asParser();
 	}
 }
-typedef LiftParseInputForwardToParser 	= stx.parse.lift.LiftParseInputForwardToParser;
+//typedef LiftParseInputForwardToParser 	= stx.parse.lift.LiftParseInputForwardToParser;
 typedef LiftArrayOfParser 							= stx.parse.lift.LiftArrayOfParser;
 
 class LiftParseRefuse{

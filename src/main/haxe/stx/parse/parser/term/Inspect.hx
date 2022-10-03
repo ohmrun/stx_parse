@@ -18,15 +18,11 @@ class Inspect<I,O> extends Delegate<I,O>{
       this.postfix   = postfix;
     }
   }
-  override inline function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,O>,Noise>):Work{
+  override inline function apply(input:ParseInput<I>):ParseResult<I,O>{
     this.prefix(input);
-    var out = this.delegation.provide(input).convert(
-      (res:ParseResult<I,O>) -> {
-        this.postfix(res);
-        return res;
-      }
-    );
-    return cont.receive(out.forward(Noise));
+    var out = this.delegation.apply(input);
+    this.postfix(out);
+    return out;
   }
   override public function toString(){
     return '$delegation';

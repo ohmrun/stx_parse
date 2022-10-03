@@ -17,7 +17,7 @@ class RepSep<I,O,S> extends Base<I,Cluster<O>,Parser<I,O>>{
       )
     ).asParser();
   }
-  public inline function defer(ipt:ParseInput<I>,cont:Terminal<ParseResult<I,Cluster<O>>,Noise>):Work{
-    return actual().defer(ipt,cont);
+  public inline function apply(ipt:ParseInput<I>):ParseResult<I,Cluster<O>>{
+    return actual().apply(ipt);
   }
 } 

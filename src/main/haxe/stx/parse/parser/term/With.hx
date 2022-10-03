@@ -16,58 +16,50 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   override function check(){
     __.that().exists().crunch(delegation);
   }
-  inline public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,V>,Noise>){  
-    var a = delegation.fst().toFletcher().forward(input);
-    var b = a.flat_fold(
-      res -> {
-        //#if debug
+  inline public function apply(input:ParseInput<I>):ParseResult<I,V>{  
+    var res = delegation.fst().apply(input);
+    // __.log().trace(_ -> _.thunk(
+    //   () -> {
+    //     final parser = delegation.fst().toString();
+    //     final result = () -> res.toString();
+    //     return 'lh parser: $parser result: ${result()} ${res.is_ok()} $this';
+    //   }
+    // ));
+    //#end
+    return switch(res.is_ok()){
+      case true: 
+        final resI = delegation.snd().apply(res.asset);
+        #if debug
         __.log().trace(_ -> _.thunk(
           () -> {
-            final parser = delegation.fst().toString();
-            final result = () -> res.toString();
-            return 'lh parser: $parser result: ${result()} ${res.is_ok()} $this';
+            final parser = delegation.snd().toString();
+            final result = resI.toString();
+            return 'rh parser: $parser result: $result $this';
           }
         ));
-        //#end
-        return res.is_ok().if_else(
-          () -> delegation.snd().toFletcher().forward(res.asset).map(
-            resI -> {
-              //#if debug
-              __.log().trace(_ -> _.thunk(
-                () -> {
-                  final parser = delegation.snd().toString();
-                  final result = resI.toString();
-                  return 'rh parser: $parser result: $result $this';
-                }
-              ));
-              //#end
-              return resI.is_ok().if_else(
-                () -> resI.is_fatal().if_else(
-                  () -> resI.fails(),
-                  () -> {
-                    final result = transform(res.value.defv(null),resI.value.defv(null));
-                    __.log().trace(_ -> _.thunk(() -> {
-                      var parsers = '${delegation.tup()}';
-                      return 'parsers: $parsers, result: $result';
-                    }));
-                    return result.fold(
-                      ok -> resI.asset.ok(ok),
-                      () -> resI.asset.nil()
-                    );
-                  }
-                ),
-                () -> resI.error.concat(input.erration('With lhs')).failure(input)
-              );
+        #end
+        switch(resI.is_ok()){
+          case true : 
+            final result = transform(res.value.defv(null),resI.value.defv(null));
+            #if debug
+            __.log().trace(_ -> _.thunk(() -> {
+              var parsers = '${delegation.tup()}';
+              return 'parsers: $parsers, result: $result';
+            }));
+            #end
+            switch(result){
+              case Some(x)  : resI.asset.ok(x);
+              case None     : resI.asset.nil();
             }
-          ),
-          () -> cont.value(
-            input.erration('With').concat(res.error).failure(input)
-          )
-        );
-      },
-      err -> cont.error(err)
-    );
-    return cont.receive(b);
+          case false : 
+            switch(resI.is_fatal()){
+              case true   : resI.fails(); 
+              case false  : resI.error.concat(input.erration('With lhs')).failure(input);
+            }
+        }
+      case false : 
+        input.erration('With').concat(res.error).failure(input);
+    }  
   }
   override public function toString(){
     return '${delegation.toString()}';

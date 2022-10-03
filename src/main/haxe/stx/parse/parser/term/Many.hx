@@ -14,37 +14,32 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   override public function check(){
     __.that(pos).exists().errata( e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
   }
-  public function defer(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>):Work{
-    function rec(input:ParseInput<I>,cont:Terminal<ParseResult<I,Array<O>>,Noise>,arr:Array<O>){
-      __.log().trace(_ -> _.thunk(() -> arr));
-      return cont.receive(delegation.toFletcher().forward(input).flat_fold(
-        res  -> {
-          __.log().trace('$delegation');
-          __.log().trace('${res.error}');
-          __.log().trace('$arr');
-            return res.is_ok().if_else(
-            () -> {
-              __.log().trace('${res.value}');
-              res.value.fold(
-                v   -> { arr.push(v); null; },
-                ()  -> {}
-              );
-              return Fletcher.lift(Fletcher.Anon(rec.bind(_,_,arr))).forward(res.asset);
-            },
-            () -> cont.value(
-              if(res.is_fatal()){
-                input.erration('failed many ${delegation}',true).concat(res.error).failure(input);
-              }else{
-                __.log().trace(_ -> _.thunk( () -> arr));
-                input.ok(arr); 
-              }
-            )
-          );
-        },
-        no   -> cont.error(no)
-      ));
+  public function apply(input:ParseInput<I>):ParseResult<I,Array<O>>{
+    function rec(input:ParseInput<I>,arr:Array<O>){
+      #if debug
+      __.log().trace('$delegation');
+      __.log().trace('${res.error}');
+      __.log().trace('$arr');
+      #end
+      final res = delegation.apply(input);
+      return switch(res.is_ok()){
+        case true : 
+          #if debug __.log().trace('${res.value}'); #end 
+          switch(res.value){
+            case Some(x) : arr.push(x); null;
+            default : 
+          }
+          return rec(res.asset,arr);
+        case false : 
+          if(res.is_fatal()){
+            input.erration('failed many ${delegation}',true).concat(res.error).failure(input);
+          }else{
+            #if debug __.log().trace(_ -> _.thunk( () -> arr)); #end
+            input.ok(arr); 
+          }
+      }
     }
-    return cont.receive(Fletcher.lift(Fletcher.Anon(rec.bind(_,_,[]))).forward(input));
+    return rec(input,[]);
   }
   override public function toString(){
     return 'Many($delegation)';

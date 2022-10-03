@@ -41,19 +41,19 @@ class ParserLift{
   static public inline function commit<I,T> (pI : Parser<I,T>):Parser <I,T>{
     return Commit(pI).asParser();
   }
-  static public inline function mod<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->ParseResult<I,TT>):Parser<I,TT>{
-    return Arrow(Fletcher.Then(
-      p,
-      Fletcher.Sync(fn)
-    ));
-  }
-  //TODO: What should this be called?
-  static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Fletcher<ParseInput<I>,TT,Noise>{
-    return Fletcher.Then(
-      p,
-      Fletcher.Sync(fn)
-    );
-  }
+  // static public inline function mod<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->ParseResult<I,TT>):Parser<I,TT>{
+  //   return Fletcher.Then(
+  //     p,
+  //     Fletcher.Sync(fn)
+  //   ));
+  // }
+
+  // static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Fletcher<ParseInput<I>,TT,Noise>{
+  //   return Fletcher.Then(
+  //     p,
+  //     Fletcher.Sync(fn)
+  //   );
+  // }
 
   static public inline function notEmpty<T>(arr:Cluster<T>):Bool return arr.length>0;
 
@@ -96,9 +96,6 @@ class ParserLift{
   static public function inspect<I,O>(parser:Parser<I,O>,pre:ParseInput<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
     return Inspect(parser,pre,post).asParser();
   }
-  static public function provide<I,O>(parser:Parser<I,O>,input:ParseInput<I>):Provide<ParseResult<I,O>>{
-    return Provide.fromFunTerminalWork(parser.defer.bind(input));
-  }
   static public function lookahead<I,O>(p:Parser<I,O>):Parser<I,O>{
     return Lookahead(p);
   }
@@ -135,12 +132,9 @@ class ParserLift{
   }
   static public function parse<P,R>(self:Parser<P,R>,input:ParseInput<P>){
     return (
-      self.toFletcher()
-          .produce(input)
-          .map((x:ParseResult<P,R>) -> x.toRes())
+      self.apply(input)
+          .toRes()
           .errata(_ -> __.fault().explain(_ -> _.e_parse_failure()))
-          .adjust(x -> x)
-          .force()
     );
   }
   static public function match<P,R>(self:Parser<P,R>,input:ParseInput<P>):Null<R>{

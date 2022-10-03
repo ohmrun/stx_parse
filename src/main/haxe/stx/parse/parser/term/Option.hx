@@ -5,21 +5,17 @@ class Option<P,R> extends Base<P,StdOption<R>,Parser<P,R>>{
   public function new(delegation:Parser<P,R>,?pos:Pos){
     super(delegation,pos);
   }
-  function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,StdOption<R>>,Noise>):Work{
-    return cont.receive(
-      delegation.toFletcher().forward(input).map(
-        (result:ParseResult<P,R>) -> {
-          __.log().trace('$result');
-          return result.has_error().if_else(
-            () -> result.is_fatal().if_else(
-              () -> result.map(Some),
-              () -> input.ok(None)
-            ),
-            () -> result.map(Some)
-          );
+  function apply(input:ParseInput<P>):ParseResult<P,StdOption<R>>{
+    final result = delegation.apply(input);
+    return switch(result.has_error()){
+      case true  :  
+        switch(result.is_fatal()){
+          case true   : result.map(Some);
+          case false  : input.ok(None);
         }
-      )
-    );
+      case false :
+        result.map(Some); 
+    } 
   }
   override public function toString(){
     return '$delegation?';

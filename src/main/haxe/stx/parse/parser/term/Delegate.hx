@@ -8,10 +8,10 @@ class Delegate<I,O> extends Base<I,O,Parser<I,O>>{
   override function check(){
     __.assert(pos).exists(delegation);
   }
-  public function defer(ipt,cont):Work{
-    return this.delegation.defer(ipt,cont);
+  public function apply(ipt){
+    return this.delegation.apply(ipt);
   }
   override public function toString(){
-    return '${name()}(${delegation})';
+    return '${this.identifier().name}(${delegation})';
   }
 }

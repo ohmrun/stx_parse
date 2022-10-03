@@ -1,21 +1,13 @@
 package stx.parse;
 
 class Parsers{
-  @:noUsing static inline public function Forward<P,R>(fn:ParseInput<P>->Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
-    return Arrow(
-      Convert.fromFun1Provide(fn).toFletcher() 
-    ,pos).asParser();
-  }
-  @:noUsing static inline public function Arrow<P,R>(fn:Fletcher<ParseInput<P>,ParseResult<P,R>,Noise>,?pos:Pos):Parser<P,R>{
-    return new stx.parse.parser.term.Arrow(fn,pos).asParser();
-  }
-  @:noUsing static inline public function Anon<P,R>(fn:ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag:Option<String>,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function Anon<P,R>(fn:ParseInput<P> -> ParseResult<P,R>,tag:Option<String>,?pos:Pos):Parser<P,R>{
     return new stx.parse.parser.term.Anon(fn,tag,pos).asParser();
   }
   @:noUsing static inline public function SyncAnon<P,R>(fn:ParseInput<P> -> ParseResult<P,R>,tag:Option<String>,?pos:Pos):Parser<P,R>{
     return new stx.parse.parser.term.SyncAnon(fn,tag,pos).asParser();
   }
-  @:noUsing static inline public function TaggedAnon<P,R>(fn:ParseInput<P> -> Terminal<ParseResult<P,R>,Noise> -> Work,tag,?pos:Pos):Parser<P,R>{
+  @:noUsing static inline public function TaggedAnon<P,R>(fn:ParseInput<P> -> ParseResult<P,R>,tag,?pos:Pos):Parser<P,R>{
     return new stx.parse.parser.term.TaggedAnon(fn,tag,pos).asParser();
   }
   @:noUsing static inline public function Failed<P,R>(msg,is_fatal = false,?id:Pos):Parser<P,R>{
@@ -27,9 +19,9 @@ class Parsers{
   @:noUsing static inline public function Stamp<P,R>(result:ParseResult<P,R>,?pos:Pos):Parser<P,R>{
     return new stx.parse.parser.term.Stamp(result,pos).asParser();
   }
-  @:noUsing static inline public function Closed<P,R>(self:Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
-    return new stx.parse.parser.term.Closed(self,pos).asParser();
-  }
+  // @:noUsing static inline public function Closed<P,R>(self:Provide<ParseResult<P,R>>,?pos:Pos):Parser<P,R>{
+  //   return new stx.parse.parser.term.Closed(self,pos).asParser();
+  // }
   @:noUsing static inline public function Range(min:Int,max:Int):Parser<String,String>{
     return new stx.parse.parser.term.Range(min,max).asParser();
   }

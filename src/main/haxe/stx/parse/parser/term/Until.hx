@@ -4,26 +4,23 @@ class Until<P,R> extends Base<P,Cluster<R>,Parser<P,R>>{
   public function new(delegation:Parser<P,R>,?tag:Option<String>,?pos:Pos){
     super(delegation,tag,pos);
   }
-  public function defer(ipt:ParseInput<P>,cont:Terminal<ParseResult<P,Cluster<R>>,Noise>):Work{
+  public function apply(ipt:ParseInput<P>):ParseResult<P,Cluster<R>>{
     final result = [];
     function rec(ipt:ParseInput<P>){
-        return delegation.toFletcher().forward(ipt).flat_map(
-          (res:ParseResult<P,R>) -> {
-            return res.is_ok().if_else(
-              () -> {
-                for (v in res.value){
-                  result.push(v);
-                }
-                return Receiver._.defer(rec.bind(res.asset));
-              },
-              () -> (result.length == 0).if_else(
-                () -> Receiver.issue(Success(res.asset.erration("Until coming up empty").failure(res.asset))),
-                () -> Receiver.issue(Success(res.asset.ok(Cluster.lift(result))))
-              )
-            );
+      final res = delegation.apply(ipt);
+      return switch(res.is_ok()){
+        case true : 
+          for (v in res.value){
+            result.push(v);
           }
-      );
+          rec(res.asset);
+        case false : 
+          switch(result.length == 0){
+            case true  : res.asset.erration("Until coming up empty").failure(res.asset);
+            case false : res.asset.ok(Cluster.lift(result));
+          }
+      }
     }
-    return cont.receive(rec(ipt));
+    return rec(ipt);
   }
 }

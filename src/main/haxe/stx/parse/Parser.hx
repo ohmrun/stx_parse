@@ -16,10 +16,6 @@ import stx.parse.Parsers.*;
   @:noUsing static inline public function fromFunction<I,O>(f:ParseInput<I>->ParseResult<I,O>,tag):Parser<I,O>{
     return SyncAnon(f,tag).asParser();
   }
-  //TODO is this right?
-  @:noUsing static inline public function fromParseInputProvide<I,O>(self:ParseInput<I>->Provide<ParseResult<I,O>>,tag):Parser<I,O>{
-    return lift(Anon(Convert.fromConvertProvide(self).toFletcher().defer,tag));
-  }
   @:noUsing static inline public function lift<I,O>(it:ParserApi<I,O>):Parser<I,O>{
     return new Parser(it);
   }
@@ -34,12 +30,6 @@ import stx.parse.Parsers.*;
   function get_self():Parser<I,O> return lift(this);
   public inline function asParser():Parser<I,O> return self;
 
-  @:to public inline function toFletcher():Fletcher<ParseInput<I>,ParseResult<I,O>,Noise>{
-    return Fletcher.lift(this.toFletcher());
-  }
-  @:to public inline function toFletcherDef():FletcherDef<ParseInput<I>,ParseResult<I,O>,Noise>{
-    return this.toFletcher();
-  }
   /**implicit override issue**/
   public inline function then<Oi>(f : O -> Oi):Parser<I,Oi>   return _.then(lift(this),f);
   /**implicit override issue**/

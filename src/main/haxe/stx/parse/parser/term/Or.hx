@@ -8,25 +8,19 @@ class Or<P,R> extends ParserCls<P,R>{
     this.lhs = lhs;
     this.rhs = rhs;
   }
-  inline function defer(input:ParseInput<P>,cont:Terminal<ParseResult<P,R>,Noise>):Work{
-    __.log().trace(_ -> _.thunk( () -> '$this'));
-    return cont.receive(
-      lhs.toFletcher().forward(input).flat_fold(
-        (result)  -> {
-          // __.log().trace('$input');
-          // __.log().trace('$result');
-          __.log().trace(_ -> _.pure('result $result at ${result.asset.position()} $lhs = ${result.is_ok()}'));
-          return result.is_ok().if_else(
-            () -> cont.value(result),
-            () -> {
-              __.log().trace(_ -> _.pure('try $rhs'));
-              return rhs.toFletcher().forward(input);
-            }
-          );
-        },
-        (error)   -> cont.error(error)
-      )
-    );
+  inline function apply(input:ParseInput<P>):ParseResult<P,R>{
+    #if debug __.log().trace(_ -> _.thunk( () -> '$this')); #end 
+    final result = lhs.apply(input);
+    #if debug
+    __.log().trace(_ -> _.pure('result $result at ${result.asset.position()} $lhs = ${result.is_ok()}'));
+    #end
+    //TODO notify upstream of fail structure
+    return switch(result.is_ok()){
+      case true   : result;
+      case false  : 
+        __.log().trace(_ -> _.pure('try $rhs'));
+        rhs.apply(input);
+    }
   }
   override public function toString(){
     return '$lhs | $rhs';

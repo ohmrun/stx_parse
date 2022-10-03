@@ -3,17 +3,17 @@ package stx.parse.test;
 class EofTest extends TestCase{
   
   public function _testSucceed(){
-    var ipt = "";
-    var prs = Parsers.Eof();
-    __.ctx(
-      ipt.reader(),
-      (res:ParseResult<String,String>) -> {
-        final out = res;
-        equals(None,out.value);
-        equals(res.asset.index,0);  
-      }
-    ).load(prs.toFletcher())
-     .crunch();
+    // var ipt = "";
+    // var prs = Parsers.Eof();
+    // __.ctx(
+    //   ipt.reader(),
+    //   (res:ParseResult<String,String>) -> {
+    //     final out = res;
+    //     equals(None,out.value);
+    //     equals(res.asset.index,0);  
+    //   }
+    // ).load(prs.toFletcher())
+    //  .crunch();
   }
   
   // public function testFail(){

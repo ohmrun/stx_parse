@@ -5,7 +5,7 @@
       "stx_pico","stx_nano", "stx_ds", "stx_assert", "stx_fn", "stx_test", "fletcher", "hre"
     ],
     "-D" : [
-      "no-deprecation-warnings"     
+      "no-deprecation-warnings" 
     ],
     "unit"  : {
       "--macro" : [
