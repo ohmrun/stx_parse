@@ -116,6 +116,9 @@ class LiftParse{
 	static public function no<P,R>(rest:ParseInput<P>,message:String,fatal=false):ParseResult<P,R>{
 		return ParseResult.make(rest,None,erration(rest,message,fatal));
 	}
+	static public function cache<P,R>(parser:Void->Parser<P,R>):Parser<P,R>{
+		return Parsers.LAnon(parser).asParser();
+	}
   static public function erration<P>(rest:ParseInput<P>,message:String,fatal=false):Refuse<ParseRefuse>{
     return Refuse.pure(ParseRefuse.make(@:privateAccess rest.content.index,message,fatal));
   }
