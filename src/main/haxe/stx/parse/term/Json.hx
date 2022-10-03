@@ -56,7 +56,7 @@ class Json{
     return [parser(), data_p, array_p()].ors(); 
 
   function array_p():Parser<String,JsonSum<String>> 
-    return l_brkt_p._and(value_p.defer().repsep(comma_p).option()).and_(r_brkt_p).then(
+    return l_brkt_p._and(value_p.cache().repsep(comma_p).option()).and_(r_brkt_p).then(
       (opt) -> opt.fold(
         ok -> JsArray(ok),
         () -> JsArray([].imm())

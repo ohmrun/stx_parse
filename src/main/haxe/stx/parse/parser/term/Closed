@@ -1,7 +1,0 @@
-package stx.parse.parser.term;
-
-class Closed<I,O> extends Base<I,O,Provide<ParseResult<I,O>>>{
-  inline public function apply(input:ParseInput<I>):ParseResult<I,O>{
-    return cont.receive(this.delegation.forward(Noise));
-  }
-}

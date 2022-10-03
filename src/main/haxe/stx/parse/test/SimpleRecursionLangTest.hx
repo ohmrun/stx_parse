@@ -40,8 +40,8 @@ private class Lang{
 
   static public var p_expr :Parser<String,Expr> = {
     [
-        p_mult.defer(),
-        p_plus.defer(),
+        p_mult.cache(),
+        p_plus.cache(),
         p_int
     ].ors().memo();
   }
