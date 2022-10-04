@@ -30,8 +30,12 @@ class String extends EnumerableCls<StdString,StdString>{
 	public function drop(i:Int):Enumerable<StdString,StdString>{
 		return new String(this.data,this.index+i);
 	}
-	public function head():StdString{
-		return this.data.charAt(index);
+	public function head():Chunk<StdString,ParseFailureCode>{
+		return if(index >= this.data.length){
+			End(__.fault().of(E_Parse_Eof));
+		}else{
+			Val(this.data.charAt(index));
+		}
 	}
 	public function toString(){
 		return 'Enumerable($data)';

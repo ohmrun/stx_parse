@@ -17,7 +17,9 @@ typedef ParserCls<P,R>       	= stx.parse.ParserCls<P,R>;
 typedef Parser<P,R>           = stx.parse.Parser<P,R>;
 typedef Parsers            		= stx.parse.Parsers;
 typedef ParserLift            = stx.parse.parser.ParserLift;
-
+typedef ParseFailure 					= stx.fail.ParseFailure;
+typedef ParseFailureCode 			= stx.fail.ParseFailureCode;
+typedef ParseFailureCodeSum   = stx.fail.ParseFailureCode.ParseFailureCodeSum;
 
 class Parse{
 	@:noUsing static public function mergeString(a:String,b:String){
@@ -94,8 +96,9 @@ class Parse{
 	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
 		return SyncAnon(
 			(input:ParseInput<I>) -> input.head().fold(
-				(vI) -> v == vI ? input.tail().ok(vI) : input.erration('eq').failure(input),
-				() -> input.erration('eq').failure(input)
+				(vI) 	-> v == vI ? input.tail().ok(vI) : input.erration('eq').failure(input),
+				(e) 	-> e.toParseFailure_with(input,false).failure(input),
+				() 		-> input.erration(E_Parse_ParseFailed('eq')).failure(input)
 			)
 		,'eq').asParser();
 	}
@@ -110,17 +113,17 @@ class LiftParse{
 	static public function nil<P,R>(rest:ParseInput<P>):ParseResult<P,R>{
     return ParseResult.make(rest,None,null);
   }
-	static public function failure<P,R>(self:Refuse<ParseRefuse>,rest:ParseInput<P>):ParseResult<P,R>{
+	static public function failure<P,R>(self:Refuse<ParseFailure>,rest:ParseInput<P>):ParseResult<P,R>{
 		return ParseResult.make(rest,None,self);
 	}
-	static public function no<P,R>(rest:ParseInput<P>,message:String,fatal=false):ParseResult<P,R>{
+	static public function no<P,R>(rest:ParseInput<P>,message:ParseFailureCode,fatal=false):ParseResult<P,R>{
 		return ParseResult.make(rest,None,erration(rest,message,fatal));
 	}
 	static public function cache<P,R>(parser:Void->Parser<P,R>):Parser<P,R>{
 		return Parsers.LAnon(parser).asParser();
 	}
-  static public function erration<P>(rest:ParseInput<P>,message:String,fatal=false):Refuse<ParseRefuse>{
-    return Refuse.pure(ParseRefuse.make(@:privateAccess rest.content.index,message,fatal));
+  static public function erration<P>(rest:ParseInput<P>,message:ParseFailureCode,fatal=false):Refuse<ParseFailure>{
+    return Refuse.pure(ParseFailure.make(@:privateAccess rest.content.index,message,fatal));
   }
   static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
     __.log().trace(_ -> _.pure(@:privateAccess ipt.content.data));
@@ -167,15 +170,17 @@ class LiftParse{
 }
 //typedef LiftParseInputForwardToParser 	= stx.parse.lift.LiftParseInputForwardToParser;
 typedef LiftArrayOfParser 							= stx.parse.lift.LiftArrayOfParser;
+typedef LiftParseFailureCodeRefuse 			= stx.parse.lift.LiftParseFailureCodeRefuse;
+typedef LiftParseFailureCodeResult 		  = stx.parse.lift.LiftParseFailureCodeResult;
 
-class LiftParseRefuse{
-	static public inline function is_parse_fail(self:Defect<ParseRefuse>):Bool{
+class LiftParseFailure{
+	static public inline function is_parse_fail(self:Defect<ParseFailure>):Bool{
     return (self.error.toIterable().toIter()).lfold( 
-			(next:Error<Decline<ParseRefuse>>,memo:Bool) -> memo.if_else(
+			(next:Error<Decline<ParseFailure>>,memo:Bool) -> memo.if_else(
 				() -> true,
 				() -> next.data.fold(
 					ok -> switch(ok){
-						case EXTERIOR(x) : x.msg != ParseRefuse.FAIL;
+						case EXTERIOR(x) : x.msg != ParseFailure.FAIL;
 						default : false;
 					},
 					() -> false
@@ -185,9 +190,9 @@ class LiftParseRefuse{
 		);
 
 	}
-  static public inline function is_fatal(self:Defect<ParseRefuse>):Bool{
+  static public inline function is_fatal(self:Defect<ParseFailure>):Bool{
     return self.error.toIterable().toIter().lfold( 
-			(next:Refuse<ParseRefuse>,memo:Bool) -> memo.if_else(
+			(next:Refuse<ParseFailure>,memo:Bool) -> memo.if_else(
 				() -> true,
 				() -> next.data.fold(
 					(ok) -> ok.fold(
@@ -200,7 +205,7 @@ class LiftParseRefuse{
 			false
 		);
   }
-  static public function toString(self:Defect<ParseRefuse>){
+  static public function toString(self:Defect<ParseFailure>){
     return self.toRefuse().toIterable().toIter().map(
 			 x -> x.data.fold(
 				 ok -> ok.fold(

@@ -39,8 +39,25 @@ class ManyTest extends TestCase{
 	public function test_eof_ok(){
 		var input 	= 'aa'.reader();
 		var parser 	= __.parse().id('a').many().and_(Parsers.Eof());
-		var result  = parser.provide(input).fudge();
-		trace(result);
-		is_true(result.is_ok());
+		var result  = parser.apply(input);
+		for(x in result.value){
+      same(['a','a'].imm(),x);
+    }
+		//is_true(result.is_ok());
+  }
+  public function test_success_none(){
+		var input 	= ''.reader();
+		var parser 	= __.parse().id('a').many().and_(Parsers.Eof());
+		var result  = parser.apply(input);
+		same(None,result.value);
+  }
+  public function test_failure_fatal(){
+    var input 	= ''.reader();
+		var parser 	= Parsers.Anon((ipt) -> ipt.no("noes",true),Some("FATAL")).many();
+		var result  = parser.apply(input);
+    var error   = result.error.toIterable().toIter().map_filter(x -> x.data.flat_map(y -> y.exterior()));
+    for(e in error){
+      alike(E_Parse_ParseFailed(null),e.msg);
+    }
   }
 }

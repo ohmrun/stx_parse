@@ -8,7 +8,10 @@ class Array<T> extends EnumerableCls<StdArray<T>, T > {
 		return !(this.data.length > this.index); 	
 	}
 	public function match(e:T->Bool){
-		return e(head());
+		return switch(head()){
+			case Val(x) : e(x);
+			default 		: false;
+		}
 	}
 	public function prepend(v:T):Enumerable<StdArray<T>,T> {
 		var lhs = this.data.slice(0,index);
@@ -22,7 +25,14 @@ class Array<T> extends EnumerableCls<StdArray<T>, T > {
 	public function drop(i:Int):Enumerable<StdArray<T>,T>{
 		return new Array(this.data,this.index + i);
 	}
-	public function head():T{
-		return this.data[index];
+	public function head():Chunk<T,ParseFailureCode>{
+		return if(index >= this.data.length){
+			End(__.fault().of(E_Parse_Eof));
+		}else{
+			switch(this.data[index]){
+				case null : Tap;
+				case x 		: Val(x);
+			}
+		}
 	}
 } 

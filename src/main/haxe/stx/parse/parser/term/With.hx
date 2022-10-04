@@ -54,11 +54,11 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
           case false : 
             switch(resI.is_fatal()){
               case true   : resI.fails(); 
-              case false  : resI.error.concat(input.erration('With lhs')).failure(input);
+              case false  : resI.error.concat(input.erration(E_Parse_ParseFailed('With lhs'))).failure(input);
             }
         }
       case false : 
-        input.erration('With').concat(res.error).failure(input);
+        input.erration(E_Parse_ParseFailed('With')).concat(res.error).failure(input);
     }  
   }
   override public function toString(){

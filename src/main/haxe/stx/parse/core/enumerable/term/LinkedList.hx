@@ -8,7 +8,10 @@ class LinkedList<T> extends EnumerableCls<StxLinkedList<T>,T>{
     return !this.data.is_defined();
   }
   public function match(fn){
-    return fn(head());
+    return switch(head()){
+      case Val(v) : fn(v);
+      default     : false;
+    }
   }
   public function prepend(v:T):Enumerable<StxLinkedList<T>,T>{
     return new LinkedList(this.data.cons(v),index);
@@ -40,8 +43,12 @@ class LinkedList<T> extends EnumerableCls<StxLinkedList<T>,T>{
     }
     return new LinkedList(x,index+n);
   }
-  public function head():T{
-    return this.data.head();
+  public function head():Chunk<T,ParseFailureCode>{
+    return if(index >= this.data.size()){
+      End(__.fault().of(E_Parse_Eof));
+    }else{
+      Val(this.data.head());
+    }
   }
   public function asEnumerable():Enumerable<StxLinkedList<T>,T>{
     return this;

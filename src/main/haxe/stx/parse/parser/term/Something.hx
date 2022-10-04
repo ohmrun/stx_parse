@@ -8,6 +8,7 @@ class Something<I> extends Sync<I,I>{
       __.log().trace('${input.head().def(null)}');
       input.head().fold(
         v 	-> input.tail().ok(v),
+        e 	-> e.toParseFailure_with(input).failure(input),
         () 	-> input.tail().erration('Something').failure(input)
       );
     }

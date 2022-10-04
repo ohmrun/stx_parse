@@ -20,7 +20,13 @@
       }
     },
     "test" : {
-      "-D" : ["debug"],
+      "-resource": [
+        "src/main/resource/stx/parse/term/simple.json@simple",
+        "haxe.json@haxe",
+        "tests.pml@tests",
+        "src/main/resource/literals.txt@literals"
+      ],
+      "-D" : ["debug","stx.parse.switches.debug=true"],
       "-main" : "stx.parse.Test",
       "interp" : {
         "--interp" : true
@@ -48,7 +54,9 @@
       ],
       "-resource" : [
         "src/main/haxe/stx/parse/term/simple.json@simple",
-        "haxe.json@haxe"
+        "haxe.json@haxe",
+        "tests.pml@tests",
+        "src/main/resource/literals.txt@literals"
       ],
       "test" : {
         "-resource": "tests.pml@tests",

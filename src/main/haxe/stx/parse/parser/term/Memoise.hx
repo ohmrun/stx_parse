@@ -16,7 +16,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
     
     return switch(memo){
       case None :
-        final base          = ipt.erration(ParseRefuse.FAIL,false).failure(ipt).mkLR(delegation, None);
+        final base          = ipt.erration(ParseFailure.FAIL,false).failure(ipt).mkLR(delegation, None);
         ipt.memo.lrStack    = ipt.memo.lrStack.cons(base);
         ipt.updateCacheAndGet(genKey, MemoLR(base));
 

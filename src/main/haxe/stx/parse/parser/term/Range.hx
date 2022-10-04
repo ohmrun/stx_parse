@@ -12,7 +12,7 @@ class Range extends Sync<String,String>{
   }
   inline public function apply(ipt:ParseInput<String>):ParseResult<String,String>{
     return switch(ipt.head()){
-      case Some(s) : 
+      case Val(s) : 
         var x = StringTools.fastCodeAt(s,0);
         var v = __.option(x);
         var l = v.map( x -> x >= min).defv(false);

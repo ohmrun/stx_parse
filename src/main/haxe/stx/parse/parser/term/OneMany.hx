@@ -7,14 +7,14 @@ class OneMany<P,R> extends With<P,R,Option<Array<R>>,Array<R>>{
     super(l,Parsers.Many(l).option(),pos);
   }
   public function transform(lhs:Null<R>,rhs:Null<Option<Array<R>>>):stx.Option<Array<R>>{
-    __.log().trace('$lhs $rhs');
+    #if debug __.log().trace('$lhs $rhs'); #end
     return __.option(lhs).map(
       (oI:R) -> {
         var arr = [];
             arr.push(oI);
         for (a in __.option(rhs).flatten()){
           for (v in a){
-            __.log().trace('$v');
+            #if debug __.log().trace('$v'); #end
             arr.push(v);
           }
         }
@@ -27,6 +27,6 @@ class OneMany<P,R> extends With<P,R,Option<Array<R>>,Array<R>>{
     );
   }
   override public function toString(){
-    return '$delegation+';
+    return 'OneMany($delegation)';
   }
 } 

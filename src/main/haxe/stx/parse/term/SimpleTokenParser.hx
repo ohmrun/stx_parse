@@ -14,5 +14,5 @@ enum SimpleTokenSum{
   static public var p_token = Identifier('$')._and(Identifier('{'))._and(p_path).and_(Identifier('}'));
 
   static public var p_parse = 
-    Identifier('$').lookahead().not()._and(Whatever()).one_many().tokenize().then(NotToken).or(p_token.then(Token)).many().and_(Eof());
+    Identifier('$').lookahead().not()._and(Something()).one_many().tokenize().then(NotToken).or(p_token.then(Token)).many().and_(Eof());
 }

@@ -18,20 +18,28 @@ using stx.Test;
   public var haxe   = __.resource("haxe").string();
 
   public function test_literal(){
-    // var target = Parse.literal.parse('"helsldf\\"o"'.reader());
-    // this.is_true(target.option().is_defined());
+    var target = Parse.literal.apply('"helsldf\\"o"'.reader());
+    __.log().trace('$target');
+    for(v in target.value){
+      same('helsldf\\"o',v);
+    }
   }
   public function test_identifier(){
-    // var target = Json.ident_p.parse('"TEst"'.reader());
-    // this.is_true(target.option().is_defined());
+    var target = Json.ident_p.apply('"TEst"'.reader());
+    for(v in target.value){
+      same('TEst',v);
+    }
   }
   public function test_zero_length_literal(){
-    // var target = Parse.literal.parse('""'.reader());
-    // this.is_true(target.option().is_defined());
+    var target = Parse.literal.apply('""'.reader());
+    __.log().trace('${target.value}');
+    for(x in target.value){
+      same("",x);
+    }
   }
   public function test_simple(){
-    //var target = new Json().parse(simple.reader());
-    //trace(target);
+    var target = new Json().parser().apply(simple.reader());
+    __.log().trace('$target');
   }
   public function testOneMany(){
     //var target = Base.anything().one_many().parse("abs".reader());

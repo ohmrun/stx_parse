@@ -11,7 +11,7 @@ interface EnumerableApi<C,T>{
 
 	public var index(default,null)	: Int;
 
-	public function head():T;
+	public function head():Chunk<T,ParseFailureCode>;
 	public function take(?len : Null<Int>):C;
 
 	public function drop(n:Int):Enumerable<C,T>;
@@ -58,7 +58,7 @@ abstract class EnumerableCls<C,T> implements EnumerableApi<C,T>{
 	abstract public function is_end():Bool;
 	abstract public function match(fn:T -> Bool):Bool;
 	abstract public function prepend(v:T):Enumerable<C,T>;
-	abstract public function head():T;
+	abstract public function head():Chunk<T,ParseFailureCode>;
 	abstract public function drop(n:Int):Enumerable<C,T>;
 	abstract public function take(?len : Null<Int>) : C;
 } 

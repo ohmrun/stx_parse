@@ -1,9 +1,15 @@
 (indeces "stx.parse.test.Suite")
-("poke"
+("json"
     include (
       ("stx.parse.term.json.Test"
         include
-        "test_escaped_double_quotes"
+        "test_simple"
       )
+    )
+)
+(
+  "bootstrap"
+    include (
+      ("stx.parse.test.OneManyTest" include "test_fail_empty")
     )
 )

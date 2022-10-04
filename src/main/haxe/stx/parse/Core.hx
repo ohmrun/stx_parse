@@ -6,11 +6,6 @@ typedef EnumerableCls<C,T>    = stx.parse.core.Enumerable.EnumerableCls<C,T>;
 typedef Enumerable<C,T>       = stx.parse.core.Enumerable<C,T>;
 
 
-typedef ParseSystemFailure    = stx.parse.core.ParseSystemFailure;
-
-typedef ParseRefuseDef         = stx.parse.core.ParseRefuse.ParseRefuseDef;
-typedef ParseRefuse            = stx.parse.core.ParseRefuse;
-
 typedef Head                  = stx.parse.core.Head;
 typedef LR                    = stx.parse.core.LR;
 typedef LRLift                = stx.parse.core.LR.LRLift;

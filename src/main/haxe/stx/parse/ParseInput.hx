@@ -15,8 +15,8 @@ class ParseInputCls<I>{
   public function toString(){
     return 'path: $cursor at ${this.content.index}:#(${head()})';
   }
-  inline public function head() : Option<I> {
-    return __.option(this.content.head());
+  inline public function head() : Chunk<I,ParseFailureCode> {
+    return this.content.head();
   }
   public function copy(?content,?memo,?tag,?cursor,?tree):ParseInputCls<I>{
     return make(

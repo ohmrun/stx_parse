@@ -12,7 +12,7 @@ import stx.parse.test.*;
 import stx.Test;
 
 using stx.parse.Test;
-
+import stx.parse.test.Suite;
 
 class Test {
 	public static function here(){
@@ -20,17 +20,17 @@ class Test {
 	}
 	public static function main() {
 		var f = __.log().global;
-				f.level = BLANK;
+				f.level = TRACE;
 				f.includes.push("stx/parse/test");
 				f.includes.push('stx/parse');
-				f.includes.push('eu/ohmrun/fletcher');
-				f.includes.push('**');
-				f.includes.push('stx/stream');
-				f.includes.push('stx/test');
-				f.includes.push('stx/stream/DEBUG');
-		__.test().run(
+				//f.includes.push('eu/ohmrun/fletcher');
+				// f.includes.push('**');
+				// f.includes.push('stx/stream');
+				// f.includes.push('stx/test');
+				// f.includes.push('stx/stream/DEBUG');
+		__.test().auto();
 			[
-				//new PrimitiveTest(),
+				//,
 				//new WithTest(),
 				//new EofTest(),
 				//new ManyTest(),
@@ -52,9 +52,7 @@ class Test {
 				// new RepSepTest(),
 				// new Issue1(),
 				// new Issue2(),
-			],
-			[]
-		);
+			];
 		//new SimpleRecursionLangTest().test_one();
 	} 
 }

@@ -12,16 +12,16 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
     }
   }
   override public function check(){
-    __.that(pos).exists().errata( e -> e.fault().of(E_UndefinedParseDelegate())).crunch(delegation);
+    __.that(pos).exists().errata( e -> e.fault().of(E_Parse_UndefinedParseDelegate)).crunch(delegation);
   }
   public function apply(input:ParseInput<I>):ParseResult<I,Array<O>>{
     function rec(input:ParseInput<I>,arr:Array<O>){
+      final res = delegation.apply(input);
       #if debug
       __.log().trace('$delegation');
       __.log().trace('${res.error}');
       __.log().trace('$arr');
       #end
-      final res = delegation.apply(input);
       return switch(res.is_ok()){
         case true : 
           #if debug __.log().trace('${res.value}'); #end 

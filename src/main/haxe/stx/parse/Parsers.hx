@@ -82,8 +82,8 @@ class Parsers{
   @:noUsing static inline public function Something<P>():Parser<P,P>{
     return new stx.parse.parser.term.Something().asParser();
   }
-  @:noUsing static inline public function Whatever<P>():Parser<P,P>{
-    return new stx.parse.parser.term.Whatever().asParser();
+  @:noUsing static inline public function Always<P>():Parser<P,P>{
+    return new stx.parse.parser.term.Always().asParser();
   }
   @:noUsing static inline public function Nothing<P>():Parser<P,P>{
     return new stx.parse.parser.term.Nothing().asParser();

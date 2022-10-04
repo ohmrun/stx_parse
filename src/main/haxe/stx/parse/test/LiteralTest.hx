@@ -1,29 +1,30 @@
 package stx.parse.test;
 
-class LiteralTest extends haxe.unit.TestCase{
+class LiteralTest extends TestCase{
   var lines   = __.resource("literals").string().split("\n");
   var parser  = new stx.parse.term.Literal().asParser();
 
-  public function Xtest_flat(){
+  public function test_flat(){
     var lit = lines[0];
-    var out = parser.match(lit.reader());
-    this.assertEquals('"hello"',out);
+    var out = parser.apply(lit.reader());
+    for(x in out.value){
+      this.equals('hello',x);
+    }
   }
   public function test_with_escape(){
     var lit   = lines[1];
-    var out   = parser.match(lit.reader());
-    var real  = '"\\\"hello"';
-    this.assertEquals(real,out);
+    var out   = parser.apply(lit.reader());
+    var real  = '\\\"hello';
+    for(x in out.value){
+      this.equals(real,x);
+    }
   }
   public function test_with_escaped_escape(){
     var lit   = lines[2];
-    var out   = parser.match(lit.reader());
+    var out   = parser.apply(lit.reader());
     var real  = '"\\\\\\\"hello"';
-    this.assertEquals(real,out);
-  }
-  public function test_empty(){
-    var lit   = lines[3];
-    var out   = parser.parse(lit.reader());
-    trace(out);
+    for(x in out.value){
+      this.equals(real,x);
+    }
   }
 }
