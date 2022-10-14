@@ -2,29 +2,29 @@ package stx.parse.test;
 
 class SimpleRecursionLangTest extends TestCase{
   public function test_one(){
-    var reader = '1+2'.reader();
-    Lang.p_expr.provide(reader).environment(
-      (x) -> {
-        //trace(x);
-        __.log().debug(_ -> _.pure(x));
-        same(
-          x.value.defv(null),
-          Plus(Num(1),Num(2))
-        );
-      }
-    ).crunch();
+    // var reader = '1+2'.reader();
+    // Lang.p_expr.provide(reader).environment(
+    //   (x) -> {
+    //     //trace(x);
+    //     __.log().debug(_ -> _.pure(x));
+    //     same(
+    //       x.value.defv(null),
+    //       Plus(Num(1),Num(2))
+    //     );
+    //   }
+    // ).crunch();
   }
   @timeout(600000)
   public function test_recur(async:Async){
-    var t   = "1+2+3x4x9x10";
-    //var t0  = haxe.Timer.stamp();
-    Lang.p_expr.provide(t.reader()).environment(
-      (x) -> {
-        trace('done');
-        __.log().debug(_ -> _.show(x.value));
-        async.done();
-      }
-    ).submit();
+    // var t   = "1+2+3x4x9x10";
+    // //var t0  = haxe.Timer.stamp();
+    // Lang.p_expr.provide(t.reader()).environment(
+    //   (x) -> {
+    //     trace('done');
+    //     __.log().debug(_ -> _.show(x.value));
+    //     async.done();
+    //   }
+    // ).submit();
     //__.log().info(haxe.Timer.stamp() - t0);
     //__.log().info(o);
     

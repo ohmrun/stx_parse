@@ -16,5 +16,4 @@ abstract class ParserCls<I,O> implements ParserApi<I,O> extends Clazz{
   public function toString(){
     return this.identifier().name;
   }
-  abstract public function apply(p:ParseInput<I>):ParseResult<I,O>;
 }

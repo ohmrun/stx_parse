@@ -1,7 +1,7 @@
 package stx.fail;
 
 enum ParseFailureCodeSum{
-  E_Parse_ParseFailed(detail:String);
+  E_Parse_ParseFailed(detail:String,?pos: {line : Int, column : Int});
   E_Parse_UndefinedParseDelegate;
   E_Parse_Eof;
   E_Parse_NotEof;

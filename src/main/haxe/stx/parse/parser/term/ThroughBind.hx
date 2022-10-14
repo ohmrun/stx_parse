@@ -10,7 +10,7 @@ abstract class ThroughBind<P,Ri,Rii> extends ParserCls<P,Rii>{
   }
   abstract function through_bind(input:ParseInput<P>,result:ParseResult<P,Ri>):Parser<P,Rii>;
 
-  @:privateAccess inline function apply(input:ParseInput<P>):ParseResult<P,Rii>{
+  @:privateAccess public inline function apply(input:ParseInput<P>):ParseResult<P,Rii>{
     final ok = this.delegate.apply(input);
 
     after = through_bind(input,ok);

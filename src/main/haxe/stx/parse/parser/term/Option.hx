@@ -5,7 +5,7 @@ class Option<P,R> extends Base<P,StdOption<R>,Parser<P,R>>{
   public function new(delegation:Parser<P,R>,?pos:Pos){
     super(delegation,pos);
   }
-  function apply(input:ParseInput<P>):ParseResult<P,StdOption<R>>{
+  public function apply(input:ParseInput<P>):ParseResult<P,StdOption<R>>{
     final result = delegation.apply(input);
     return switch(result.has_error()){
       case true  :  

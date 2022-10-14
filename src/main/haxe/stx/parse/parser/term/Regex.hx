@@ -11,7 +11,7 @@ class Regex extends Sync<String,String>{
     this.stamp = stamp;
     this.tag   = Some('Regex($stamp)');
   }
-  inline function apply(ipt:ParseInput<String>){
+  public inline function apply(ipt:ParseInput<String>){
     var reg         = new EReg(stamp,"g");
     //var ereg        = new RegExp(stamp,"g");
     var is_matched  = ipt.matchedBy(reg.match);

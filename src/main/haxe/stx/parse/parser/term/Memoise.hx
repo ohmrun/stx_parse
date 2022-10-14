@@ -9,7 +9,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
   function genKey(pos : Int) {  
     return this.uid+"@"+pos;
   }
-  @:privateAccess inline function apply(ipt:ParseInput<I>):ParseResult<I,O>{
+  @:privateAccess public inline function apply(ipt:ParseInput<I>):ParseResult<I,O>{
     #if debug __.log().debug('memoise'); #end
     final memo = delegation.recall(genKey, ipt);
     #if debug __.log().debug(_ -> _.thunk(() -> 'memoise:recalled ${memo.is_defined()}')); #end
