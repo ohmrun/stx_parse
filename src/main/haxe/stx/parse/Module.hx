@@ -12,6 +12,12 @@ class Module extends Clazz{
 	public inline function id(str:String):Parser<String,String>{
 		return Identifier(str);
 	}
+	public inline function code(int:Int):Parser<String,String>{
+		return CharCode(int);
+	}
+	public inline function range(start:Int,finish:Int):Parser<String,String>{
+		return Range(start,finish);
+	}
 	public inline function alts<I,O>(arr:Cluster<Parser<I,O>>){
     return arr.lfold1((next,memo:Parser<I,O>) -> Or(memo,next).asParser());
 	}

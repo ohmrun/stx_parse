@@ -70,7 +70,6 @@ class Parse{
 
 	static public var gap					= tab.or(space);
 	static public var whitespace	= Range(0, 32).tagged('whitespace');
-	
 
 	//static public var camel 			= lower.and_with(word, mergeString);
 	static public var word				= lower.or(upper).one_many().tokenize();//[a-z]*

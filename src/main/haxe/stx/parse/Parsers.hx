@@ -124,5 +124,8 @@ class Parsers{
   static public inline function Position<O>(p:Parser<String,O>,?pos:Pos):Parser<String,O>{
 		return new stx.parse.parser.term.Position(p,pos).asParser();
 	}
+  static public function CharCode(i:Int):Parser<String,String>{
+		return new stx.parse.parser.term.CharCode(i).asParser();
+	}	
 }
 
