@@ -1,3 +1,4 @@
+default: test-interp
 unit:
   clear && hx build unit
 test-interp:

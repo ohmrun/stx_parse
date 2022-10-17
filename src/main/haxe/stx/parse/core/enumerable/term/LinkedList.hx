@@ -50,7 +50,7 @@ class LinkedList<T> extends EnumerableCls<StxLinkedList<T>,T>{
       Val(this.data.head());
     }
   }
-  public function asEnumerable():Enumerable<StxLinkedList<T>,T>{
-    return this;
-  }
+  public function copy(?index:Int):Enumerable<StxLinkedList<T>,T>{
+		return new LinkedList(this.data,__.option(index).defv(this.index)).asEnumerable();
+	}
 }

@@ -47,7 +47,7 @@ class ParseInputCls<I>{
   }
 }
 
-@:forward(memo,tag,head,inside,push,pop)abstract ParseInput<I>(ParseInputCls<I>) from ParseInputCls<I>{
+@:forward(copy,memo,tag,head,inside,push,pop)abstract ParseInput<I>(ParseInputCls<I>) from ParseInputCls<I>{
   @:noUsing static public function lift<I>(self:ParseInputCls<I>):ParseInput<I>{
     return self;
   }

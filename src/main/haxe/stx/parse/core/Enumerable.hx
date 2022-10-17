@@ -11,6 +11,9 @@ interface EnumerableApi<C,T>{
 
 	public var index(default,null)	: Int;
 
+	public function zero():Enumerable<C,T>;
+	public function copy(?index:Int):Enumerable<C,T>;
+
 	public function head():Chunk<T,ParseFailureCode>;
 	public function take(?len : Null<Int>):C;
 
@@ -25,6 +28,8 @@ interface EnumerableApi<C,T>{
 	//public function append(v:T):Enumerable<C,T>;
 	//public function concat(e:Enumerable<Dynamic || C ,T>):???
 	public function is_end():Bool;
+
+	public function asEnumerable():Enumerable<C,T>;
 } 
 
 @:forward abstract Enumerable<C,T>(EnumerableApi<C,T>) from EnumerableApi<C,T> to EnumerableApi<C,T>{
@@ -55,10 +60,17 @@ abstract class EnumerableCls<C,T> implements EnumerableApi<C,T>{
 		this.data 	= data;
 		this.index 	= index;
 	}
+	public function zero():Enumerable<C,T>{
+		return copy(0);
+	}
 	abstract public function is_end():Bool;
 	abstract public function match(fn:T -> Bool):Bool;
 	abstract public function prepend(v:T):Enumerable<C,T>;
 	abstract public function head():Chunk<T,ParseFailureCode>;
 	abstract public function drop(n:Int):Enumerable<C,T>;
 	abstract public function take(?len : Null<Int>) : C;
+	abstract public function copy(?index:Int):Enumerable<C,T>;
+	public function asEnumerable():Enumerable<C,T>{
+		return this;
+	}
 } 

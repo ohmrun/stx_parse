@@ -25,6 +25,9 @@ class Array<T> extends EnumerableCls<StdArray<T>, T > {
 	public function drop(i:Int):Enumerable<StdArray<T>,T>{
 		return new Array(this.data,this.index + i);
 	}
+	public function copy(?index:Int):Enumerable<StdArray<T>, T >{
+		return new Array(this.data,__.option(index).defv(this.index)).asEnumerable();
+	}
 	public function head():Chunk<T,ParseFailureCode>{
 		return if(index >= this.data.length){
 			End(__.fault().of(E_Parse_Eof));

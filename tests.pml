@@ -10,6 +10,6 @@
 (
   "bootstrap"
     include (
-      ("stx.parse.test.OneManyTest" include "test_fail_empty")
+      ("stx.parse.test.PositionTest" include "test")
     )
 )

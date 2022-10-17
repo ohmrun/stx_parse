@@ -121,5 +121,8 @@ class Parsers{
   static public inline function Until<I,O>(p:Parser<I,O>,?pos:Pos):Parser<I,Cluster<O>>{
 		return new stx.parse.parser.term.Until(p,pos).asParser();
 	}
+  static public inline function Position<O>(p:Parser<String,O>,?pos:Pos):Parser<String,O>{
+		return new stx.parse.parser.term.Position(p,pos).asParser();
+	}
 }
 

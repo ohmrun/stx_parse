@@ -10,7 +10,9 @@ class Suite{
       new LiteralTest(),
       new LookaheadTest(),
       new ManyTest(),
-      new OneManyTest()
+      new OneManyTest(),
+      new AndTest(),
+      new PositionTest()
     ];
   }
 }

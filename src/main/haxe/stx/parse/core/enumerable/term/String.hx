@@ -37,6 +37,9 @@ class String extends EnumerableCls<StdString,StdString>{
 			Val(this.data.charAt(index));
 		}
 	}
+	public function copy(?index:Int):Enumerable<StdString,StdString>{
+		return new String(this.data,__.option(index).defv(this.index)).asEnumerable();
+	}
 	public function toString(){
 		return 'Enumerable($data)';
 	}
