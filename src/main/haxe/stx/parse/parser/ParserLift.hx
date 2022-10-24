@@ -31,7 +31,7 @@ class ParserLift{
   static public inline function and_seq<I,T>(pI:Parser<I,T>,p2 : Parser<I,T>):Parser<I,Cluster<T>>{
     return AnonWith(pI,p2,(l:T,r:T) -> [l,r]).asParser();
   }
-  //@:native("__and") // Prevent a bug with hxcpp
+  @:native("__and") // Prevent a bug with hxcpp
   static public inline function _and<I,T,U>(pI:Parser<I,T>, p2 : Parser<I,U>):Parser<I,U> {
     return AndR(pI,p2).asParser();
   }
@@ -93,7 +93,7 @@ class ParserLift{
   static public inline function option<I,T>(p:Parser<I,T>):Parser<I,StdOption<T>>{
     return new Parser(new stx.parse.parser.term.Option(p));
   }
-  static public function inspect<I,O>(parser:Parser<I,O>,pre:ParseInput<I>->Void,post:ParseResult<I,O>->Void):Parser<I,O>{
+  static public function inspect<I,O>(parser:Parser<I,O>,?pre:ParseInput<I>->Void,?post:ParseResult<I,O>->Void):Parser<I,O>{
     return Inspect(parser,pre,post).asParser();
   }
   static public function lookahead<I,O>(p:Parser<I,O>):Parser<I,O>{

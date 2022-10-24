@@ -19,17 +19,21 @@ import stx.parse.Parsers.*;
     var idx    = 1;
     var failed = false;
 
+    #if debug
     __.log().trace(ok);
+    #end
     //trace(ok);
     if(ok){
       while(true){
-        __.log().trace(data);
+        #if debug__.log().blank(data); #end
         final val = code(data,idx);
+        #if debug
         __.log().trace('$val ${data.substr(idx,1)}');
+        #end
         switch(val){
           case 92 :  
             if(code(data,idx+1) == q){
-              trace('step over');
+              #if debug __.log().trace('step over'); #end
               idx+=2;
             }else{
               idx+=1;

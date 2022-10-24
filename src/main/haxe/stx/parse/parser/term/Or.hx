@@ -18,7 +18,9 @@ class Or<P,R> extends ParserCls<P,R>{
     return switch(result.is_ok()){
       case true   : result;
       case false  : 
+        #if debug
         __.log().trace(_ -> _.pure('try $rhs'));
+        #end
         rhs.apply(input);
     }
   }

@@ -125,7 +125,7 @@ class LiftParse{
     return Refuse.pure(ParseFailure.make(@:privateAccess rest.content.index,message,fatal));
   }
   static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
-    __.log().trace(_ -> _.pure(@:privateAccess ipt.content.data));
+    #if debug __.log().trace(_ -> _.pure(@:privateAccess ipt.content.data)); #end 
     var data : String = (cast ipt).content.data;
     if(data == null){
       data = "";

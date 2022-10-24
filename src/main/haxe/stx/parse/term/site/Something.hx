@@ -5,7 +5,9 @@ class Something<I:{ site : Site }> extends stx.parse.parser.term.Sync<String,Str
     return if(input.is_end()){
       input.erration('EOF').failure(input);
     }else{
+      #if debug
       __.log().trace('${input.head().def(null)}');
+      #end
       input.head().fold(
         v 	-> input.tail().ok(v),
         e   -> e.toParseFailure_with(input,false).failure(input),

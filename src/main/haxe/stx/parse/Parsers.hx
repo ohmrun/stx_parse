@@ -127,5 +127,8 @@ class Parsers{
   static public function CharCode(i:Int):Parser<String,String>{
 		return new stx.parse.parser.term.CharCode(i).asParser();
 	}	
+  @:noUsing static inline public function Bag<I,O>(choices:Array<Parser<I,O>>):Parser<I,Cluster<O>>{
+    return new stx.parse.parser.term.Bag(choices).asParser();
+  }
 }
 

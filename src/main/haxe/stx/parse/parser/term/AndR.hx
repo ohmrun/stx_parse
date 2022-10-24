@@ -12,7 +12,9 @@ class AndR<I,T,U> extends With<I,T,U,U>{
     __.assert().exists(delegation);
   }
   public inline function transform(lhs:Null<T>,rhs:Null<U>){
-    __.log().trace(_ -> _.thunk(() -> '$lhs $rhs'));
+    #if debug 
+    __.log().trace(_ -> _.thunk(() -> '${delegation.fst()} $lhs ${delegation.snd()} $rhs'));
+    #end 
     return __.option(rhs);
   }
 }

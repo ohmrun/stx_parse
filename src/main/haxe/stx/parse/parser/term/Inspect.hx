@@ -3,7 +3,9 @@ package stx.parse.parser.term;
 class Inspect<I,O> extends Delegate<I,O>{
   private dynamic function prefix(input:ParseInput<I>){
     if(input.tag!=null){
+     #if debug 
       __.log().trace('${input.tag} "${input.head()}"',pos);
+     #end
     }
   }
   private dynamic function postfix(result:ParseResult<I,O>){

@@ -24,7 +24,7 @@ class Module extends Clazz{
 	public inline function when<I>(fn:I->Bool):Parser<I,I>{
 		return When(fn);
 	}
-	public inline function inspect(prefix,postfix,?pos:Pos){
+	public inline function inspect(?prefix,?postfix,?pos:Pos){
 		return Inspect(prefix,postfix,pos);
 	}
 }

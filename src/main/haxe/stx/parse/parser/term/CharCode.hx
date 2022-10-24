@@ -13,4 +13,8 @@ class CharCode extends Sync<String,String>{
       ()  -> ipt.no('code failed')
     );
   }
+  override public function toString(){
+    final v = String.fromCharCode(code);
+    return "'" + v + "'";
+  }
 }

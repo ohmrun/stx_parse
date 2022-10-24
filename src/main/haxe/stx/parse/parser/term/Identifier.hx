@@ -12,7 +12,9 @@ class Identifier extends Sync<String,String>{
     var offset  = ipt.offset;
     var string  = ipt.take(len);
 
+    #if debug
     __.log().trace('len=$len offset=$offset head:"$head" stamp:"$stamp" string:"$string"');
+    #end
     return if(string == stamp) {
       var next = ipt.drop(stamp.length);
       //trace(next);
