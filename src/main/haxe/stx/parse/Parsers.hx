@@ -49,6 +49,15 @@ class Parsers{
   @:noUsing static inline public function OneMany<I,T>(p: Parser<I,T>):Parser<I,Array<T>>{
     return new stx.parse.parser.term.OneMany(p).asParser();
   }
+  @:noUsing static inline public function Repeated<I,T>(p: Parser<I,T>,n):Parser<I,Array<T>>{
+    return new stx.parse.parser.term.Repeated(p,n).asParser();
+  }
+  @:noUsing static inline public function RepeatedUpto<I,T>(p: Parser<I,T>,n):Parser<I,Array<T>>{
+    return new stx.parse.parser.term.RepeatedUpto(p,n).asParser();
+  }
+  @:noUsing static inline public function RepeatedOnlyUpto<I,T>(p: Parser<I,T>,n):Parser<I,Array<T>>{
+    return new stx.parse.parser.term.RepeatedOnlyUpto(p,n).asParser();
+  }
   @:noUsing static inline public function Eof<I,O>():Parser<I,O>{
     return new stx.parse.parser.term.Eof().asParser();
   }

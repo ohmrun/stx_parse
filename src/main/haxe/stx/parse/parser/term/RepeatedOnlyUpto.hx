@@ -1,8 +1,16 @@
 package stx.parse.parser.term;
 
-class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
-  public function new(delegation:Parser<I,O>,?id:Pos){
-    #if test
+/**
+  Will only parse inner between 1 and number times, won't try more.
+**/
+class RepeatedOnlyUpto<I,O> extends Base<I,Array<O>,Parser<I,O>>{
+  final number : Int;
+
+  public function new(delegation:Parser<I,O>,number:Int,?id:Pos){
+    this.number = number;
+    //__.assert(this.number).gt_eq(1);
+
+    #if debug
     __.assert(id).exists(delegation);
     #end
     super(delegation,id);
@@ -17,6 +25,7 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
     #end
   }
   public function apply(inputI:ParseInput<I>):ParseResult<I,Array<O>>{
+    var count = 0;
     function rec(inputII:ParseInput<I>,arr:Array<O>){
       final res = delegation.apply(inputII);
       #if debug
@@ -24,26 +33,35 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
       __.log().trace('${res.error}');
       __.log().trace('$arr');
       #end
+      __.log().blank(count);
+      __.log().blank(res.is_ok());
       return switch(res.is_ok()){
         case true : 
-          #if debug __.log().trace('${res.value}'); #end 
-          switch(res.value){
-            case Some(x) : arr.push(x); null;
-            default : 
+          count++;
+          if (count == number){
+            inputII.ok(arr); 
+          }else{
+            #if debug __.log().trace('${res.value}'); #end 
+            switch(res.value){
+              case Some(x) : arr.push(x); null;
+              default : 
+            }
+            __.log().debug('${res}');
+            return rec(res.asset,arr);
           }
-          return rec(res.asset,arr);
         case false : 
           if(res.is_fatal()){
             inputI.erration('failed many ${delegation}',true).concat(res.error).failure(inputI);
           }else{
             #if debug __.log().trace(_ -> _.thunk( () -> arr)); #end
-            inputII.ok(arr); 
+            if(count <= number){
+              inputII.ok(arr); 
+            }else{
+              inputI.no('Should repeat $number times, but repeated $count times');
+            }
           }
       }
     }
     return rec(inputI,[]);
-  }
-  override public function toString(){
-    return 'Many($delegation)';
   }
 }
