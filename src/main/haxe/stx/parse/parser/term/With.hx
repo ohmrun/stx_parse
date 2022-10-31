@@ -28,6 +28,8 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
     //#end
     return switch(res.is_ok()){
       case true: 
+        __.assert().exists(delegation);
+        __.assert().exists(delegation.snd());
         final resI = delegation.snd().apply(res.asset);
         #if debug
         __.log().trace(_ -> _.thunk(

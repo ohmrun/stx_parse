@@ -1,10 +1,10 @@
 package stx.parse.parser.term;
 
 /**
-  Parses delegation `number` times, if delegation parse fails while `x < number`, `Repeated` will fail.
-  If `number + 1` delegation attempt succeeds, `Repeated` will fail.
+  Will only continue delegate parses `number` times.
+  Will not attempt delegate parse beyond.
 **/
-class Repeated<I,O> extends Base<I,Array<O>,Parser<I,O>>{
+class RepeatedOnly<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   final number : Int;
 
   public function new(delegation:Parser<I,O>,number:Int,?id:Pos){
@@ -38,15 +38,15 @@ class Repeated<I,O> extends Base<I,Array<O>,Parser<I,O>>{
       __.log().blank(res.is_ok());
       return switch(res.is_ok()){
         case true : 
-          if (count > number){
-            inputI.no('Should repeat $number times, but repeated $count times');
+          count++;
+          #if debug __.log().trace('${res.value}'); #end 
+          switch(res.value){
+            case Some(x)  : arr.push(x); null;
+            default       : 
+          }
+          if (count == number){
+            res.asset.ok(arr); 
           }else{
-            count++;
-            #if debug __.log().trace('${res.value}'); #end 
-            switch(res.value){
-              case Some(x) : arr.push(x); null;
-              default : 
-            }
             __.log().debug('${res}');
             return rec(res.asset,arr);
           }
@@ -56,7 +56,7 @@ class Repeated<I,O> extends Base<I,Array<O>,Parser<I,O>>{
           }else{
             #if debug __.log().trace(_ -> _.thunk( () -> arr)); #end
             if(count == number){
-              res.asset.ok(arr); 
+              inputII.ok(arr); 
             }else{
               inputI.no('Should repeat $number times, but repeated $count times');
             }

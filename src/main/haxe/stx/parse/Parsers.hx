@@ -58,6 +58,9 @@ class Parsers{
   @:noUsing static inline public function RepeatedOnlyUpto<I,T>(p: Parser<I,T>,n):Parser<I,Array<T>>{
     return new stx.parse.parser.term.RepeatedOnlyUpto(p,n).asParser();
   }
+  @:noUsing static inline public function RepeatedOnly<I,T>(p: Parser<I,T>,n):Parser<I,Array<T>>{
+    return new stx.parse.parser.term.RepeatedOnly(p,n).asParser();
+  }
   @:noUsing static inline public function Eof<I,O>():Parser<I,O>{
     return new stx.parse.parser.term.Eof().asParser();
   }

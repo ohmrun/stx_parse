@@ -37,7 +37,7 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseFailure> & 
     return fromEquity(Equity._.map(this.toEquity(),opt -> opt.map(fn)));
   }
   public inline function is_ok(){
-    return !this.error.is_defined();
+    return this.error.is_defined() == false;
   }
   public inline function fails<Ri>():ParseResult<P,Ri>{
     return make(this.asset,None,this.error);

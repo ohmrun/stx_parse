@@ -13,7 +13,9 @@ abstract class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
   }
   inline public function apply(input:ParseInput<I>):ParseResult<I,U>{
     #if debug __.log().trace('$delegation then'); #end
+    __.assert().exists(delegation);
     final res = delegation.apply(input);
+    __.log().trace('$res');
     return switch(res.is_ok()){
       case true : 
         #if debug __.log().trace('then'); #end

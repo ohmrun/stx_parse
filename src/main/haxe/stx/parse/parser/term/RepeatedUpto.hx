@@ -1,8 +1,8 @@
 package stx.parse.parser.term;
 
 /**
-  Parses between 1 and number times.
-  If number + 1 attempt succeeds, the parser fails.
+  Succeeds if delegate parse succeeds between 1 and `number` times.
+  If attempt `number + 1` succeeds, `RepeateUpto` fails.
 **/
 class RepeatedUpto<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   final number : Int;
@@ -56,7 +56,7 @@ class RepeatedUpto<I,O> extends Base<I,Array<O>,Parser<I,O>>{
           }else{
             #if debug __.log().trace(_ -> _.thunk( () -> arr)); #end
             if(count <= number){
-              inputII.ok(arr); 
+              res.asset.ok(arr); 
             }else{
               inputI.no('Should repeat $number times, but repeated $count times');
             }

@@ -1,7 +1,8 @@
 package stx.parse.parser.term;
 
 /**
-  Will only parse inner between 1 and number times, won't try more.
+  Will only continue delegate parses between and`number` times.
+  Will not attempt delegate parse beyond.
 **/
 class RepeatedOnlyUpto<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   final number : Int;
@@ -38,14 +39,14 @@ class RepeatedOnlyUpto<I,O> extends Base<I,Array<O>,Parser<I,O>>{
       return switch(res.is_ok()){
         case true : 
           count++;
+          #if debug __.log().trace('${res.value}'); #end 
+          switch(res.value){
+            case Some(x) : arr.push(x); null;
+            default : 
+          }
           if (count == number){
-            inputII.ok(arr); 
+            res.asset.ok(arr); 
           }else{
-            #if debug __.log().trace('${res.value}'); #end 
-            switch(res.value){
-              case Some(x) : arr.push(x); null;
-              default : 
-            }
             __.log().debug('${res}');
             return rec(res.asset,arr);
           }
