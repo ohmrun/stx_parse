@@ -17,31 +17,38 @@ class Many<I,O> extends Base<I,Array<O>,Parser<I,O>>{
     #end
   }
   public function apply(inputI:ParseInput<I>):ParseResult<I,Array<O>>{
-    function rec(inputII:ParseInput<I>,arr:Array<O>){
-      final res = delegation.apply(inputII);
+    final arr   = [];
+    var out : Option<ParseResult<I,Array<O>>>     = None;
+    var ipt     = inputI;
+
+    function step():Void{
+      final res = delegation.apply(ipt);
       #if debug
       __.log().trace('$delegation');
       __.log().trace('${res.error}');
       __.log().trace('$arr');
       #end
-      return switch(res.is_ok()){
+      switch(res.is_ok()){
         case true : 
           #if debug __.log().trace('${res.value}'); #end 
           switch(res.value){
             case Some(x) : arr.push(x); null;
             default : 
           }
-          return rec(res.asset,arr);
+          ipt = res.asset;
         case false : 
           if(res.is_fatal()){
-            inputI.erration('failed many ${delegation}',true).concat(res.error).failure(inputI);
+            out = Some(inputI.erration('failed many ${delegation}',true).concat(res.error).failure(inputI));
           }else{
             #if debug __.log().trace(_ -> _.thunk( () -> arr)); #end
-            inputII.ok(arr); 
+            out = Some(ipt.ok(arr)); 
           }
       }
     }
-    return rec(inputI,[]);
+    while(!out.is_defined()){
+      step();
+    }
+    return out.defv(inputI.no('FAIL'));
   }
   override public function toString(){
     return 'Many($delegation)';

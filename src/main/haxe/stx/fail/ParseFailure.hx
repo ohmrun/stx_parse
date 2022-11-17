@@ -29,6 +29,6 @@ typedef ParseFailureDef = {
     return Defect.pure(this);
   }
   @:to public function toRefuse(){
-    return Refuse.make(Some(EXTERIOR(this)),None,null);
+    return Refuse.make(Some(EXTERNAL(this)),None,null);
   }
 }

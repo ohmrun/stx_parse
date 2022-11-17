@@ -179,7 +179,7 @@ class LiftParseFailure{
 				() -> true,
 				() -> next.data.fold(
 					ok -> switch(ok){
-						case EXTERIOR(x) : x.msg != ParseFailure.FAIL;
+						case EXTERNAL(x) : x.msg != ParseFailure.FAIL;
 						default : false;
 					},
 					() -> false

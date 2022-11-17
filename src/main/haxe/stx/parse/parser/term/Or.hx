@@ -9,7 +9,7 @@ class Or<P,R> extends ParserCls<P,R>{
     this.rhs = rhs;
     #if debug
     __.assert().exists(lhs);
-      trace(lhs);
+      __.log().trace('${lhs}');
     __.assert().exists(rhs);
     #end
   }

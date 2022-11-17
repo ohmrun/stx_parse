@@ -13,7 +13,6 @@ class When<I> extends SyncBase<I,I,I->Bool>{
      (e) -> e.toParseResult_with(input),
      ()   -> input.erration('When').failure(input)
     );
-    trace(result);
     return result;
   }
 }

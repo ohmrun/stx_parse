@@ -10,7 +10,7 @@ class Logging{
       #if (stx.parse.switches.debug == "true") 
         stx.Log.pkg(__.pkg());
       #else
-        stx.Log.void();
+        stx.Log.empty();
       #end
   }
 }
