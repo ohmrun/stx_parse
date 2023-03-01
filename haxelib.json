@@ -8,16 +8,16 @@
   "releasenote": "see CHANGELOG.md",
   "contributors": ["0b1kn00b"],
   "dependencies": {
-    "stx_pico"      : "git:https://github.com/ohmrun/stx_pico.git",
-    "stx_nano"      : "git:https://github.com/ohmrun/stx_nano.git",
-    "stx_fn"        : "git:https://github.com/ohmrun/stx_fn.git",
+    "stx_pico"      : "",
+    "stx_nano"      : "",
+    "stx_fn"        : "",
 
-    "stx_log"       : "git:https://github.com/ohmrun/stx_log.git",
-    "stx_assert"    : "git:https://github.com/ohmrun/stx_assert.git",
+    "stx_log"       : "",
+    "stx_assert"    : "",
 
     
-    "hre"            : "git:https://gitlab.com/demurgos/hre.git",
-    "fletcher"       : "git:https://github.com/ohmrun/fletcher.git" 
+    "hre"            : "",
+    "fletcher"       : "" 
   },
   "classPath": "src/main/haxe"
 }
