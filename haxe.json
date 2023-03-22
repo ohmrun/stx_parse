@@ -2,7 +2,7 @@
   "build" : {
     "-cp" : "src/main/haxe",
     "-lib" : [
-      "stx_pico","stx_nano", "stx_ds", "stx_assert", "stx_fn", "stx_test", "fletcher", "hre"
+      "stx_pico","stx_nano", "stx_ds", "stx_assert", "stx_fn", "fletcher", "hre"
     ],
     "-D" : [
       "no-deprecation-warnings" 
@@ -20,6 +20,8 @@
       }
     },
     "test" : {
+      "-cp" : "src/test/haxe",
+      "-L" : "stx_test",
       "-resource": [
         "src/main/resource/stx/parse/term/simple.json@simple",
         "haxe.json@haxe",
