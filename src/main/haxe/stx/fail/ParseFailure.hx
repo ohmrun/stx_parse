@@ -1,5 +1,11 @@
 package stx.fail;
 
+import stx.fail.ParseFailureCode;
+
+using stx.Pico;
+using stx.Fail;
+using stx.Nano;
+
 typedef ParseFailureDef = {
   public var idx(default,null)              : Int;
   public var msg(default,null)              : ParseFailureCode;

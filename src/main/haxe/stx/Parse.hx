@@ -1,5 +1,11 @@
 package stx;
 
+using stx.Pico;
+using stx.Fail;
+using stx.Nano;
+using stx.Parse;
+using stx.Fn;
+
 import stx.parse.Parsers.*;
 
 typedef LiftArrayReader       = stx.parse.lift.LiftArrayReader;
