@@ -12,10 +12,11 @@
 #       tags: backend security
 #       run: bundle audit
 #
-# pre-commit:
-#   parallel: true
-#   commands:
-#     eslint:
+pre-commit:
+  parallel: true
+  commands:
+    unit:
+      run: hx build unit
 #       glob: "*.{js,ts,jsx,tsx}"
 #       run: yarn eslint {staged_files}
 #     rubocop:
