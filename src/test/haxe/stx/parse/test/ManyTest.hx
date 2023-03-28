@@ -55,7 +55,7 @@ class ManyTest extends TestCase{
     var input 	= ''.reader();
 		var parser 	= Parsers.Anon((ipt) -> ipt.no("noes",true),Some("FATAL")).many();
 		var result  = parser.apply(input);
-    var error   = result.error.toIterable().toIter().map_filter(x -> x.data.flat_map(y -> y.exterior()));
+    var error   = result.error.toIterable().toIter().map_filter(x -> x.data.flat_map(y -> y.external()));
     for(e in error){
       alike(E_Parse_ParseFailed(null),e.msg);
     }

@@ -3,13 +3,16 @@ package stx.parse.term.json;
 import stx.parse.term.Json;
 import stx.parse.test.Suite;
 
+using stx.Log;
+using stx.Nano;
+using stx.Parse;
 using stx.Test;
 
 @:access(stx) class Test extends TestCase{
   static public function main(){
     final log = __.log().global;
-          log.includes.push("**/*");
-          log.level = TRACE;
+          //log.includes.push("**/*");
+          //log.level = TRACE;
     __.test().auto();
   }
   //public var github_author = __.resource("github_author").string();
@@ -38,7 +41,7 @@ using stx.Test;
     }
   }
   public function test_simple(){
-    var target = new Json().parser().apply(simple.reader());
+    var target = new stx.parse.term.Json().parser().apply(simple.reader());
     __.log().trace('$target');
   }
   public function testOneMany(){

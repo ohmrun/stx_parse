@@ -5,6 +5,7 @@ using stx.Fail;
 using stx.Nano;
 using stx.Parse;
 using stx.Fn;
+using stx.Log;
 
 import stx.parse.Parsers.*;
 

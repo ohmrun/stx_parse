@@ -1,0 +1,19 @@
+-main stx.parse.Test
+-cp src/main/haxe
+-cp src/test/haxe
+-lib stx_pico
+-lib stx_nano
+-lib stx_ds
+-lib stx_assert
+-lib stx_fn
+-lib fletcher
+-lib hre
+-D no-deprecation-warnings
+-D debug
+-D stx.parse.switches.debug=true
+-resource src/main/resource/stx/parse/term/simple.json@simple
+-resource haxe.json@haxe
+-resource tests.pml@tests
+-resource src/main/resource/literals.txt@literals
+--interp
+-L stx_test

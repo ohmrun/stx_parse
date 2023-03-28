@@ -13,7 +13,7 @@ class EofTest extends TestCase{
     final ipt = "x";
     final prs = Parsers.Eof();
     final out = prs.apply(ipt.reader());
-    final err = out.error.toIterable().toIter().map_filter(e -> e.data.flat_map(x -> x.exterior())).head();
+    final err = out.error.toIterable().toIter().map_filter(e -> e.data.flat_map(x -> x.external())).head();
     for(e in err){
       same(E_Parse_NotEof,e.msg);
     }

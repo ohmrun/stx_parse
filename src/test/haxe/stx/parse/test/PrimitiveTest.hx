@@ -20,7 +20,7 @@ class PrimitiveTest extends TestCase{
 		final parser = Parsers.Always();
 		final reader = "".reader();
 		final result = parser.apply(reader);
-		final iter 	 = result.error.toIterable().toIter().map_filter(x -> x.data.flat_map(y -> y.exterior()));
+		final iter 	 = result.error.toIterable().toIter().map_filter(x -> x.data.flat_map(y -> y.external()));
 		for( e in iter ){
 			same(E_Parse_Eof,e.msg);
 		}
