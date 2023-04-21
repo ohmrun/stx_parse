@@ -31,8 +31,8 @@ class Test {
 				// f.includes.push('stx/stream');
 				// f.includes.push('stx/test');
 				// f.includes.push('stx/stream/DEBUG');
-		__.test().auto();
-			[
+		//__.test().auto();
+		__.test().run([
 				//,
 				//new WithTest(),
 				//new EofTest(),
@@ -55,7 +55,7 @@ class Test {
 				// new RepSepTest(),
 				// new Issue1(),
 				// new Issue2(),
-			];
+			],[]);
 		//new SimpleRecursionLangTest().test_one();
 	} 
 }

@@ -1,8 +1,21 @@
-Left Recursive Parser Combinator Library.
+# stx_parse
+## Left Recursive Parser Combinator Library.
+
+## Usage
+
+```haxe
+  /**
+   * A parser maps an Input to a Result
+   */
+  public function apply(p:ParseInput<I>):ParseResult<I,O>;
+```
+21/04/2023
+  Going to require 4.3.0 now because finally the regular expression libray is standardised across targets.
+  Removed asynchronicity due to performance, you can always patch it in yourself, it just doesn't bode well to 
+  add extra function calls at this level.
 
 21/07/2021
-  A few bugs somewhere, but basically supports asyncronicity via the `Fletcher` library.
-  Asynchronous Left Recursive Pack Rat Parser
+  <s>Asynchronous</s> Left Recursive Pack Rat Parser
    
 25/06/2020
   - Now supports incremental data, asyncronous Parsers
