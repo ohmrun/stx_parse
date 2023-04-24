@@ -16,8 +16,8 @@ class StringParsers{
 		return Range(start,finish);
   }
   static public var boolean 				= id('true').or(id('false'));
-	static public var integer     		= reg("^[\\+\\-]?\\d+");
-  static public var float 					= reg("^[\\+\\-]?\\d+(\\.\\d+)?");
+	static public var integer     		= reg("^[+-]?\\d+");
+  static public var float 					= reg("^[+-]?\\d+(\\.\\d+)?");
   
 	static public function primitive():Parser<String,Primitive>{
 		return boolean.then((x) -> PBool(x == 'true' ? true : false))

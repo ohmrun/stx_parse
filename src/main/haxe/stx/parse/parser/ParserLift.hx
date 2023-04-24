@@ -133,7 +133,7 @@ class ParserLift{
   static public function parse<P,R>(self:Parser<P,R>,input:ParseInput<P>){
     return (
       self.apply(input)
-          .toRes()
+          .toUpshot()
           .errata(_ -> __.fault().explain(_ -> _.e_parse_failure()))
     );
   }

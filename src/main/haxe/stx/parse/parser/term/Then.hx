@@ -20,7 +20,7 @@ abstract class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
       case true : 
         #if debug __.log().trace('then'); #end
         final result = res.map(transform);
-        #if debug __.log().trace('thened ${result.toRes()}'); #end
+        #if debug __.log().trace('thened ${result.toUpshot()}'); #end
         result;
       case false : res.fails();
     }

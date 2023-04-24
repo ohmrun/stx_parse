@@ -58,8 +58,8 @@ typedef ParseResultDef<P,R> = EquityDef<ParseInput<P>,Option<R>,ParseFailure> & 
   // public function errata(fn:Refuse<ParseFailure>->Refuse<ParseFailure>):ParseResult<P,R>{
   //   return _.errata(this,fn);
   // }
-  public function toRes(){
-    return _.toRes(this);
+  public function toUpshot(){
+    return _.toUpshot(this);
   }
 }
 class ParseResultLift{
@@ -89,7 +89,7 @@ class ParseResultLift{
   static public inline function fudge<P,R>(self:ParseResult<P,R>):R{
     return self.value.fudge();
   }
-  static public inline function toRes<P,R>(self:ParseResult<P,R>):Res<Option<R>,ParseFailure>{
+  static public inline function toUpshot<P,R>(self:ParseResult<P,R>):Upshot<Option<R>,ParseFailure>{
     return switch(self.is_ok()){
       case true   : __.accept(self.value);
       case false  : __.reject(self.toDefect().toRefuse());
