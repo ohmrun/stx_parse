@@ -33,7 +33,7 @@ class Test {
 				// f.includes.push('stx/stream/DEBUG');
 		//__.test().auto();
 		__.test().run([
-				//,
+			new RegexTest(),
 				//new WithTest(),
 				//new EofTest(),
 				//new ManyTest(),

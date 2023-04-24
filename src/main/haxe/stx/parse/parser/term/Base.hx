@@ -5,7 +5,7 @@ abstract class Base<I,O,T> extends ParserCls<I,O>{
   public var delegation(default,null)        : T;
 
   public function new(?delegation:T,?tag:Option<String>,?pos:Pos){
-    super(pos);
+    super(tag,pos);
     this.delegation = delegation;
   }
   function check(){}

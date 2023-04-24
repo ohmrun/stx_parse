@@ -38,7 +38,7 @@ class ManyTest extends TestCase{
   // }
 	public function test_eof_ok(){
 		var input 	= 'aa'.reader();
-		var parser 	= __.parse().id('a').many().and_(Parsers.Eof());
+		var parser 	= SParse.id('a').many().and_(Parsers.Eof());
 		var result  = parser.apply(input);
 		for(x in result.value){
       same(['a','a'].imm(),x);
@@ -47,7 +47,7 @@ class ManyTest extends TestCase{
   }
   public function test_success_none(){
 		var input 	= ''.reader();
-		var parser 	= __.parse().id('a').many().and_(Parsers.Eof());
+		var parser 	= SParse.id('a').many().and_(Parsers.Eof());
 		var result  = parser.apply(input);
 		same(None,result.value);
   }

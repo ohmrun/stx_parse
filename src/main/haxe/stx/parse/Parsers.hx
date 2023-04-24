@@ -4,6 +4,12 @@ class Parsers{
   @:noUsing static inline public function Anon<P,R>(fn:ParseInput<P> -> ParseResult<P,R>,tag:Option<String>,?pos:Pos):Parser<P,R>{
     return new stx.parse.parser.term.Anon(fn,tag,pos).asParser();
   }
+  @:noUsing static inline public function Equals<P>(v:P){
+    return new stx.parse.parser.term.Equals(v).asParser();
+  }
+  @:noUsing static inline public function Sub<I,O,Oi,Oii>(p:Parser<I,O>,fn:Option<O>->Couple<ParseInput<Oi>,Parser<Oi,Oii>>){
+    return new stx.parse.parser.term.Sub(p,fn).asParser();
+  }
   @:noUsing static inline public function SyncAnon<P,R>(fn:ParseInput<P> -> ParseResult<P,R>,tag:Option<String>,?pos:Pos):Parser<P,R>{
     return new stx.parse.parser.term.SyncAnon(fn,tag,pos).asParser();
   }

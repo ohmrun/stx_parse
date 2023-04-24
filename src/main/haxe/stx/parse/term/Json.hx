@@ -1,5 +1,6 @@
 package stx.parse.term;
 
+import stx.parse.parsers.StringParsers as SParse;
 import stx.parse.Parsers.*;
 
 enum JsonSum<T>{
@@ -39,9 +40,9 @@ class Json{
   static var comma_p          = spaced(Identifier(","));
 
   static function spaced<I,T>(p : Parser<String,T>) 
-      return Parse.whitespace.many()._and(p).tagged('spaced: (${p.tag.defv('')})');
+      return SParse.whitespace.many()._and(p).tagged('spaced: (${p.tag.defv('')})');
 
-  static var ident_p          = spaced(Parse.literal);
+  static var ident_p          = spaced(SParse.literal);
   //Parse.valid.or('-'.id().one_many().token())
   //static var lit_content_p    = Identifier('"').not()._and(Something()).many().tokenize().tagged("lit_content");
   //.static var ident_p          = spaced(Identifier('"'))._and(lit_content_p).and_(Identifier('"'));
@@ -50,7 +51,7 @@ class Json{
     = spaced(Range(48, 57).one_many().tokenize());
 
   static var data_p : Parser<String,JsonSum<String>>       
-    = ident_p.or(integer).or(spaced(Parse.boolean)).or(nada).then(JsData).tagged("data_p");
+    = ident_p.or(integer).or(spaced(SParse.boolean)).or(nada).then(JsData).tagged("data_p");
     
   function value_p():Parser<String,JsonSum<String>> 
     return [parser(), data_p, array_p()].ors(); 

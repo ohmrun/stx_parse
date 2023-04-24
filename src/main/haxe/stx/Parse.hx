@@ -29,6 +29,9 @@ typedef ParseFailureCode 			= stx.fail.ParseFailureCode;
 typedef ParseFailureCodeSum   = stx.fail.ParseFailureCode.ParseFailureCodeSum;
 
 class Parse{
+	static public function string(self:stx.parse.module.Parsers){
+		return stx.parse.parsers.StringParsers;
+	}
 	@:noUsing static public function mergeString(a:String,b:String){
 		return a + b;
 	}
@@ -46,67 +49,6 @@ class Parse{
 			(t) -> [t].concat(b),
 			() 	-> b
 		);
-	}
-	static public var boolean 		= __.parse().id('true').or(__.parse().id('false'));
-	static public var integer     = __.parse().reg("^[\\+\\-]?\\d+");
-  static public var float 			= __.parse().reg("^[\\+\\-]?\\d+(\\.\\d+)?");
-  
-	static public function primitive():Parser<String,Primitive>{
-		return boolean.then((x) -> PBool(x == 'true' ? true : false))
-		.or(float.then(Std.parseFloat.fn().then(x -> PSprig(Byteal(NFloat(x))))))
-		.or(integer.then((str) -> PSprig(Byteal(NFloat((__.option(Std.parseInt(str)).defv(0)))))))
-		.or(literal.then(x -> PSprig(Textal(x))));
-	}
-		
-
-	static public var lower				= Range(97, 122);
-	static public var upper				= Range(65, 90);
-	static public var alpha				= Or(upper,lower);
-	static public var digit				= Range(48, 57);
-	static public var alphanum		= alpha.or(digit);
-	static public var ascii				= Range(0, 255);
-	
-	static public var valid				= alpha.or(digit).or(__.parse().id('_'));
-	
-	static public var tab					= __.parse().id('	');
-	static public var space				= __.parse().id(' ');
-	
-	static public var nl					= __.parse().id('\n');
-	static public var cr					= __.parse().id('\r\n');
-	static public var cr_or_nl		= nl.or(cr);
-
-	static public var gap					= tab.or(space);
-	static public var whitespace	= Range(0, 32).tagged('whitespace');
-
-	//static public var camel 			= lower.and_with(word, mergeString);
-	static public var word				= lower.or(upper).one_many().tokenize();//[a-z]*
-	static public var quote				= __.parse().id('"').or(__.parse().id("'"));
-	static public var escape			= __.parse().id('\\');
-	static public var not_escaped	= __.parse().id('\\\\');
-	
-	static public var x 					= not_escaped.not()._and(escape);
-	static public var x_quote 		= x._and(quote);
-
-	static public var literal 		= new stx.parse.term.Literal().asParser();
-	static public var symbol 			= Parsers.When(x -> StringTools.fastCodeAt(x,0) >= 33).one_many().tokenize().tagged('symbol');
-
-	static public	final brkt_l_square = __.parse().id('[');
-	static public	final brkt_r_square = __.parse().id(']');
-
-	static public function spaced( p : Parser<String,String> ) {
-		return p.and_(gap.many());
-	}
-	static public function returned(p : Parser<String,String>) {
-		return p.and_(whitespace.many());
-	}
-	@:noUsing static public function eq<I>(v:I):Parser<I,I>{
-		return SyncAnon(
-			(input:ParseInput<I>) -> input.head().fold(
-				(vI) 	-> v == vI ? input.tail().ok(vI) : input.erration('eq').failure(input),
-				(e) 	-> e.toParseFailure_with(input,false).failure(input),
-				() 		-> input.erration(E_Parse_ParseFailed('eq')).failure(input)
-			)
-		,'eq').asParser();
 	}
 }
 class LiftParse{
@@ -141,30 +83,7 @@ class LiftParse{
     return regex.exec(data);
   }
 	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<ParseInput<Oi>,Parser<Oi,Oii>>){
-		return Anon(
-			function(input:ParseInput<I>):ParseResult<I,Oii>{
-				final res 		= p.apply(input);
-				return switch(res.is_ok()){
-					case true : 
-						final out 		= p0(res.value);
-						final reader 	= out.fst();
-						final parser 	= out.snd(); 
-						final resII 	= parser.apply(reader);
-						final inner 	= switch(resII.is_ok()){
-							case true : 
-								switch(resII.value){
-									case Some(ok) : res.asset.ok(ok);
-									case None  		: res.asset.nil();
-								}
-							case false : 
-								ParseResult.make(input,None,resII.error);
-						}
-						inner;
-					case false : res.fails();
-				}
-			},
-			Some('sub')
-		);
+		return stx.parse.Parsers.Sub(p,p0);
 	}
 	static public inline function tagged<I,T>(p : Parser<I,T>, tag : String):Parser<I,T> {
     p.tag = Some(tag);

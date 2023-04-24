@@ -1,5 +1,6 @@
 package stx.parse.test;
 
+import stx.parse.parsers.StringParsers in SParse;
 
 using stx.Pico;
 using stx.Nano;

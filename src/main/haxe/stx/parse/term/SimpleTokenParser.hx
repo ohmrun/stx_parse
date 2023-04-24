@@ -1,5 +1,6 @@
 package stx.parse.term;
 
+import stx.parse.parsers.StringParsers in SParse;
 import stx.parse.Parsers.*;
 
 enum SimpleTokenSum{
@@ -10,7 +11,7 @@ enum SimpleTokenSum{
   public function new(){
     this = p_parse; 
   }
-  static public var p_path  = Rep1Sep(Parse.valid.one_many().tokenize(),Identifier('.'));
+  static public var p_path  = Rep1Sep(SParse.valid.one_many().tokenize(),Identifier('.'));
   static public var p_token = Identifier('$')._and(Identifier('{'))._and(p_path).and_(Identifier('}'));
 
   static public var p_parse = 

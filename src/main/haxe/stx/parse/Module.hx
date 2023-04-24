@@ -6,18 +6,6 @@ class Module extends Clazz{
 	public function greedy<I,O>(prs:Parser<I,O>):Parser<I,Cluster<O>>{
 		return prs.many().and_(Eof());
 	}
-	public inline function reg(str:String):Parser<String,String>{
-		return Regex(str).asParser();
-	}
-	public inline function id(str:String):Parser<String,String>{
-		return Identifier(str);
-	}
-	public inline function code(int:Int):Parser<String,String>{
-		return CharCode(int);
-	}
-	public inline function range(start:Int,finish:Int):Parser<String,String>{
-		return Range(start,finish);
-	}
 	public inline function alts<I,O>(arr:Cluster<Parser<I,O>>){
     return arr.lfold1((next,memo:Parser<I,O>) -> Or(memo,next).asParser()).defv(
 			Parsers.Failed('not one alternative specified').asParser()
@@ -28,5 +16,8 @@ class Module extends Clazz{
 	}
 	public inline function inspect(?prefix,?postfix,?pos:Pos){
 		return Inspect(prefix,postfix,pos);
+	}
+	public function parsers(){
+		return new stx.parse.module.Parsers();
 	}
 }

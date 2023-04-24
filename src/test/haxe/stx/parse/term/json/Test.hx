@@ -21,7 +21,7 @@ using stx.Test;
   public var haxe   = __.resource("haxe").string();
 
   public function test_literal(){
-    var target = Parse.literal.apply('"helsldf\\"o"'.reader());
+    var target = __.parse().parsers().string().literal.apply('"helsldf\\"o"'.reader());
     __.log().trace('$target');
     for(v in target.value){
       same('helsldf\\"o',v);
@@ -34,7 +34,7 @@ using stx.Test;
     }
   }
   public function test_zero_length_literal(){
-    var target = Parse.literal.apply('""'.reader());
+    var target = __.parse().parsers().string().literal.apply('""'.reader());
     __.log().trace('${target.value}');
     for(x in target.value){
       same("",x);
