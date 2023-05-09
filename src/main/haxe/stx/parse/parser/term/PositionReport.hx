@@ -2,7 +2,7 @@ package stx.parse.parser.term;
 
 using StringTools;
 
-class PositionReport<O> extends SyncBase<String,O,Noise>{
+class PositionReport<O> extends SyncBase<String,O,Nada>{
   final cursor : Int;
   final error  : String;
 

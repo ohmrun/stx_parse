@@ -1,6 +1,6 @@
 package stx.parse.parser.term;
 
-class Pure<I,O> extends SyncBase<I,O,Noise>{
+class Pure<I,O> extends SyncBase<I,O,Nada>{
   var value : ParseResult<I,O>;
   public function new(value,?pos){
     this.value = value;

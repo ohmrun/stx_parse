@@ -136,8 +136,8 @@ class Parsers{
   static public inline function Not<I,O>(p:Parser<I,O>,?pos:Pos):Parser<I,O>{
 		return new stx.parse.parser.term.Not(p,pos).asParser();
 	}
-  static public inline function Until<I,O>(p:Parser<I,O>,?pos:Pos):Parser<I,Cluster<O>>{
-		return new stx.parse.parser.term.Until(p,pos).asParser();
+  static public inline function While<I,O>(p:Parser<I,O>,?pos:Pos):Parser<I,Cluster<O>>{
+		return new stx.parse.parser.term.While(p,pos).asParser();
 	}
   static public inline function Position<O>(p:Parser<String,O>,?pos:Pos):Parser<String,O>{
 		return new stx.parse.parser.term.Position(p,pos).asParser();

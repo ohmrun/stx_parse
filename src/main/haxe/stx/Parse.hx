@@ -73,15 +73,6 @@ class LiftParse{
   static public function erration<P>(rest:ParseInput<P>,message:ParseFailureCode,fatal=false):Refuse<ParseFailure>{
     return Refuse.pure(ParseFailure.make(@:privateAccess rest.content.index,message,fatal));
   }
-  static public function parsify(regex:hre.RegExp,ipt:ParseInput<String>):hre.Match{
-    #if debug __.log().trace(_ -> _.pure(@:privateAccess ipt.content.data)); #end 
-    var data : String = (cast ipt).content.data;
-    if(data == null){
-      data = "";
-    }
-    data = data.substr(ipt.offset);
-    return regex.exec(data);
-  }
 	static public function sub<I,O,Oi,Oii>(p:Parser<I,O>,p0:Option<O>->Couple<ParseInput<Oi>,Parser<Oi,Oii>>){
 		return stx.parse.Parsers.Sub(p,p0);
 	}

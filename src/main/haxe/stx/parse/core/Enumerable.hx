@@ -36,26 +36,14 @@ interface EnumerableApi<C,T>{
   public function new(self) this = self;
   @:noUsing static public function lift<C,T>(self:EnumerableApi<C,T>):Enumerable<C,T> return new Enumerable(self);
   
-	@:deprecated
-	@:noUsing static public function array<T>(array:std.Array<T>):Enumerable<std.Array<T>,T>{
-		return new Array(array);
-	}
 	@:noUsing static public function Array<T>(array:std.Array<T>):Enumerable<std.Array<T>,T>{
 		return new Array(array);
 	}
 	@:noUsing static public function String(string:std.String):Enumerable<std.String,std.String>{
 		return new String(string);
 	}
-	@:deprecated
-	@:noUsing static public function string(string:std.String):Enumerable<std.String,std.String>{
-		return new String(string);
-	}
 
 	@:noUsing static public function LinkedList<T>(list:stx.ds.LinkedList<T>):Enumerable<stx.ds.LinkedList<T>,T>{
-		return new LinkedList(list);
-	}
-	@:deprecated
-	@:noUsing static public function linked_list<T>(list:stx.ds.LinkedList<T>):Enumerable<stx.ds.LinkedList<T>,T>{
 		return new LinkedList(list);
 	}
   

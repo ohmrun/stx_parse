@@ -1,6 +1,5 @@
 package stx.parse.parser.term;
 
-import hre.*;
 /**
   The ParseInput pulls from the offset to the end of the string, so I suggest leading the regex with "^".
 **/

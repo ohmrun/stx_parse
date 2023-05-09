@@ -7,7 +7,6 @@
 -lib stx_assert
 -lib stx_fn
 -lib fletcher
--lib hre
 -D no-deprecation-warnings
 -D debug
 -D stx.parse.switches.debug=true

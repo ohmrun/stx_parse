@@ -27,7 +27,7 @@ class Issue3Test extends TestCase{
   // }
   // public function _testThen(){
   //   final value   = "aa".reader();
-  //   final parse   = Parsers.Something().then(_ -> Noise);
+  //   final parse   = Parsers.Something().then(_ -> Nada);
   //   final result  = parse.toFletcher().fudge(value);
   //   trace(result);
   // }

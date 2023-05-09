@@ -2,7 +2,7 @@
   "build" : {
     "-cp" : "src/main/haxe",
     "-lib" : [
-      "stx_pico","stx_nano", "stx_ds", "stx_assert", "stx_fn", "fletcher", "hre"
+      "stx_pico","stx_nano", "stx_ds", "stx_assert", "stx_fn", "fletcher"
     ],
     "-D" : [
       "no-deprecation-warnings" 

@@ -48,7 +48,7 @@ class ParserLift{
   //   ));
   // }
 
-  // static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Fletcher<ParseInput<I>,TT,Noise>{
+  // static public inline function postfix<I,T,TT>(p:Parser<I,T>,fn:ParseResult<I,T>->TT):Fletcher<ParseInput<I>,TT,Nada>{
   //   return Fletcher.Then(
   //     p,
   //     Fletcher.Sync(fn)
@@ -113,6 +113,11 @@ class ParserLift{
       }
     ).asParser();
   }
+  /**
+   * Takes a parser that returns a cluster of strings and returns a parser that returns a string.
+   * @param p 
+   * @return Parser<String,String>
+   */
   static public function tokenize(p:Parser<String,Cluster<String>>):Parser<String,String>{
 		return p.then(
 			(arr) -> __.option(arr).defv([]).join("")
