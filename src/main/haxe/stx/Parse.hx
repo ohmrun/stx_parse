@@ -29,6 +29,10 @@ typedef ParseFailureCode 			= stx.fail.ParseFailureCode;
 typedef ParseFailureCodeSum   = stx.fail.ParseFailureCode.ParseFailureCodeSum;
 
 class Parse{
+	/**
+	 * Returns `stx.parse.parsers.StringParsers`
+	 * @param self 
+	 */
 	static public function string(self:stx.parse.module.Parsers){
 		return stx.parse.parsers.StringParsers;
 	}
