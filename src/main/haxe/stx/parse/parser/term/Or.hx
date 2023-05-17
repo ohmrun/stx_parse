@@ -8,15 +8,15 @@ class Or<P,R> extends ParserCls<P,R>{
     this.lhs = lhs;
     this.rhs = rhs;
     #if debug
-    __.assert().exists(lhs);
+    __.assert().that().exists(lhs);
       __.log().trace('${lhs}');
-    __.assert().exists(rhs);
+    __.assert().that().exists(rhs);
     #end
   }
   public inline function apply(input:ParseInput<P>):ParseResult<P,R>{
     #if debug __.log().trace(_ -> _.thunk( () -> '$this')); #end 
-    __.assert().exists(input);
-    __.assert().exists(lhs);
+    __.assert().that().exists(input);
+    __.assert().that().exists(lhs);
     final result = lhs.apply(input);
     #if debug
     __.log().trace(_ -> _.pure('result $result at ${result.asset.position()} $lhs = ${result.is_ok()}'));
@@ -26,10 +26,18 @@ class Or<P,R> extends ParserCls<P,R>{
       case true   : result;
       case false  : 
         #if debug
-        __.log().trace(_ -> _.pure('try $rhs'));
+        __.log().trace(_ -> _.pure('rhs: try $rhs'));
         #end
-        __.assert().exists(rhs);
-        rhs.apply(input);
+        __.assert().that().exists(rhs);
+        final resI = rhs.apply(input);
+
+        if(!resI.is_ok()){
+          resI.with_errata(result.error);
+        }
+        #if debug
+          __.log().trace(_ -> _.pure('result $resI at ${resI.asset.position()} $lhs = ${resI.is_ok()}'));
+        #end
+        resI;
     }
   }
   override public function toString(){

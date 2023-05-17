@@ -12,7 +12,7 @@ class RepeatedUpto<I,O> extends Base<I,Array<O>,Parser<I,O>>{
     //__.assert(this.number).gt_eq(1);
 
     #if debug
-    __.assert(id).exists(delegation);
+    __.assert(id).that().exists(delegation);
     #end
     super(delegation,id);
     this.tag = switch (delegation.tag){
@@ -22,7 +22,7 @@ class RepeatedUpto<I,O> extends Base<I,Array<O>,Parser<I,O>>{
   }
   override public function check(){
     #if debug
-    __.that(pos).exists().errata( e -> e.fault().of(E_Parse_UndefinedParseDelegate)).crunch(delegation);
+    __.assert(pos).expect().exists().errata( e -> e.fault().of(E_Parse_UndefinedParseDelegate)).crunch(delegation);
     #end
   }
   public function apply(inputI:ParseInput<I>):ParseResult<I,Array<O>>{

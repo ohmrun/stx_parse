@@ -20,7 +20,7 @@ class Memoise<I,O> extends Base<I,O,Parser<I,O>>{
         ipt.memo.lrStack    = ipt.memo.lrStack.cons(base);
         ipt.updateCacheAndGet(genKey, MemoLR(base));
 
-        #if debug __.assert().exists(delegation); #end
+        #if debug __.assert().that().exists(delegation); #end
 
         final res = delegation.apply(ipt);
         #if debug __.log().debug("memoise:delegate"); #end

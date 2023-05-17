@@ -5,8 +5,8 @@ using stx.parse.parser.term.With;
 abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   public function new(l:Parser<I,T>,r:Parser<I,U>,?pos:Pos){
     #if debug
-    __.assert().exists(l);
-    __.assert().exists(r);
+    __.assert().that().exists(l);
+    __.assert().that().exists(r);
     #end
     //__.log().debug(_ -> _.thunk(() -> '${l} ${r}'));
     //__.log().debug(_ -> _.thunk(() -> '${l.tag} ${r.tag}'));
@@ -14,22 +14,23 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
   }
   abstract public function transform(lhs:Null<T>,rhs:Null<U>):Option<V>;
   override function check(){
-    __.that().exists().crunch(delegation);
+    __.assert().expect().exists().crunch(delegation);
   }
   inline public function apply(input:ParseInput<I>):ParseResult<I,V>{  
     var res = delegation.fst().apply(input);
-    // __.log().trace(_ -> _.thunk(
-    //   () -> {
-    //     final parser = delegation.fst().toString();
-    //     final result = () -> res.toString();
-    //     return 'lh parser: $parser result: ${result()} ${res.is_ok()} $this';
-    //   }
-    // ));
-    //#end
+    #if debug
+    __.log().trace(_ -> _.thunk(
+      () -> {
+        final parser = delegation.fst().toString();
+        final result = () -> res.toString();
+        return 'lh parser result: ${result()} ${res.is_ok()} $parser ';
+      }
+    ));
+    #end
     return switch(res.is_ok()){
       case true: 
-        __.assert().exists(delegation);
-        __.assert().exists(delegation.snd());
+        __.assert().that().exists(delegation);
+        __.assert().that().exists(delegation.snd());
         final resI = delegation.snd().apply(res.asset);
         #if debug
         __.log().trace(_ -> _.thunk(
@@ -56,11 +57,11 @@ abstract class With<I,T,U,V> extends Base<I,V,Couple<Parser<I,T>,Parser<I,U>>>{
           case false : 
             switch(resI.is_fatal()){
               case true   : resI.fails(); 
-              case false  : resI.error.concat(input.erration(E_Parse_ParseFailed('With lhs'))).failure(input);
+              case false  : resI.error.concat(input.erration(E_Parse_ParseFailed('With lhs'))).failure(resI.asset);
             }
         }
       case false : 
-        input.erration(E_Parse_ParseFailed('With')).concat(res.error).failure(input);
+        input.erration(E_Parse_ParseFailed('With')).concat(res.error).failure(res.asset);
     }  
   }
   override public function toString(){

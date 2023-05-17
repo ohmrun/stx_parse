@@ -6,13 +6,20 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
   }
   override function check(){
     for(delegate in delegation){
-      __.assert().exists(delegate);
+      __.assert().that().exists(delegate);
     }
   }
   public function apply(input:ParseInput<I>):ParseResult<I,T>{
-    var idx   = 1;
-    final res = delegation[0].apply(input);
-
+    var idx    = 1;
+    final res  = delegation[0].apply(input);
+    var errs  : Defect<ParseFailure> = null;
+    function set_error(e){
+      if (errs == null){
+        errs = e;
+      }else{
+        errs = errs.concat(e);
+      }
+    }
     function rec(res:ParseResult<I,T>):ParseResult<I,T>{
       return switch(res.is_ok()){
         case true  : res;
@@ -20,6 +27,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
           switch(res.is_fatal()){
             case true  : res;
             case false :
+              set_error(res.error);
               if(idx < delegation.length){
                 var n = idx;
                 idx   = idx + 1;
@@ -32,7 +40,7 @@ class Ors<I,T> extends Base<I,T,Array<Parser<I,T>>>{
                 if(!resI.is_ok()){
                   ParseResult.make(resI.asset,None,resI.error);
                 }else{
-                  resI;
+                  resI.with_errata(errs);
                 }
               }else{
                 var opts = delegation.map(_ -> _.tag);

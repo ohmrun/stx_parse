@@ -13,6 +13,7 @@ using stx.Log;
 using stx.Assert;
 using stx.Ds;
 
+using stx.parse.Logging;
 
 
 import haxe.ds.Map in StdMap;

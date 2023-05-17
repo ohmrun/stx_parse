@@ -6,11 +6,11 @@ using stx.Pkg;
 
 class Logging{
   static public function log(wildcard:Wildcard):Log{
-    return 
-      #if (stx.parse.switches.debug == "true") 
-        stx.Log.pkg(__.pkg());
-      #else
-        stx.Log.empty();
-      #end
+    return stx.Log.pkg(__.pkg());
+      // #if (debug) 
+        
+      // #else
+      //   stx.Log.empty();
+      // #end
   }
 }

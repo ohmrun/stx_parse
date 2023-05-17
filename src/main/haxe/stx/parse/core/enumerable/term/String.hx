@@ -4,7 +4,7 @@ import String in StdString;
 
 class String extends EnumerableCls<StdString,StdString>{
 	public function new(v, ?i) {
-		__.assert().exists(v);
+		__.assert().that().exists(v);
 		super(v, i);
 	}
 	public function is_end() {

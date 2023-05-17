@@ -9,7 +9,7 @@ class SyncAnon<P,R> extends SyncBase<P,R,ParseInput<P> -> ParseResult<P,R>>{
   }
   public function apply(ipt:ParseInput<P>):ParseResult<P,R>{
     #if test
-      __.assert().exists(pos);
+      __.assert().that().exists(pos);
     #end
     final result = method(ipt);
     //trace('$this $result');

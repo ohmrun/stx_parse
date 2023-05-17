@@ -18,7 +18,7 @@ class Anon<P,R> extends Base<P,R,ParseInput<P> -> ParseResult<P,R>>{
     super(delegation,tag,pos);
   }
   inline public function apply(ipt:ParseInput<P>):ParseResult<P,R>{
-    #if debug __.assert().exists(pos); #end
+    #if debug __.assert().that().exists(pos); #end
     return this.delegation(ipt);
   }
   override public function toString(){

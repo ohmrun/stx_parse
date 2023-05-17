@@ -2,7 +2,7 @@ package stx.parse.parser.term;
 
 class Succeed<P,R> extends SyncBase<P,R,R>{
   public function new(value:R,?pos:Pos){
-    __.assert().exists(value);
+    __.assert().that().exists(value);
     super(value,pos);
   }
   @:noUsing static inline public function pure<P,R>(r:R):Parser<P,R>{

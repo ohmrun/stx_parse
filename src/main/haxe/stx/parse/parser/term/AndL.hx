@@ -5,7 +5,7 @@ class AndL<I,T,U> extends With<I,T,U,T>{
     super(l,r,pos);
   }
   override function check(){
-    __.assert().exists(delegation);
+    __.assert().that().exists(delegation);
   }
   public inline function transform(lhs:Null<T>,rhs:Null<U>){
     return __.option(lhs);

@@ -9,13 +9,13 @@ abstract class Then<I,T,U> extends Base<I,U,Parser<I,T>>{
   abstract function transform(t:T):U;
 
   override public function check(){
-    __.that(pos).exists().errata(e -> e.fault().of(E_Parse_UndefinedParseDelegate)).crunch(delegation);
+    __.assert(pos).expect().exists().errata(e -> e.fault().of(E_Parse_UndefinedParseDelegate)).crunch(delegation);
   }
   inline public function apply(input:ParseInput<I>):ParseResult<I,U>{
     #if debug __.log().trace('$delegation then'); #end
-    __.assert().exists(delegation);
+    __.assert().that().exists(delegation);
     final res = delegation.apply(input);
-    __.log().trace('$res');
+    #if debug __.log().trace('$res'); #end 
     return switch(res.is_ok()){
       case true : 
         #if debug __.log().trace('then'); #end

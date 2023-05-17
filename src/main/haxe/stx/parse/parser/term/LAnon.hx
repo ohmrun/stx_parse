@@ -6,7 +6,7 @@ class LAnon<I,O> extends Base<I,O,Parser<I,O>>{
   public function new(closure:Void->Parser<I,O>,?id:Pos){
     super(null,id);
     #if test
-    __.assert().exists(closure);
+    __.assert().that().exists(closure);
     #end
     this.closure = closure;//.fn().cache().prj();
   }
@@ -16,7 +16,7 @@ class LAnon<I,O> extends Base<I,O,Parser<I,O>>{
   public inline function apply(ipt:ParseInput<I>):ParseResult<I,O>{
     return if(delegation == null){
       open();
-      __.assert().exists(delegation);
+      __.assert().that().exists(delegation);
       this.delegation.apply(ipt);
     }else{
       this.delegation.apply(ipt);

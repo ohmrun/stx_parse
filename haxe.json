@@ -78,6 +78,16 @@
           "--hl" : "build/unit/hl/main.hl"
         }
       }
+    },
+    "feat" : {
+      "-lib" : ["stx_test"],
+      "-cp" : ["src/test/haxe"],
+      "better_error_reporting" : {
+        "--main"  : "stx.parse.BetterErrorReporting",
+        "interp"  : {
+          "--interp" : true
+        }
+      }
     }
   },
   "run" : {
