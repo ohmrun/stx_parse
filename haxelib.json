@@ -4,7 +4,7 @@
   "license": "BSD",
   "tags": ["cross","utility"],
   "description": "LR Parser API based on Parsex",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "releasenote": "Settling down nicely",
   "contributors": ["0b1kn00b"],
   "dependencies": {
