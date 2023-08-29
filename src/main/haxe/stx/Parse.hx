@@ -117,6 +117,7 @@ class LiftParseFailure{
 				() -> next.data.fold(
 					(ok) -> ok.fold(
 						x -> x.fatal,
+						_ -> false,
 						_ -> false
 					),
 					() -> false
@@ -130,7 +131,8 @@ class LiftParseFailure{
 			 x -> x.data.fold(
 				 ok -> ok.fold(
 					 okI 	-> Std.string(okI),
-					 _ 	  -> ''
+					 _ 	  -> '',
+					 _ 		-> ''
 				 ),
 				 () -> ''
 			 )
