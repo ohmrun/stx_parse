@@ -16,9 +16,9 @@ pre-commit:
   parallel: true
   commands:
     unit:
-      run: hx build unit
+      run: hb build unit
     test:
-      run: hx build test/interp
+      run: hb build test/interp
 #       glob: "*.{js,ts,jsx,tsx}"
 #       run: yarn eslint {staged_files}
 #     rubocop:

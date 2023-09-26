@@ -1,9 +1,9 @@
 default: test-interp
 unit:
-  clear && hx build unit
+  clear && hb build unit
 test-interp:
-  clear && hx build test/interp
+  clear && hb build test/interp
 test-json-interp:
-  clear && hx build json/test/interp
+  clear && hb build json/test/interp
 test-json-interp-build:
-  clear && STX_TEST__SUITE=poke hx build json/test/interp
+  clear && STX_TEST__SUITE=poke hb build json/test/interp

@@ -16,8 +16,11 @@ class BetterErrorReporting extends stx.test.TestCase{
   }
   public function test(){
     final string = "abbbbc";
-    final parser = Parsers.Something().and(Parsers.OneMany(StringParsers.id("b"))).then(_ -> "0").and(StringParsers.id("r"));
+    final parser = parser();
     final result = parser.apply(string.reader());
     trace(result);
+  }
+  private function parser(){
+    return Parsers.Something().and(Parsers.OneMany(StringParsers.id("b"))).then(_ -> "0").and(StringParsers.id("r"));
   }
 }
